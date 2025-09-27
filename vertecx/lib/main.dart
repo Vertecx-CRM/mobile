@@ -1,10 +1,7 @@
-// lib/main.dart
-// Configuración mínima del router sin BLoC.
-
 import 'package:flutter/material.dart';
-// Importa las rutas y la página de lista 
 import 'presentation/routes/app_routes.dart';
 import 'presentation/pages/user_list_page.dart';
+
 
 void main() {
   runApp(const MainApp());
@@ -20,7 +17,6 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        // Color principal de la aplicación (puedes cambiarlo)
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal), 
       ),
 
