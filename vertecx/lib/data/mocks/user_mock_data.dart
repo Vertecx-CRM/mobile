@@ -9,6 +9,7 @@
       email: "joaoestid@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.administrador,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u002',
@@ -18,6 +19,7 @@
       email: "danier@gmail.com",
       estado: UserStatus.inactivo,
       rol: UserRole.cliente,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u003',
@@ -27,6 +29,7 @@
       email: "samir@gmail.com",
       estado: UserStatus.inactivo,
       rol: UserRole.tecnico,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u004',
@@ -36,6 +39,7 @@
       email: "maria.lopez@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.administrador,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u005',
@@ -45,6 +49,7 @@
       email: "carlos.martinez@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.cliente,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u006',
@@ -54,6 +59,7 @@
       email: "ana.silva@gmail.com",
       estado: UserStatus.inactivo,
       rol: UserRole.tecnico,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u007',
@@ -63,6 +69,7 @@
       email: "javier.ramirez@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.cliente,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u008',
@@ -72,6 +79,7 @@
       email: "laura.herrera@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.tecnico,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u009',
@@ -81,6 +89,7 @@
       email: "miguel.diaz@gmail.com",
       estado: UserStatus.inactivo,
       rol: UserRole.cliente,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u010',
@@ -90,6 +99,7 @@
       email: "sofia.rojas@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.administrador,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u011',
@@ -99,6 +109,7 @@
       email: "david.morales@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.tecnico,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u012',
@@ -108,6 +119,7 @@
       email: "paola.castillo@gmail.com",
       estado: UserStatus.inactivo,
       rol: UserRole.cliente,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u013',
@@ -117,6 +129,7 @@
       email: "roberto.gutierrez@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.tecnico,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u014',
@@ -126,6 +139,7 @@
       email: "carmen.navarro@gmail.com",
       estado: UserStatus.activo,
       rol: UserRole.cliente,
+      imagenPath: "assets/icons/userP.png",
     ),
     UserModel(
       id: 'u015',
@@ -135,5 +149,6 @@
       email: "fernando.ortega@gmail.com",
       estado: UserStatus.inactivo,
       rol: UserRole.administrador,
+      imagenPath: "assets/icons/userP.png",
     ),
   ];

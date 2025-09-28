@@ -20,7 +20,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final current = (state as UserLoaded).users;
       final updated = current.map((u) {
         if (u.id == event.userId) {
-          return toggleStatus(u); // ✅ usa tu función helper de user_model.dart
+          return toggleStatus(u);
         }
         return u;
       }).toList();

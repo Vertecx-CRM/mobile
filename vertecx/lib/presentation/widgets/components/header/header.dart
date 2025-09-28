@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 class HearderUser extends StatelessWidget {
   final String title;
   final String iconPath;
+   final double titleSize;
 
   const HearderUser({
     super.key,
     required this.title,
     required this.iconPath,
+    this.titleSize = 32,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity, // ocupa todo el ancho
+      width: double.infinity,
       height: 69,
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -22,25 +24,24 @@ class HearderUser extends StatelessWidget {
         ),
         color: Color(0xfff3f3f3),
       ),
-      child: Row(
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          // 🔹 Título centrado
-          Expanded(
-            child: Center(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFFB20000),
-                ),
+          // 🔹 Texto centrado
+          Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: titleSize,
+                fontWeight: FontWeight.w900,
+                color: const Color(0xFFB20000),
               ),
             ),
           ),
 
-          // 🔹 Icono a la derecha
-          Padding(
-            padding: const EdgeInsets.only(right: 10, bottom: 2),
+          // 🔹 Imagen alineada a la derecha
+          Positioned(
+            right: 25,
             child: SizedBox(
               width: 40,
               height: 40,

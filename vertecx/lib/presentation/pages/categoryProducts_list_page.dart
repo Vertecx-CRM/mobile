@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vertecx/data/models/users/user_model.dart';
-import '../widgets/usersWidgets/user_card_widget.dart';
+import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
+import '../widgets/categoryProductsWidgets/categoryProduct_card_widget.dart';
 import '../widgets/components/search/search.dart';
 import '../widgets/components/header/header.dart';
-import '../../data/repositories/userRepositories/bloc/user_bloc.dart';
+import '../../data/repositories/categoryProductRepositories/bloc/category_product_bloc.dart';
 
-class UserListPage extends StatefulWidget {
-  const UserListPage({super.key});
+class CategoryProductListPage extends StatefulWidget {
+  const CategoryProductListPage({super.key});
 
   @override
-  State<UserListPage> createState() => _UserListPageState();
+  State<CategoryProductListPage> createState() =>
+      _CategoryProductListPageState();
 }
 
-class _UserListPageState extends State<UserListPage> {
-  int _usersToShow = 4;
+class _CategoryProductListPageState extends State<CategoryProductListPage> {
+  int _categoriesToShow = 4;
   String _searchQuery = "";
   final ScrollController _scrollController = ScrollController();
 
-  void _loadMoreUsers(int totalUsers) {
+  void _loadMoreCategories(int totalCategories) {
     setState(() {
-      _usersToShow = (_usersToShow + 2).clamp(0, totalUsers);
+      _categoriesToShow = (_categoriesToShow + 2).clamp(0, totalCategories);
     });
   }
 
@@ -35,35 +36,39 @@ class _UserListPageState extends State<UserListPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => UserBloc()..add(LoadUsers()),
+      create: (_) => CategoryProductBloc()..add(LoadCategories()),
       child: Scaffold(
-        backgroundColor: Color(0xFFE8E8E8),
-        body: BlocBuilder<UserBloc, UserState>(
+        backgroundColor: const Color(0xFFE8E8E8),
+        body: BlocBuilder<CategoryProductBloc, CategoryProductState>(
           builder: (context, state) {
-            if (state is UserLoaded) {
-              // 🔎 Filtrar usuarios por búsqueda
-              final filteredUsers = state.users
-                  .where((u) => u.matchesQuery(_searchQuery))
+            if (state is CategoryProductLoaded) {
+              // Filtrar categorías por búsqueda
+              final filteredCategories = state.categories
+                  .where((c) => c.matchesQuery(_searchQuery))
                   .toList();
 
-              final users = filteredUsers.take(_usersToShow).toList();
-              final allUsersLoaded = _usersToShow >= filteredUsers.length;
+              final categories = filteredCategories
+                  .take(_categoriesToShow)
+                  .toList();
+              final allCategoriesLoaded =
+                  _categoriesToShow >= filteredCategories.length;
 
               return SingleChildScrollView(
                 controller: _scrollController,
                 child: Column(
                   children: [
-                    // 🔹 encabezado de primeras
+                    // encabezado
                     const HearderUser(
-                      title: "Usuarios",
+                      title: "Categorías de productos",
                       iconPath: "assets/icons/userP.png",
+                      titleSize: 20,
                     ),
 
                     const SizedBox(height: 20),
 
-                    // 🔹 buscador
+                    // buscador
                     Buscar(
-                      hintText: "Buscar usuario...",
+                      hintText: "Buscar categoría...",
                       onChanged: (value) {
                         setState(() => _searchQuery = value);
                       },
@@ -71,13 +76,13 @@ class _UserListPageState extends State<UserListPage> {
 
                     const SizedBox(height: 20),
 
-                    // 🔹 lista de usuarios
-                    ...users.map(
-                      (user) => UserCardWidget(
-                        user: user,
+                    // lista de categorías
+                    ...categories.map(
+                      (category) => CategoryCard(
+                        category: category,
                         onToggleStatus: () {
-                          context.read<UserBloc>().add(
-                            ToggleUserStatus(user.id),
+                          context.read<CategoryProductBloc>().add(
+                            ToggleCategoryStatus(category.id),
                           );
                         },
                       ),
@@ -85,11 +90,12 @@ class _UserListPageState extends State<UserListPage> {
 
                     const SizedBox(height: 20),
 
-                    // 🔹 botón o mensaje final
-                    if (filteredUsers.isNotEmpty)
-                      if (!allUsersLoaded)
+                    // botón o mensaje final
+                    if (filteredCategories.isNotEmpty)
+                      if (!allCategoriesLoaded)
                         TextButton(
-                          onPressed: () => _loadMoreUsers(filteredUsers.length),
+                          onPressed: () =>
+                              _loadMoreCategories(filteredCategories.length),
                           child: Column(
                             children: [
                               Image.asset(
@@ -98,7 +104,7 @@ class _UserListPageState extends State<UserListPage> {
                                 height: 20,
                               ),
                               const Text(
-                                "Cargar más Usuarios",
+                                "Cargar más Categorías de productos",
                                 style: TextStyle(color: Color(0xFFB20000)),
                               ),
                             ],
@@ -108,7 +114,7 @@ class _UserListPageState extends State<UserListPage> {
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Text(
-                            "Ya están todos los usuarios",
+                            "Ya están todas las categoría de productos",
                             style: TextStyle(
                               color: Color(0xFFB20000),
                               fontWeight: FontWeight.bold,
@@ -119,7 +125,7 @@ class _UserListPageState extends State<UserListPage> {
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 20),
                         child: Text(
-                          "No se encontraron usuarios",
+                          "No se encontraron categoría de productos",
                           style: TextStyle(
                             color: Color(0xFFB20000),
                             fontWeight: FontWeight.bold,

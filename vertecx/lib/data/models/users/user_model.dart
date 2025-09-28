@@ -11,6 +11,7 @@ class UserModel {
   final String email;
   final UserStatus estado;
   final UserRole rol;
+  final String imagenPath;
 
   UserModel({
     required this.id,
@@ -20,6 +21,7 @@ class UserModel {
     required this.email,
     required this.estado,
     required this.rol,
+    required this.imagenPath
   });
 
   // Método de utilidad para mapear el enum a una cadena legible
@@ -51,6 +53,7 @@ UserModel toggleStatus(UserModel user) {
         ? UserStatus.inactivo
         : UserStatus.activo,
     rol: user.rol,
+    imagenPath: user.imagenPath
   );
 }
 
@@ -75,8 +78,6 @@ extension UserSearch on UserModel {
            removeDiacritics(statusString.toLowerCase()).contains(normalizedQuery);
   }
 }
-
-
 
 String removeDiacritics(String input) {
   const withDiacritics = 'áéíóúÁÉÍÓÚñÑ';
