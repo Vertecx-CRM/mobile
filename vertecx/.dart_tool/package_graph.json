@@ -11,7 +11,9 @@
         "bloc",
         "equatable",
         "flutter",
-        "flutter_bloc"
+        "flutter_bloc",
+        "intl",
+        "table_calendar"
       ],
       "devDependencies": [
         "flutter_lints",
@@ -41,6 +43,24 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "intl",
+      "version": "0.20.2",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "table_calendar",
+      "version": "3.2.0",
+      "dependencies": [
+        "flutter",
+        "intl",
+        "simple_gesture_detector"
       ]
     },
     {
@@ -174,6 +194,13 @@
         "stream_channel",
         "string_scanner",
         "term_glyph"
+      ]
+    },
+    {
+      "name": "simple_gesture_detector",
+      "version": "0.2.1",
+      "dependencies": [
+        "flutter"
       ]
     },
     {

@@ -4,12 +4,14 @@ class HearderUser extends StatelessWidget {
   final String title;
   final String iconPath;
    final double titleSize;
+   final Widget? leading;
 
   const HearderUser({
     super.key,
     required this.title,
     required this.iconPath,
     this.titleSize = 32,
+    this.leading,
   });
 
   @override
@@ -27,7 +29,8 @@ class HearderUser extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // 🔹 Texto centrado
+
+          // Texto centrado
           Center(
             child: Text(
               title,
@@ -38,8 +41,15 @@ class HearderUser extends StatelessWidget {
               ),
             ),
           ),
+          
+          // Botón de retroceso
+          if (leading != null)
+            Positioned(
+              left: 10,
+              child: leading!,
+            ),
 
-          // 🔹 Imagen alineada a la derecha
+          // Imagen alineada a la derecha
           Positioned(
             right: 25,
             child: SizedBox(
