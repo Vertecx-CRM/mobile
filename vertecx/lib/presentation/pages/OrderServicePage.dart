@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vertecx/blocs/OrderServiceController.dart';
 import 'package:vertecx/data/repositories/OrderRepository.dart';
-import 'package:vertecx/presentation/widgets/AppBottomNav.dart';
 import 'package:vertecx/presentation/widgets/OrderServiceCard.dart';
-
 
 class OrderServicePage extends StatelessWidget {
   const OrderServicePage({super.key});
@@ -28,10 +26,7 @@ class _OrderServiceView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: const Text(
-          'Ordenes De Servicio',
-          style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFFB20000)),
-        ),
+        title: const Text('Ordenes De Servicio', style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFFB20000))),
         centerTitle: false,
         backgroundColor: Colors.white,
         actions: const [
@@ -42,7 +37,7 @@ class _OrderServiceView extends StatelessWidget {
               backgroundColor: Color(0xFFEFEFEF),
               child: Icon(Icons.person_outline, color: Color(0xFF6B7280)),
             ),
-          )
+          ),
         ],
       ),
       body: Column(
@@ -57,10 +52,7 @@ class _OrderServiceView extends StatelessWidget {
                 contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                 filled: true,
                 fillColor: const Color(0xFFF3F4F6),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
-                ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
               ),
             ),
           ),
@@ -68,7 +60,7 @@ class _OrderServiceView extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
               itemBuilder: (_, i) => OrderCard(order: controller.orders[i]),
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, i) => const SizedBox(height: 10),
               itemCount: controller.orders.length,
             ),
           ),
@@ -76,21 +68,15 @@ class _OrderServiceView extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 54),
+        padding: const EdgeInsets.only(bottom: 70, right: 16),
         child: FloatingActionButton.extended(
           onPressed: () {},
           backgroundColor: const Color(0xFFB20000),
-          elevation: 3,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
-            'Crear Orden',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-          ),
+          label: const Text('Crear Orden', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
         ),
       ),
-      bottomNavigationBar: const AppBottomNav(),
-      backgroundColor: Colors.white,
     );
   }
 }
