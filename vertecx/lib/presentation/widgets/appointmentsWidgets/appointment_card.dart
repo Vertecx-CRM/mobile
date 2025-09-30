@@ -17,8 +17,7 @@ class AppointmentCard extends StatelessWidget {
   String getDiaSemana(DateTime fecha) {
     return DateFormat.EEEE("es_ES").format(fecha);
   }
-
-  /// 🔹 Mostrar técnico principal y cantidad si hay más
+  
   String getTecnicosTexto() {
     final tecnicos = cita.orden.tecnicos;
     if (tecnicos.isEmpty) return "Sin técnico";
@@ -53,7 +52,7 @@ class AppointmentCard extends StatelessWidget {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFFF4F4F4),
@@ -63,7 +62,7 @@ class AppointmentCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 🔹 Columna izquierda (Día)
+              //Columna izquierda (Día)
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -94,19 +93,17 @@ class AppointmentCard extends StatelessWidget {
                 ],
               ),
 
-              // 🔹 Línea divisoria
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 12),
                 width: 3,
                 color: const Color(0xFFE8E8E8),
               ),
 
-              // 🔹 Contenido principal
+              // Contenido principal
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Tipo de servicio + Tipo de cita
                     Row(
                       children: [
                         Text(
@@ -129,7 +126,7 @@ class AppointmentCard extends StatelessWidget {
                       ],
                     ),
 
-                    // 🔹 Tipo de mantenimiento (solo si aplica)
+                    // Tipo de mantenimiento
                     if (cita.orden.tipoMantenimiento != null)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
@@ -155,7 +152,7 @@ class AppointmentCard extends StatelessWidget {
 
                     const SizedBox(height: 8),
 
-                    // Técnico + Estado en un Row
+                    // Técnico
                     Row(
                       children: [
                         const Icon(
@@ -174,7 +171,7 @@ class AppointmentCard extends StatelessWidget {
                           ),
                         ),
 
-                        // 🔹 Estado interactivo con confirmación
+                        //Estado interactivo con confirmación
                         PopupMenuButton<String>(
                           onSelected: (value) {
                             AppDialogs.showConfirmChangeStatus(
@@ -189,8 +186,6 @@ class AppointmentCard extends StatelessWidget {
                                     newStatus: value,
                                   ),
                                 );
-
-                                // Mensaje de éxito
                                 AppDialogs.showSuccessMessage(
                                   context,
                                   "Estado cambiado a $value",

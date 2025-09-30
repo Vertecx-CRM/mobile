@@ -17,7 +17,7 @@ class LoadAppointmentsForDay extends CalendarEvent {
   List<Object?> get props => [date];
 }
 
-/// Cargar todas las citas del mes (útil si luego quieres verlas en el calendario con punticos)
+/// Cargar todas las citas del mes
 class LoadAppointmentsForMonth extends CalendarEvent {
   final DateTime month;
 
@@ -39,4 +39,7 @@ class UpdateAppointmentStatus extends CalendarEvent {
   @override
   List<Object?> get props => [appointmentId, newStatus];
 }
+
+class LoadAllAppointments extends CalendarEvent {}
+
 

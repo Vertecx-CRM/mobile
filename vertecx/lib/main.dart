@@ -7,6 +7,7 @@ import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import './presentation/pages/dashboard_page.dart';
 
 
 void main() async {
@@ -35,6 +36,7 @@ class MainApp extends StatelessWidget {
           AppRoutes.categoryProduct: (context) =>
               const CategoryProductListPage(),
           AppRoutes.appointment: (context) => const CalendarPage(),
+          AppRoutes.dashboard: (context) => const DashboardPage(),
         },
       ),
     );
@@ -69,6 +71,12 @@ class HomePage extends StatelessWidget {
               label: const Text('Ir a Citas'),
               onPressed: () =>
                   Navigator.of(context).pushNamed(AppRoutes.appointment),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.dashboard),
+              label: const Text('Ir a dashboard'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.dashboard),
             ),
           ],
         ),

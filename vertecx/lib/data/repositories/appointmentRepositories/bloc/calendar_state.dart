@@ -46,3 +46,13 @@ class CalendarError extends CalendarState {
   @override
   List<Object?> get props => [message];
 }
+
+class AllAppointmentsLoaded extends CalendarState {
+  final List<AppointmentEvent> appointments;
+
+  const AllAppointmentsLoaded(this.appointments);
+
+  @override
+  List<Object?> get props => [appointments];
+}
+

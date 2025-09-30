@@ -8,7 +8,6 @@ final List<String> months = [
   ];
 
 final List<AppointmentEvent> mockAppointments = [
-  // 🔹 Ejemplo Solicitud
   AppointmentEvent(
     id: 1,
     horaInicio: "09:00",
@@ -34,7 +33,6 @@ final List<AppointmentEvent> mockAppointments = [
     tipoCita: "solicitud",
   ),
 
-  // 🔹 Ejemplo Ejecución
   AppointmentEvent(
     id: 2,
     horaInicio: "14:00",
@@ -65,7 +63,6 @@ final List<AppointmentEvent> mockAppointments = [
     tipoCita: "ejecucion",
   ),
 
-  // 🔹 Ejemplo Garantía
   AppointmentEvent(
     id: 3,
     horaInicio: "11:00",

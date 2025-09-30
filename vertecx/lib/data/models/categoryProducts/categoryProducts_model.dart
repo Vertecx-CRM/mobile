@@ -19,7 +19,7 @@ class CategoryProduct {
       estado == CategoryStatus.activo ? "Activo" : "Inactivo";
 }
 
-/// 🔹 Alternar estado
+/// Alternar estado
 CategoryProduct toggleCategoryStatus(CategoryProduct category) {
   return CategoryProduct(
     id: category.id,
@@ -32,7 +32,7 @@ CategoryProduct toggleCategoryStatus(CategoryProduct category) {
   );
 }
 
-/// 🔹 Lógica de búsqueda
+/// Lógica de búsqueda
 extension CategorySearch on CategoryProduct {
   bool matchesQuery(String query) {
     final normalizedQuery = removeDiacritics(query.toLowerCase());
@@ -50,7 +50,7 @@ extension CategorySearch on CategoryProduct {
   }
 }
 
-/// 🔹 Función utilitaria para quitar tildes
+/// Función utilitaria para quitar tildes
 String removeDiacritics(String input) {
   const withDiacritics = 'áéíóúÁÉÍÓÚñÑ';
   const withoutDiacritics = 'aeiouAEIOUnN';

@@ -16,7 +16,7 @@ class AppointmentDetailPage extends StatelessWidget {
       backgroundColor: const Color(0xFFE8E8E8),
       body: Column(
         children: [
-          // 🔹 Encabezado con flecha de volver
+          // Encabezado 
           HearderUser(
             title: "Detalle de la Cita",
             iconPath: "assets/icons/userP.png",
@@ -27,7 +27,7 @@ class AppointmentDetailPage extends StatelessWidget {
             ),
           ),
 
-          // 🔹 Contenido con scroll
+          //Contenido con scroll
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),

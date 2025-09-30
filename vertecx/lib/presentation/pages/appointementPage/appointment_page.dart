@@ -28,12 +28,12 @@ class _CalendarPageState extends State<CalendarPage> {
       backgroundColor: const Color(0xFFE8E8E8),
       body: Column(
         children: [
-          // 🔹 Encabezado
+          // Encabezado
           const HearderUser(title: "Citas", iconPath: "assets/icons/userP.png"),
 
           const SizedBox(height: 10),
 
-          // 🔹 Buscador
+          // Buscador
           Buscar(
             hintText: "Buscar cita...",
             onChanged: (value) {
@@ -45,7 +45,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
           const SizedBox(height: 30),
 
-          // 🔹 Calendario dentro del contenedor
+          //Calendario
           BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               return Container(
@@ -65,7 +65,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
                 child: Column(
                   children: [
-                    // 🔹 Header dentro del cuadro
+                    // Header
                     CalendarHeader(
                       focusedDay: _focusedDay,
                       months: months,
@@ -90,7 +90,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                     const SizedBox(height: 15),
 
-                    // 🔹 Calendario
+                    //Calendario
                     TableCalendar(
                       firstDay: DateTime.utc(2020, 1, 1),
                       lastDay: DateTime.utc(2030, 12, 31),
@@ -105,11 +105,11 @@ class _CalendarPageState extends State<CalendarPage> {
                       calendarStyle: const CalendarStyle(
                         todayDecoration: BoxDecoration(
                           color: Color(0xFFFFD6D6),
-                          shape: BoxShape.circle,
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                         selectedDecoration: BoxDecoration(
                           color: Color(0xFFB20000),
-                          shape: BoxShape.circle,
+                          borderRadius: BorderRadius.all(Radius.circular(6)),
                         ),
                       ),
                       daysOfWeekStyle: const DaysOfWeekStyle(
@@ -126,6 +126,13 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         defaultBuilder: (context, day, focusedDay) {
+                          // Verificar si hay citas este día desde el mock
+                          final hasAppointment = mockAppointments.any(
+                            (cita) =>
+                                cita.fecha.year == day.year &&
+                                cita.fecha.month == day.month &&
+                                cita.fecha.day == day.day,
+                          );
                           return Container(
                             width: 56,
                             height: 40,
@@ -133,6 +140,12 @@ class _CalendarPageState extends State<CalendarPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(6),
+                              border: hasAppointment
+                                  ? Border.all(
+                                      color: const Color(0xFFCC0000),
+                                      width: 3,
+                                    )
+                                  : null,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.08),
@@ -172,7 +185,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
           const SizedBox(height: 16),
 
-          // 📋 Lista de citas con la nueva Card
+          //Lista de citas
           Expanded(
             child: BlocBuilder<CalendarBloc, CalendarState>(
               builder: (context, state) {
@@ -183,19 +196,19 @@ class _CalendarPageState extends State<CalendarPage> {
                     return cita.orden.tipoServicio.toLowerCase().contains(
                           _searchQuery,
                         ) ||
-                        cita.orden.descripcion.toLowerCase().contains(_searchQuery) ||
+                        cita.orden.descripcion.toLowerCase().contains(
+                          _searchQuery,
+                        ) ||
                         cita.orden.tecnicos
                             .map((t) => t.nombre.toLowerCase())
                             .join(" ")
                             .contains(_searchQuery);
                   }).toList();
-
                   if (citas.isEmpty) {
                     return const Center(
                       child: Text("No hay citas para este día"),
                     );
                   }
-
                   return ListView.builder(
                     itemCount: citas.length,
                     itemBuilder: (context, index) {

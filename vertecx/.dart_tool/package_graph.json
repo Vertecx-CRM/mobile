@@ -10,6 +10,7 @@
         "awesome_dialog",
         "bloc",
         "equatable",
+        "fl_chart",
         "flutter",
         "flutter_bloc",
         "intl",
@@ -42,6 +43,15 @@
         "stack_trace",
         "stream_channel",
         "test_api",
+        "vector_math"
+      ]
+    },
+    {
+      "name": "fl_chart",
+      "version": "1.1.1",
+      "dependencies": [
+        "equatable",
+        "flutter",
         "vector_math"
       ]
     },

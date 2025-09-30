@@ -62,6 +62,12 @@
       "languageVersion": "3.7"
     },
     {
+      "name": "fl_chart",
+      "rootUri": "file:///C:/Users/Joao/AppData/Local/Pub/Cache/hosted/pub.dev/fl_chart-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///C:/dev/flutter/packages/flutter",
       "packageUri": "lib/",

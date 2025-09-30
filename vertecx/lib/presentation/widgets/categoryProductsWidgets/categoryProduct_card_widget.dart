@@ -80,7 +80,7 @@ class CategoryCard extends StatelessWidget {
                 ),
               ),
 
-              // 🔹 Chip de estado animado
+              // Chip de estado animado
               AnimatedStatusChip(
                 label: category.statusString,
                 bgColor: statusBgColor,

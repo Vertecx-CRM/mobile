@@ -9,7 +9,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   final AppointmentRepository repository;
 
   CalendarBloc(this.repository) : super(CalendarInitial()) {
-    // 🔹 Cargar citas por día
+    //Cargar citas por día
     on<LoadAppointmentsForDay>((event, emit) async {
       emit(CalendarLoading());
       try {
@@ -20,7 +20,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       }
     });
 
-    // 🔹 Cargar citas por mes
+    //Cargar citas por mes
     on<LoadAppointmentsForMonth>((event, emit) async {
       emit(CalendarLoading());
       try {
@@ -33,6 +33,16 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
         );
       } catch (e) {
         emit(CalendarError("Error al cargar las citas del mes: $e"));
+      }
+    });
+
+    on<LoadAllAppointments>((event, emit) async {
+      emit(CalendarLoading());
+      try {
+        final citas = repository.getAllAppointments();
+        emit(AllAppointmentsLoaded(citas));
+      } catch (e) {
+        emit(CalendarError("Error al cargar todas las citas: $e"));
       }
     });
 

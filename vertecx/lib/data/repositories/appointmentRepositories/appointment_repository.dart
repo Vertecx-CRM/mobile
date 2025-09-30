@@ -2,7 +2,7 @@ import 'package:vertecx/data/models/appointments/appointment_model.dart';
 import 'package:vertecx/data/mocks/appointments_mock_data.dart';
 
 class AppointmentRepository {
-  /// 🔹 Devuelve las citas de un día específico
+  //Devuelve las citas de un día específico
   List<AppointmentEvent> getAppointmentsForDay(DateTime date) {
     return mockAppointments
         .where(
@@ -14,7 +14,7 @@ class AppointmentRepository {
         .toList();
   }
 
-  /// 🔹 Devuelve todas las citas agrupadas por día de un mes
+  ///Devuelve todas las citas agrupadas por día de un mes
   Map<DateTime, List<AppointmentEvent>> getAppointmentsForMonth(
     DateTime month,
   ) {
@@ -32,7 +32,7 @@ class AppointmentRepository {
     return citasPorDia;
   }
 
-  /// 🔹 Devuelve todas las citas (si se necesita un listado completo)
+  ///Devuelve todas las citas (si se necesita un listado completo)
   List<AppointmentEvent> getAllAppointments() {
     return mockAppointments;
   }

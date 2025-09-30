@@ -61,7 +61,7 @@ extension UserSearch on UserModel {
   bool matchesQuery(String query) {
     final normalizedQuery = removeDiacritics(query.toLowerCase());
 
-    // 👇 chequeo exacto para estados
+    //chequeo exacto para estados
     if (normalizedQuery == "activo") {
       return estado == UserStatus.activo;
     }
@@ -69,7 +69,7 @@ extension UserSearch on UserModel {
       return estado == UserStatus.inactivo;
     }
 
-    // 👇 resto de campos usa búsqueda flexible con contains
+    //resto de campos usa búsqueda flexible con contains
     return removeDiacritics(nombreCompleto.toLowerCase()).contains(normalizedQuery) ||
            removeDiacritics(documentoId.toLowerCase()).contains(normalizedQuery) ||
            removeDiacritics(telefono.toLowerCase()).contains(normalizedQuery) ||

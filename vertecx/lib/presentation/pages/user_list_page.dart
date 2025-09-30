@@ -41,7 +41,7 @@ class _UserListPageState extends State<UserListPage> {
         body: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {
             if (state is UserLoaded) {
-              // 🔎 Filtrar usuarios por búsqueda
+              // Filtrar usuarios por búsqueda
               final filteredUsers = state.users
                   .where((u) => u.matchesQuery(_searchQuery))
                   .toList();
@@ -53,7 +53,7 @@ class _UserListPageState extends State<UserListPage> {
                 controller: _scrollController,
                 child: Column(
                   children: [
-                    // 🔹 encabezado de primeras
+                    // encabezado
                     const HearderUser(
                       title: "Usuarios",
                       iconPath: "assets/icons/userP.png",
@@ -61,7 +61,7 @@ class _UserListPageState extends State<UserListPage> {
 
                     const SizedBox(height: 20),
 
-                    // 🔹 buscador
+                    //buscador
                     Buscar(
                       hintText: "Buscar usuario...",
                       onChanged: (value) {
@@ -71,7 +71,7 @@ class _UserListPageState extends State<UserListPage> {
 
                     const SizedBox(height: 20),
 
-                    // 🔹 lista de usuarios
+                    // lista de usuarios
                     ...users.map(
                       (user) => UserCardWidget(
                         user: user,
@@ -85,7 +85,7 @@ class _UserListPageState extends State<UserListPage> {
 
                     const SizedBox(height: 20),
 
-                    // 🔹 botón o mensaje final
+                    //botón o mensaje final
                     if (filteredUsers.isNotEmpty)
                       if (!allUsersLoaded)
                         TextButton(

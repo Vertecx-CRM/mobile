@@ -65,7 +65,7 @@ class UserCardWidget extends StatelessWidget {
                           const SizedBox(height: 5),
                           Row(
                             children: [
-                              // 🔹 Usamos el chip animado reciclable
+                              //Usamos el chip animado reciclable
                               AnimatedStatusChip(
                                 label: user.statusString,
                                 bgColor: statusBgColor,
