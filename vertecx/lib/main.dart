@@ -1,8 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+// BLoC / repos
+import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
+import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
+
+// Rutas y páginas
+import 'package:vertecx/presentation/routes/app_routes.dart';
+import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
+import 'package:vertecx/presentation/pages/user_list_page.dart';
+import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
+import './presentation/pages/dashboard_page.dart';
+
+// Widgets
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vertecx/presentation/widgets/AppBottomNav.dart';
 
-void main() => runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: Home()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('es_ES', null);
+  runApp(const MainApp());
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => CalendarBloc(AppointmentRepository())),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: AppRoutes.home,
+        routes: {
+          // Home usa el BottomNav nuevo
+          AppRoutes.home: (_) => const Home(),
+
+          // Rutas existentes
+          AppRoutes.userList: (_) => const UserListPage(),
+          AppRoutes.categoryProduct: (_) => const CategoryProductListPage(),
+          AppRoutes.appointment: (_) => const CalendarPage(),
+          AppRoutes.dashboard: (_) => const DashboardPage(),
+        },
+      ),
+    );
+  }
+}
+
+/// ---------- HOME con Bottom Nav + Quick Actions ----------
 
 class Home extends StatefulWidget {
   const Home({super.key});
