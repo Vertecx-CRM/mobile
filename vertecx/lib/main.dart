@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
+import 'package:vertecx/presentation/pages/appointementPage/appointment_page_tecnico.dart';
 import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import './presentation/pages/dashboard_page.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +37,8 @@ class MainApp extends StatelessWidget {
               const CategoryProductListPage(),
           AppRoutes.appointment: (context) => const CalendarPage(),
           AppRoutes.dashboard: (context) => const DashboardPage(),
+          AppRoutes.appointmentTechnician: (context) =>
+              const AppointmentPageTecnico(),
         },
       ),
     );
@@ -77,6 +79,13 @@ class HomePage extends StatelessWidget {
               label: const Text('Ir a dashboard'),
               onPressed: () =>
                   Navigator.of(context).pushNamed(AppRoutes.dashboard),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.build), 
+              label: const Text('Ir a Citas Técnico'),
+              onPressed: () => Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.appointmentTechnician),
             ),
           ],
         ),
