@@ -9,6 +9,10 @@ import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import './presentation/pages/dashboard_page.dart';
+import './presentation/pages/products_page.dart';
+import './presentation/pages/roles_page.dart';
+import './presentation/pages/technicians_page.dart';
+import './presentation/pages/services_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +41,10 @@ class MainApp extends StatelessWidget {
               const CategoryProductListPage(),
           AppRoutes.appointment: (context) => const CalendarPage(),
           AppRoutes.dashboard: (context) => const DashboardPage(),
+          AppRoutes.products: (context) => const ProductsPage(),
+          AppRoutes.roles: (context) => const RolesPage(),
+          AppRoutes.technicians: (context) => const TechniciansPage(),
+          AppRoutes.services: (context) => const ServicesPage(),
           AppRoutes.appointmentTechnician: (context) =>
               const AppointmentPageTecnico(),
         },
@@ -79,6 +87,29 @@ class HomePage extends StatelessWidget {
               label: const Text('Ir a dashboard'),
               onPressed: () =>
                   Navigator.of(context).pushNamed(AppRoutes.dashboard),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.shopping_bag),
+              label: const Text('Ir a Productos'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.products),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.admin_panel_settings),
+              label: const Text('Ir a Roles'),
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.roles),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.build),
+              label: const Text('Ir a Técnicos'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.technicians),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.miscellaneous_services),
+              label: const Text('Ir a Servicios'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.services),
             ),
             ElevatedButton.icon(
               icon: const Icon(Icons.build), 
