@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vertecx/blocs/OrderServiceController.dart';
-import 'package:vertecx/data/repositories/OrderRepository.dart';
+import 'package:vertecx/data/repositories/order_repository.dart';
 import 'package:vertecx/presentation/widgets/OrderServiceCard.dart';
 
 class OrderServicePage extends StatelessWidget {
@@ -65,17 +65,6 @@ class _OrderServiceView extends StatelessWidget {
             ),
           ),
         ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70, right: 16),
-        child: FloatingActionButton.extended(
-          onPressed: () {},
-          backgroundColor: const Color(0xFFB20000),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text('Crear Orden', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-        ),
       ),
     );
   }

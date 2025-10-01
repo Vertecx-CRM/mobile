@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/users/user_model.dart';
-import '../widgets/usersWidgets/user_card_widget.dart';
-import '../widgets/components/search/search.dart';
-import '../widgets/components/header/header.dart';
-import '../../data/repositories/userRepositories/bloc/user_bloc.dart';
+import 'package:vertecx/presentation/widgets/usersWidgets/user_card_widget.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
+import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/data/repositories/userRepositories/bloc/user_bloc.dart';
 
 class UserListPage extends StatefulWidget {
   const UserListPage({super.key});
@@ -37,11 +37,11 @@ class _UserListPageState extends State<UserListPage> {
     return BlocProvider(
       create: (_) => UserBloc()..add(LoadUsers()),
       child: Scaffold(
-        backgroundColor: Color(0xFFE8E8E8),
+        appBar: const AppTopBar(title: 'Usuarios'),
+        backgroundColor: const Color(0xFFE8E8E8),
         body: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {
             if (state is UserLoaded) {
-              // Filtrar usuarios por búsqueda
               final filteredUsers = state.users
                   .where((u) => u.matchesQuery(_searchQuery))
                   .toList();
@@ -51,84 +51,72 @@ class _UserListPageState extends State<UserListPage> {
 
               return SingleChildScrollView(
                 controller: _scrollController,
-                child: Column(
-                  children: [
-                    // encabezado
-                    const HearderUser(
-                      title: "Usuarios",
-                      iconPath: "assets/icons/userP.png",
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    //buscador
-                    Buscar(
-                      hintText: "Buscar usuario...",
-                      onChanged: (value) {
-                        setState(() => _searchQuery = value);
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // lista de usuarios
-                    ...users.map(
-                      (user) => UserCardWidget(
-                        user: user,
-                        onToggleStatus: () {
-                          context.read<UserBloc>().add(
-                            ToggleUserStatus(user.id),
-                          );
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Buscar(
+                        hintText: "Buscar usuario...",
+                        onChanged: (value) {
+                          setState(() => _searchQuery = value);
                         },
                       ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    //botón o mensaje final
-                    if (filteredUsers.isNotEmpty)
-                      if (!allUsersLoaded)
-                        TextButton(
-                          onPressed: () => _loadMoreUsers(filteredUsers.length),
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                "assets/icons/Vector.png",
-                                width: 20,
-                                height: 20,
+                      const SizedBox(height: 20),
+                      ...users.map(
+                        (user) => UserCardWidget(
+                          user: user,
+                          onToggleStatus: () {
+                            context.read<UserBloc>().add(
+                                  ToggleUserStatus(user.id),
+                                );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      if (filteredUsers.isNotEmpty)
+                        if (!allUsersLoaded)
+                          TextButton(
+                            onPressed: () => _loadMoreUsers(filteredUsers.length),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  "assets/icons/Vector.png",
+                                  width: 20,
+                                  height: 20,
+                                ),
+                                const Text(
+                                  "Cargar más Usuarios",
+                                  style: TextStyle(color: Color(0xFFB20000)),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Text(
+                              "Ya están todos los usuarios",
+                              style: TextStyle(
+                                color: Color(0xFFB20000),
+                                fontWeight: FontWeight.bold,
                               ),
-                              const Text(
-                                "Cargar más Usuarios",
-                                style: TextStyle(color: Color(0xFFB20000)),
-                              ),
-                            ],
-                          ),
-                        )
+                            ),
+                          )
                       else
                         const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
+                          padding: EdgeInsets.symmetric(vertical: 20),
                           child: Text(
-                            "Ya están todos los usuarios",
+                            "No se encontraron usuarios",
                             style: TextStyle(
                               color: Color(0xFFB20000),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        )
-                    else
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Text(
-                          "No se encontraron usuarios",
-                          style: TextStyle(
-                            color: Color(0xFFB20000),
-                            fontWeight: FontWeight.bold,
-                          ),
                         ),
-                      ),
-
-                    const SizedBox(height: 40),
-                  ],
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               );
             }

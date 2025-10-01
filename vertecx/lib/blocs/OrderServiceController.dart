@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:vertecx/data/models/OrderService.dart';
-import 'package:vertecx/data/repositories/OrderRepository.dart';
+import 'package:vertecx/data/models/order_service_models.dart';
+import 'package:vertecx/data/repositories/order_repository.dart';
 
 
 class OrderServiceController extends ChangeNotifier {

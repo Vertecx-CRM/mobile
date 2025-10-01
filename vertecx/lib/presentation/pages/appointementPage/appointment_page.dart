@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:vertecx/data/mocks/appointments_mock_data.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_event.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_state.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_card.dart';
-import 'package:table_calendar/table_calendar.dart';
-import '../../widgets/appointmentsWidgets/calendar_header.dart';
-import 'package:vertecx/presentation/widgets/components/header/header.dart';
+import 'package:vertecx/presentation/widgets/appointmentsWidgets/calendar_header.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
+import 'package:vertecx/presentation/widgets/app_top_bar.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -25,27 +25,23 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppTopBar(title: 'Citas'),
       backgroundColor: const Color(0xFFE8E8E8),
       body: Column(
         children: [
-          // Encabezado
-          const HearderUser(title: "Citas", iconPath: "assets/icons/userP.png"),
-
           const SizedBox(height: 10),
-
-          // Buscador
-          Buscar(
-            hintText: "Buscar cita...",
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value.toLowerCase();
-              });
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Buscar(
+              hintText: "Buscar cita...",
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
+            ),
           ),
-
-          const SizedBox(height: 30),
-
-          //Calendario
+          const SizedBox(height: 20),
           BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {
               return Container(
@@ -65,7 +61,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
                 child: Column(
                   children: [
-                    // Header
                     CalendarHeader(
                       focusedDay: _focusedDay,
                       months: months,
@@ -89,14 +84,11 @@ class _CalendarPageState extends State<CalendarPage> {
                       },
                     ),
                     const SizedBox(height: 15),
-
-                    //Calendario
                     TableCalendar(
                       firstDay: DateTime.utc(2020, 1, 1),
                       lastDay: DateTime.utc(2030, 12, 31),
                       focusedDay: _focusedDay,
-                      selectedDayPredicate: (day) =>
-                          isSameDay(_selectedDay, day),
+                      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
                       calendarFormat: CalendarFormat.month,
                       startingDayOfWeek: StartingDayOfWeek.monday,
                       locale: "es_ES",
@@ -126,7 +118,6 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                       calendarBuilders: CalendarBuilders(
                         defaultBuilder: (context, day, focusedDay) {
-                          // Verificar si hay citas este día desde el mock
                           final hasAppointment = mockAppointments.any(
                             (cita) =>
                                 cita.fecha.year == day.year &&
@@ -172,9 +163,9 @@ class _CalendarPageState extends State<CalendarPage> {
                           _selectedDay = selectedDay;
                           _focusedDay = focusedDay;
                         });
-                        context.read<CalendarBloc>().add(
-                          LoadAppointmentsForDay(selectedDay),
-                        );
+                        context
+                            .read<CalendarBloc>()
+                            .add(LoadAppointmentsForDay(selectedDay));
                       },
                     ),
                   ],
@@ -182,10 +173,7 @@ class _CalendarPageState extends State<CalendarPage> {
               );
             },
           ),
-
           const SizedBox(height: 16),
-
-          //Lista de citas
           Expanded(
             child: BlocBuilder<CalendarBloc, CalendarState>(
               builder: (context, state) {
@@ -193,21 +181,19 @@ class _CalendarPageState extends State<CalendarPage> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is CalendarLoaded) {
                   final citas = state.appointments.where((cita) {
-                    return cita.orden.tipoServicio.toLowerCase().contains(
-                          _searchQuery,
-                        ) ||
-                        cita.orden.descripcion.toLowerCase().contains(
-                          _searchQuery,
-                        ) ||
+                    return cita.orden.tipoServicio
+                            .toLowerCase()
+                            .contains(_searchQuery) ||
+                        cita.orden.descripcion
+                            .toLowerCase()
+                            .contains(_searchQuery) ||
                         cita.orden.tecnicos
                             .map((t) => t.nombre.toLowerCase())
                             .join(" ")
                             .contains(_searchQuery);
                   }).toList();
                   if (citas.isEmpty) {
-                    return const Center(
-                      child: Text("No hay citas para este día"),
-                    );
+                    return const Center(child: Text("No hay citas para este día"));
                   }
                   return ListView.builder(
                     itemCount: citas.length,
@@ -216,9 +202,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     },
                   );
                 } else {
-                  return const Center(
-                    child: Text("Selecciona un día para ver citas"),
-                  );
+                  return const Center(child: Text("Selecciona un día para ver citas"));
                 }
               },
             ),

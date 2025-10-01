@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:vertecx/data/models/OrderService.dart';
+import 'package:vertecx/data/models/order_service_models.dart';
 import 'package:vertecx/presentation/widgets/StatusChip.dart';
 
 class OrderCard extends StatelessWidget {

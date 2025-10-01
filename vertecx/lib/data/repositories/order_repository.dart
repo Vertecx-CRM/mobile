@@ -1,4 +1,4 @@
-import 'package:vertecx/data/models/OrderService.dart';
+import 'package:vertecx/data/models/order_service_models.dart';
 
 class OrderRepository {
   Future<List<OrderService>> getAll() async {

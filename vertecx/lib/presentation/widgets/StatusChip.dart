@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/data/models/OrderService.dart';
+import 'package:vertecx/data/models/order_service_models.dart';
 
 class StatusChip extends StatelessWidget {
   const StatusChip({super.key, required this.status});
