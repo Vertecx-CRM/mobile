@@ -23,7 +23,7 @@
     },
     {
       "name": "flutter_lints",
-      "version": "5.0.0",
+      "version": "6.0.0",
       "dependencies": [
         "lints"
       ]
@@ -75,7 +75,7 @@
     },
     {
       "name": "awesome_dialog",
-      "version": "3.2.1",
+      "version": "3.3.0",
       "dependencies": [
         "flutter",
         "rive"
@@ -119,7 +119,7 @@
     },
     {
       "name": "lints",
-      "version": "5.1.1",
+      "version": "6.0.0",
       "dependencies": []
     },
     {
@@ -215,15 +215,12 @@
     },
     {
       "name": "rive",
-      "version": "0.13.20",
+      "version": "0.14.0-dev.8",
       "dependencies": [
-        "collection",
         "flutter",
         "flutter_web_plugins",
-        "http",
         "meta",
-        "plugin_platform_interface",
-        "rive_common"
+        "rive_native"
       ]
     },
     {
@@ -310,34 +307,19 @@
       ]
     },
     {
-      "name": "rive_common",
-      "version": "0.4.15",
+      "name": "rive_native",
+      "version": "0.0.11",
       "dependencies": [
-        "collection",
+        "args",
         "ffi",
         "flutter",
         "flutter_web_plugins",
         "graphs",
         "http",
         "meta",
+        "path",
         "plugin_platform_interface",
-        "web"
-      ]
-    },
-    {
-      "name": "plugin_platform_interface",
-      "version": "2.1.8",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
-      "name": "http",
-      "version": "1.5.0",
-      "dependencies": [
-        "async",
-        "http_parser",
-        "meta",
+        "vector_math",
         "web"
       ]
     },
@@ -361,8 +343,18 @@
       "dependencies": []
     },
     {
-      "name": "web",
-      "version": "1.1.1",
+      "name": "http",
+      "version": "1.5.0",
+      "dependencies": [
+        "async",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
       "dependencies": []
     },
     {
@@ -370,6 +362,18 @@
       "version": "2.3.2",
       "dependencies": [
         "collection"
+      ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
       ]
     },
     {
