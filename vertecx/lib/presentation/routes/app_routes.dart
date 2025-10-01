@@ -31,4 +31,8 @@ class AppRoutes {
   static const requests          = '/sales/requests';
   static const salesOrders       = '/sales/orders';
   static const salesAppointments = '/sales/appointments';
+  static const String products = '/products';
+  static const String roles = '/roles';
+  static const String services = '/services';
+  static const String technicians = '/technicians';
 }

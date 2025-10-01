@@ -76,8 +76,13 @@
       ]
     },
     {
+<<<<<<< HEAD
       "name": "flutter_svg",
       "version": "2.2.1",
+=======
+      "name": "awesome_dialog",
+      "version": "3.3.0",
+>>>>>>> b5ab57480872679f597cd28ae15a08abbb22f5ee
       "dependencies": [
         "flutter",
         "http",
@@ -221,6 +226,28 @@
       ]
     },
     {
+<<<<<<< HEAD
+=======
+      "name": "rive",
+      "version": "0.14.0-dev.8",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "meta",
+        "rive_native"
+      ]
+    },
+    {
+      "name": "provider",
+      "version": "6.1.5+1",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "nested"
+      ]
+    },
+    {
+>>>>>>> b5ab57480872679f597cd28ae15a08abbb22f5ee
       "name": "sky_engine",
       "version": "0.0.0",
       "dependencies": []
@@ -416,6 +443,7 @@
       ]
     },
     {
+<<<<<<< HEAD
       "name": "petitparser",
       "version": "7.0.1",
       "dependencies": [
@@ -437,10 +465,86 @@
         "async",
         "http_parser",
         "meta",
+=======
+      "name": "rive_native",
+      "version": "0.0.11",
+      "dependencies": [
+        "args",
+        "ffi",
+        "flutter",
+        "flutter_web_plugins",
+        "graphs",
+        "http",
+        "meta",
+        "path",
+        "plugin_platform_interface",
+        "vector_math",
+>>>>>>> b5ab57480872679f597cd28ae15a08abbb22f5ee
         "web"
       ]
     },
     {
+<<<<<<< HEAD
+=======
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "nested",
+      "version": "1.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "vm_service",
+      "version": "15.0.2",
+      "dependencies": []
+    },
+    {
+      "name": "http",
+      "version": "1.5.0",
+      "dependencies": [
+        "async",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
+    },
+    {
+      "name": "graphs",
+      "version": "2.3.2",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "ffi",
+      "version": "2.1.4",
+      "dependencies": []
+    },
+    {
+>>>>>>> b5ab57480872679f597cd28ae15a08abbb22f5ee
       "name": "http_parser",
       "version": "4.1.2",
       "dependencies": [
