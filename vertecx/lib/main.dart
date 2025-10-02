@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
+import 'package:vertecx/presentation/pages/appointementPage/appointment_page_tecnico.dart';
 import 'package:vertecx/presentation/pages/purchase_orders_page.dart';
 import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
@@ -53,6 +54,9 @@ class MainApp extends StatelessWidget {
 
           AppRoutes.dashboard: (context) =>
               const AppScaffold(title: "Dashboard", body: DashboardPage()),
+          
+          AppRoutes.dashboard: (context) =>
+              const AppScaffold(title: "Cita de técnico", body: AppointmentPageTecnico()),
 
           AppRoutes.products: (context) =>
               const AppScaffold(title: "Productos", body: ProductsPage()),
@@ -139,6 +143,11 @@ class HomePage extends StatelessWidget {
                   Navigator.of(context).pushNamed(AppRoutes.services),
             ),
             ElevatedButton.icon(
+              icon: const Icon(Icons.build), 
+              label: const Text('Ir a Citas Técnico'),
+              onPressed: () => Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.appointmentTechnician),
               icon: const Icon(Icons.person),
               label: const Text('Ir a Clientes'),
               onPressed: () =>
