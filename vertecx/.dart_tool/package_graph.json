@@ -13,7 +13,9 @@
         "fl_chart",
         "flutter",
         "flutter_bloc",
+        "flutter_svg",
         "intl",
+        "provider",
         "table_calendar"
       ],
       "devDependencies": [
@@ -47,21 +49,21 @@
       ]
     },
     {
-      "name": "fl_chart",
-      "version": "1.1.1",
-      "dependencies": [
-        "equatable",
-        "flutter",
-        "vector_math"
-      ]
-    },
-    {
       "name": "intl",
       "version": "0.20.2",
       "dependencies": [
         "clock",
         "meta",
         "path"
+      ]
+    },
+    {
+      "name": "fl_chart",
+      "version": "1.1.1",
+      "dependencies": [
+        "equatable",
+        "flutter",
+        "vector_math"
       ]
     },
     {
@@ -82,10 +84,23 @@
       ]
     },
     {
-      "name": "bloc",
-      "version": "9.0.1",
+      "name": "flutter_svg",
+      "version": "2.2.1",
       "dependencies": [
-        "meta"
+        "flutter",
+        "http",
+        "vector_graphics",
+        "vector_graphics_codec",
+        "vector_graphics_compiler"
+      ]
+    },
+    {
+      "name": "provider",
+      "version": "6.1.5+1",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "nested"
       ]
     },
     {
@@ -95,6 +110,13 @@
         "bloc",
         "flutter",
         "provider"
+      ]
+    },
+    {
+      "name": "bloc",
+      "version": "9.0.1",
+      "dependencies": [
+        "meta"
       ]
     },
     {
@@ -224,12 +246,46 @@
       ]
     },
     {
-      "name": "provider",
-      "version": "6.1.5+1",
+      "name": "vector_graphics_compiler",
+      "version": "1.1.19",
       "dependencies": [
-        "collection",
+        "args",
+        "meta",
+        "path",
+        "path_parsing",
+        "vector_graphics_codec",
+        "xml"
+      ]
+    },
+    {
+      "name": "vector_graphics_codec",
+      "version": "1.1.13",
+      "dependencies": []
+    },
+    {
+      "name": "vector_graphics",
+      "version": "1.1.19",
+      "dependencies": [
         "flutter",
-        "nested"
+        "http",
+        "vector_graphics_codec"
+      ]
+    },
+    {
+      "name": "http",
+      "version": "1.5.0",
+      "dependencies": [
+        "async",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "nested",
+      "version": "1.0.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
@@ -331,25 +387,20 @@
       ]
     },
     {
-      "name": "nested",
-      "version": "1.0.0",
+      "name": "xml",
+      "version": "6.6.1",
       "dependencies": [
-        "flutter"
+        "collection",
+        "meta",
+        "petitparser"
       ]
     },
     {
-      "name": "vm_service",
-      "version": "15.0.2",
-      "dependencies": []
-    },
-    {
-      "name": "http",
-      "version": "1.5.0",
+      "name": "path_parsing",
+      "version": "1.1.0",
       "dependencies": [
-        "async",
-        "http_parser",
         "meta",
-        "web"
+        "vector_math"
       ]
     },
     {
@@ -358,16 +409,31 @@
       "dependencies": []
     },
     {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "http_parser",
+      "version": "4.1.2",
+      "dependencies": [
+        "collection",
+        "source_span",
+        "string_scanner",
+        "typed_data"
+      ]
+    },
+    {
+      "name": "vm_service",
+      "version": "15.0.2",
+      "dependencies": []
+    },
+    {
       "name": "graphs",
       "version": "2.3.2",
       "dependencies": [
         "collection"
       ]
-    },
-    {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
     },
     {
       "name": "plugin_platform_interface",
@@ -382,13 +448,11 @@
       "dependencies": []
     },
     {
-      "name": "http_parser",
-      "version": "4.1.2",
+      "name": "petitparser",
+      "version": "7.0.1",
       "dependencies": [
         "collection",
-        "source_span",
-        "string_scanner",
-        "typed_data"
+        "meta"
       ]
     },
     {
