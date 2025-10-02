@@ -11,13 +11,14 @@ import '../../../data/domain/rules/appointment_state_rules.dart';
 
 class AppointmentCard extends StatelessWidget {
   final AppointmentEvent cita;
+  final bool esTecnico;
 
-  const AppointmentCard({super.key, required this.cita});
+  const AppointmentCard({super.key, required this.cita, this.esTecnico = false});
 
   String getDiaSemana(DateTime fecha) {
     return DateFormat.EEEE("es_ES").format(fecha);
   }
-  
+
   String getTecnicosTexto() {
     final tecnicos = cita.orden.tecnicos;
     if (tecnicos.isEmpty) return "Sin técnico";
@@ -30,8 +31,6 @@ class AppointmentCard extends StatelessWidget {
       return "$primero - $restantes técnicos";
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +193,10 @@ class AppointmentCard extends StatelessWidget {
                             );
                           },
                           itemBuilder: (context) {
-                            final opciones = getOpcionesEstado(cita.estado);
+                            final opciones = getOpcionesEstado(
+                              cita.estado,
+                              esTecnico: esTecnico,
+                            );
                             return opciones
                                 .map(
                                   (e) =>
@@ -202,7 +204,10 @@ class AppointmentCard extends StatelessWidget {
                                 )
                                 .toList();
                           },
-                          enabled: getOpcionesEstado(cita.estado).isNotEmpty,
+                          enabled: getOpcionesEstado(
+                            cita.estado,
+                            esTecnico: true,
+                          ).isNotEmpty,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,

@@ -237,7 +237,7 @@
     },
     {
       "name": "rive",
-      "version": "0.14.0-dev.8",
+      "version": "0.14.0-dev.9",
       "dependencies": [
         "flutter",
         "flutter_web_plugins",
@@ -364,7 +364,7 @@
     },
     {
       "name": "rive_native",
-      "version": "0.0.11",
+      "version": "0.0.12",
       "dependencies": [
         "args",
         "ffi",

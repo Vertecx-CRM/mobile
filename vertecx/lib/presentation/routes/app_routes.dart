@@ -28,6 +28,7 @@ class AppRoutes {
   // Servicios (subpantallas)
   static const String servicesList      = '/services/list';
   static const String techniciansList   = '/services/technicians';
+  static const String appointmentTechnician = '/appointment/technician';
 
   // Ventas (subpantallas)
   static const String sales             = '/sales/list';
@@ -38,4 +39,6 @@ class AppRoutes {
 
   // Roles (subpantallas)
   static const String rolesList         = '/roles/list';
+  static const String sales = '/sales';
+  static const String purchaseOrders = '/purchaseOrders';
 }

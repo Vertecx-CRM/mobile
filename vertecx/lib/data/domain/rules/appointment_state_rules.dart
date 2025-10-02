@@ -1,17 +1,20 @@
-  /// Reglas de transición de estado
-  List<String> getOpcionesEstado(String estadoActual) {
-    switch (estadoActual) {
-      case "Pendiente":
-        return ["Finalizado", "Cancelado", "Cerrado"];
-      case "En-proceso":
-        return ["Finalizado", "Cancelado"];
-      case "Cancelado":
-        return ["Reprogramada"];
-      case "Finalizado":
-      case "Cerrado":
-      case "Reprogramada":
-        return [];
-      default:
-        return [];
+List<String> getOpcionesEstado(String estado, {bool esTecnico = false}) {
+  if (esTecnico) {
+    if (estado == "En-proceso") {
+      return ["Finalizado", "Cancelado"];
     }
+    return [];
   }
+
+  switch (estado) {
+    case "Pendiente":
+      return ["En-proceso", "Cancelado"];
+    case "En-proceso":
+      return ["Finalizado", "Cancelado", "Cerrado"];
+    case "Cancelado":
+    case "Finalizado":
+      return [];
+    default:
+      return [];
+  }
+}

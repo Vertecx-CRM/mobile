@@ -213,13 +213,13 @@
     },
     {
       "name": "rive",
-      "rootUri": "file:///C:/Users/danie/AppData/Local/Pub/Cache/hosted/pub.dev/rive-0.14.0-dev.8",
+      "rootUri": "file:///C:/Users/danie/AppData/Local/Pub/Cache/hosted/pub.dev/rive-0.14.0-dev.9",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },
     {
       "name": "rive_native",
-      "rootUri": "file:///C:/Users/danie/AppData/Local/Pub/Cache/hosted/pub.dev/rive_native-0.0.11",
+      "rootUri": "file:///C:/Users/danie/AppData/Local/Pub/Cache/hosted/pub.dev/rive_native-0.0.12",
       "packageUri": "lib/",
       "languageVersion": "3.5"
     },

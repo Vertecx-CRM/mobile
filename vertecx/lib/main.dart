@@ -7,6 +7,8 @@ import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_
 
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
+import 'package:vertecx/presentation/pages/appointementPage/appointment_page_tecnico.dart';
+import 'package:vertecx/presentation/pages/purchase_orders_page.dart';
 import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';

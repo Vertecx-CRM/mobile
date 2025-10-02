@@ -10,21 +10,35 @@ class AppDialogs {
   }) {
     AwesomeDialog(
       context: context,
-      dialogType: DialogType.warning,
+      dialogType: DialogType.noHeader,
       animType: AnimType.rightSlide,
-      title: title,
-      desc: message,
+      customHeader: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.elasticOut,
+        builder: (context, value, child) {
+          return Transform.scale(scale: value, child: child);
+        },
+        child: const CircleAvatar(
+          backgroundColor: Colors.orange,
+          radius: 40,
+          child: Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.white,
+            size: 50,
+          ),
+        ),
+      ),
+      title: "Warning",
+      desc: "¿Quieres marcar como INACTIVO?",
       btnCancelOnPress: () {},
-      btnOkOnPress: onConfirm,
+      btnOkOnPress: () {},
     ).show();
   }
 
   static void showSuccessMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
+      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
     );
   }
 }
