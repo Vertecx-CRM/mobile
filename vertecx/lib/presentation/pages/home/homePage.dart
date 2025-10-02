@@ -125,7 +125,7 @@ class _QuickActionsPanel extends StatelessWidget {
           Navigator.of(context).pushNamed(AppRoutes.salesHub);
           break;
         case 'Roles':
-          Navigator.of(context).pushNamed(AppRoutes.dashboard); // placeholder
+          Navigator.of(context).pushNamed(AppRoutes.rolesList); // placeholder
           break;
         default:
           break;

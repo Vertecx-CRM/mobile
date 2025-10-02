@@ -11,7 +11,7 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final f = DateFormat('dd/MM/yyyy');
+    final f = DateFormat('dd/MM/yyyy HH:mm');
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -26,7 +26,7 @@ class OrderCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text('Id:', style: TextStyle(fontWeight: FontWeight.w600)),
+                  const Text('Id: ', style: TextStyle(fontWeight: FontWeight.w600)),
                   Text('${order.id}', style: const TextStyle(fontWeight: FontWeight.w600)),
                   const Spacer(),
                   StatusChip(status: order.estado),
@@ -39,10 +39,11 @@ class OrderCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
+              Text('Cliente: ${order.cliente}', style: TextStyle(color: Colors.grey.shade800, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 2),
               Text('Técnico: ${order.tecnico}', style: TextStyle(color: Colors.grey.shade700)),
-              Text('Fecha creación: ${f.format(order.fechaCreacion)}',
-                  style: TextStyle(color: Colors.grey.shade700)),
+              Text('Fecha creación: ${f.format(order.fechaCreacion)}', style: TextStyle(color: Colors.grey.shade700)),
             ],
           ),
         ),

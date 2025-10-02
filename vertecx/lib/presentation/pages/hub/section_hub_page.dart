@@ -125,7 +125,7 @@ class ProductsHubPage extends StatelessWidget {
       title: 'Productos',
       items: const [
         SectionHubItem(icon: Icons.category,        label: 'Categorías',          routeName: AppRoutes.productCategories),
-        SectionHubItem(icon: Icons.inventory_2,     label: 'Productos',           routeName: AppRoutes.products),
+        SectionHubItem(icon: Icons.inventory_2,     label: 'Productos',          routeName: AppRoutes.productsList),
       ],
     );
   }
@@ -139,8 +139,8 @@ class ServicesHubPage extends StatelessWidget {
     return SectionHubPage(
       title: 'Servicios',
       items: const [
-        SectionHubItem(icon: Icons.design_services, label: 'Servicios',           routeName: AppRoutes.services),
-        SectionHubItem(icon: Icons.handyman,        label: 'Técnicos',            routeName: AppRoutes.technicians),
+        SectionHubItem(icon: Icons.design_services, label: 'Servicios',           routeName: AppRoutes.servicesList),
+        SectionHubItem(icon: Icons.handyman,        label: 'Técnicos',            routeName: AppRoutes.techniciansList),
       ],
     );
   }
@@ -157,7 +157,7 @@ class SalesHubPage extends StatelessWidget {
         SectionHubItem(icon: Icons.point_of_sale,   label: 'Ventas',              routeName: AppRoutes.sales),
         SectionHubItem(icon: Icons.people,          label: 'Clientes',            routeName: AppRoutes.clients),
         SectionHubItem(icon: Icons.assignment,      label: 'Solicitudes',         routeName: AppRoutes.requests),
-        SectionHubItem(icon: Icons.inventory,       label: 'Órdenes',             routeName: AppRoutes.salesOrders),
+        SectionHubItem(icon: Icons.inventory,       label: 'Órdenes de Servicio', routeName: AppRoutes.salesOrders),
         SectionHubItem(icon: Icons.event,           label: 'Citas',               routeName: AppRoutes.salesAppointments),
       ],
     );

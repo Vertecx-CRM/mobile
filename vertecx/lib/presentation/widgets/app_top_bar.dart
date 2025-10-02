@@ -31,6 +31,12 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         return 'Dashboard';
       case AppRoutes.profile:
         return 'Mi Perfil';
+        case AppRoutes.rolesList:
+        return 'Roles';
+        case AppRoutes.salesOrders:
+        return 'Ordenes de Servicio';
+        case AppRoutes.requests:
+        return 'Solicitudes';
       default:
         return 'Sistemas PC';
     }
