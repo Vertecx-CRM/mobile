@@ -71,11 +71,6 @@ class _ServicesPageState extends State<ServicesPage> {
         controller: _scrollController,
         child: Column(
           children: [
-            const HearderUser(
-              title: "Servicios",
-              iconPath: "assets/icons/userP.png",
-              titleSize: 30,
-            ),
             const SizedBox(height: 20),
             Buscar(
               hintText: "Buscar servicio...",
