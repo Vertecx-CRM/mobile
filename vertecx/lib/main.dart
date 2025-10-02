@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
+import 'package:vertecx/presentation/pages/purchase_orders_page.dart';
 import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
@@ -14,6 +15,7 @@ import './presentation/pages/technicians_page.dart';
 import './presentation/pages/services_page.dart';
 import './presentation/pages/clients_page.dart';
 import 'package:vertecx/presentation/widgets/general_scaffold.dart';
+import 'package:vertecx/presentation/pages/sales_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,6 +68,12 @@ class MainApp extends StatelessWidget {
 
           AppRoutes.clients: (context) =>
               const AppScaffold(title: "Clientes", body: ClientsPage()),
+          AppRoutes.sales: (context) =>
+              const AppScaffold(title: "Ventas", body: SalesPage()),
+          AppRoutes.purchaseOrders: (context) => const AppScaffold(
+            title: "Órdenes de Compra",
+            body: PurchaseOrdersPage(),
+          ),
         },
       ),
     );
@@ -135,6 +143,17 @@ class HomePage extends StatelessWidget {
               label: const Text('Ir a Clientes'),
               onPressed: () =>
                   Navigator.of(context).pushNamed(AppRoutes.clients),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.point_of_sale),
+              label: const Text('Ir a Ventas'),
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.sales),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.receipt_long),
+              label: const Text('Ir a Órdenes de Compra'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.purchaseOrders),
             ),
           ],
         ),

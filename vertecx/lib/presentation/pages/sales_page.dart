@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import '../widgets/components/search/search.dart';
-import 'package:vertecx/data/mocks/clients_mock_data.dart';
-import '../widgets/clientsWidgets/clients_card_widget.dart';
+import 'package:vertecx/data/mocks/sales_mock_data.dart';
+import 'package:vertecx/presentation/widgets/salesWidgets/sales_card_widget.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
 
-class ClientsPage extends StatefulWidget {
-  const ClientsPage({super.key});
+class SalesPage extends StatefulWidget {
+  const SalesPage({super.key});
 
   @override
-  State<ClientsPage> createState() => _ClientsPageState();
+  State<SalesPage> createState() => _SalesPageState();
 }
 
-class _ClientsPageState extends State<ClientsPage> {
+class _SalesPageState extends State<SalesPage> {
   final ScrollController _scrollController = ScrollController();
-  int _clientsToShow = 4; // cantidad inicial de clientes
+  int _salesToShow = 4; // cantidad inicial de ventas
   String _searchQuery = "";
 
-  void _loadMoreClients() {
+  void _loadMoreSales() {
     setState(() {
-      _clientsToShow = (_clientsToShow + 2).clamp(0, mockClients.length);
+      _salesToShow = (_salesToShow + 2).clamp(0, mockSales.length);
     });
   }
 
@@ -31,13 +31,16 @@ class _ClientsPageState extends State<ClientsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // filtrar clientes por búsqueda
-    final filteredClients = mockClients
-        .where((c) => c.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+    // Filtrar ventas por nombre de cliente o ID
+    final filteredSales = mockSales.where((s) {
+      final query = _searchQuery.toLowerCase();
+      return s.clientName.toLowerCase().contains(query) ||
+          s.id.toLowerCase().contains(query);
+    }).toList();
 
-    final clients = filteredClients.take(_clientsToShow).toList();
-    final allClientsLoaded = _clientsToShow >= filteredClients.length;
+    // Paginación
+    final sales = filteredSales.take(_salesToShow).toList();
+    final allSalesLoaded = _salesToShow >= filteredSales.length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE8E8E8),
@@ -47,24 +50,26 @@ class _ClientsPageState extends State<ClientsPage> {
           children: [
             const SizedBox(height: 20),
 
-            // buscador
+            // 🔎 Buscador
             Buscar(
-              hintText: "Buscar cliente...",
+              hintText: "Buscar cliente o ID...",
               onChanged: (value) {
-                setState(() => _searchQuery = value);
+                setState(() {
+                  _searchQuery = value;
+                });
               },
             ),
 
             const SizedBox(height: 20),
 
-            // lista de clientes filtrados
-            if (clients.isNotEmpty)
-              ...clients.map((c) => ClientCardWidget(client: c))
+            // 📋 Lista de resultados
+            if (sales.isNotEmpty)
+              ...sales.map((s) => SaleCardWidget(sale: s))
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  "No se encontraron clientes",
+                  "No se encontraron ventas",
                   style: TextStyle(
                     color: Color(0xFFB20000),
                     fontWeight: FontWeight.bold,
@@ -74,11 +79,11 @@ class _ClientsPageState extends State<ClientsPage> {
 
             const SizedBox(height: 20),
 
-            // botón o mensaje final
-            if (filteredClients.isNotEmpty)
-              if (!allClientsLoaded)
+            // Botón o mensaje de final
+            if (filteredSales.isNotEmpty)
+              if (!allSalesLoaded)
                 TextButton(
-                  onPressed: _loadMoreClients,
+                  onPressed: _loadMoreSales,
                   child: Column(
                     children: [
                       Image.asset(
@@ -87,7 +92,7 @@ class _ClientsPageState extends State<ClientsPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Cargar más clientes",
+                        "Cargar más ventas",
                         style: TextStyle(color: Color(0xFFB20000)),
                       ),
                     ],
@@ -97,7 +102,7 @@ class _ClientsPageState extends State<ClientsPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Ya están todos los clientes",
+                    "Ya están todas las ventas",
                     style: TextStyle(
                       color: Color(0xFFB20000),
                       fontWeight: FontWeight.bold,
@@ -110,7 +115,7 @@ class _ClientsPageState extends State<ClientsPage> {
         ),
       ),
 
-      // botón flotante para subir
+      // ⬆️ Botón flotante
       floatingActionButton: FloatingActionButton(
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),
