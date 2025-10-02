@@ -1,39 +1,65 @@
 import 'package:vertecx/data/models/sales/sale_model.dart';
+import 'package:vertecx/data/models/sales/sale_item_model.dart';
 
 final List<SaleModel> mockSales = [
   SaleModel(
-    id: "Ven-001",
-    clientName: "Diana Higuita",
+    id: "VEN-001",
+    clientName: "Laura Gómez",
     date: DateTime(2025, 7, 11),
-    total: 320000,
+    subtotal: 800000,
+    iva: 100000,
+    discount: 0,
+    total: 900000,
     status: SaleStatus.finalizado,
+    items: [
+      SaleItemModel(
+        name: "Monitor LG",
+        price: 600000,
+        quantity: 1,
+        type: SaleItemType.product,
+      ),
+      SaleItemModel(
+        name: "Instalación PC",
+        price: 200000,
+        quantity: 1,
+        type: SaleItemType.service,
+      ),
+    ],
   ),
   SaleModel(
-    id: "Ven-002",
-    clientName: "Juliana Gomez",
-    date: DateTime(2025, 7, 23),
-    total: 2567000,
+    id: "VEN-002",
+    clientName: "Carlos Rodríguez",
+    date: DateTime(2025, 7, 12),
+    subtotal: 500000,
+    iva: 100000,
+    discount: 0,
+    total: 600000,
+    status: SaleStatus.finalizado,
+    items: [
+      SaleItemModel(
+        name: "Monitor LG",
+        price: 600000,
+        quantity: 1,
+        type: SaleItemType.product,
+      ),
+    ],
+  ),
+  SaleModel(
+    id: "VEN-003",
+    clientName: "Ana Lévez",
+    date: DateTime(2025, 7, 13),
+    subtotal: 300000,
+    iva: 100000,
+    discount: 0,
+    total: 400000,
     status: SaleStatus.anulado,
-  ),
-  SaleModel(
-    id: "Ven-003",
-    clientName: "Melany Perez",
-    date: DateTime(2025, 7, 11),
-    total: 1245000,
-    status: SaleStatus.finalizado,
-  ),
-  SaleModel(
-    id: "Ven-004",
-    clientName: "Yisela Urrego",
-    date: DateTime(2025, 7, 11),
-    total: 245000,
-    status: SaleStatus.finalizado,
-  ),
-  SaleModel(
-    id: "Ven-005",
-    clientName: "Camila David",
-    date: DateTime(2025, 7, 23),
-    total: 2567000,
-    status: SaleStatus.anulado,
+    items: [
+      SaleItemModel(
+        name: "Monitor LG",
+        price: 600000,
+        quantity: 1,
+        type: SaleItemType.product,
+      ),
+    ],
   ),
 ];

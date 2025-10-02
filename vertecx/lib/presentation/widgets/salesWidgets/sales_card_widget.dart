@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/models/sales/sale_model.dart';
+import 'package:vertecx/presentation/widgets/salesWidgets/sale_detail_widget.dart';
 
 class SaleCardWidget extends StatelessWidget {
   final SaleModel sale;
@@ -117,7 +118,21 @@ class SaleCardWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(16),
+                            ),
+                          ),
+                          builder: (_) => FractionallySizedBox(
+                            heightFactor: 0.9,
+                            child: SaleDetailWidget(sale: sale),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey.shade200,
                         padding: const EdgeInsets.symmetric(
@@ -134,7 +149,7 @@ class SaleCardWidget extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 12,
-                          fontWeight: FontWeight.bold, // también negrilla
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

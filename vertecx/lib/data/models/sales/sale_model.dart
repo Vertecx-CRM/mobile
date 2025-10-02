@@ -1,20 +1,29 @@
 import 'dart:ui';
 
+import 'package:vertecx/data/models/sales/sale_item_model.dart';
+
 enum SaleStatus { finalizado, anulado }
 
 class SaleModel {
-  final String id; // Ej: Ven-001
+  final String id;
   final String clientName;
   final DateTime date;
+  final double subtotal;
+  final double iva;
+  final double discount;
   final double total;
   final SaleStatus status;
-
+  final List<SaleItemModel> items;
   SaleModel({
     required this.id,
     required this.clientName,
     required this.date,
+    required this.subtotal,
+    required this.iva,
+    required this.discount,
     required this.total,
     required this.status,
+    required this.items,
   });
 
   // Texto del estado

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/mocks/sales_mock_data.dart';
+import 'package:vertecx/presentation/widgets/salesWidgets/sale_detail_widget.dart';
 import 'package:vertecx/presentation/widgets/salesWidgets/sales_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 
@@ -64,7 +65,10 @@ class _SalesPageState extends State<SalesPage> {
 
             // 📋 Lista de resultados
             if (sales.isNotEmpty)
-              ...sales.map((s) => SaleCardWidget(sale: s))
+              ...sales.map(
+                (s) =>
+                    SaleCardWidget(sale: s), // 👈 ya no tiene GestureDetector
+              )
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),

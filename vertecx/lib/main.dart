@@ -54,9 +54,11 @@ class MainApp extends StatelessWidget {
 
           AppRoutes.dashboard: (context) =>
               const AppScaffold(title: "Dashboard", body: DashboardPage()),
-          
-          AppRoutes.dashboard: (context) =>
-              const AppScaffold(title: "Cita de técnico", body: AppointmentPageTecnico()),
+
+          AppRoutes.dashboard: (context) => const AppScaffold(
+            title: "Cita de técnico",
+            body: AppointmentPageTecnico(),
+          ),
 
           AppRoutes.products: (context) =>
               const AppScaffold(title: "Productos", body: ProductsPage()),
@@ -143,11 +145,13 @@ class HomePage extends StatelessWidget {
                   Navigator.of(context).pushNamed(AppRoutes.services),
             ),
             ElevatedButton.icon(
-              icon: const Icon(Icons.build), 
+              icon: const Icon(Icons.build),
               label: const Text('Ir a Citas Técnico'),
               onPressed: () => Navigator.of(
                 context,
               ).pushNamed(AppRoutes.appointmentTechnician),
+            ),
+            ElevatedButton.icon(
               icon: const Icon(Icons.person),
               label: const Text('Ir a Clientes'),
               onPressed: () =>
