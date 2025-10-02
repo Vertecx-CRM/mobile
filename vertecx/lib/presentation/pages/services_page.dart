@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/mocks/services_mock_data.dart';
 import 'package:vertecx/presentation/widgets/servicesWidgets/services_card_widget.dart';
-import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
 import 'package:vertecx/presentation/widgets/AppBottomNav.dart';

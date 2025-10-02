@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import '../widgets/components/search/search.dart';
-import '../widgets/productsWidgets/product_card_widget.dart';
+import 'package:vertecx/data/mocks/clients_mock_data.dart';
+import '../widgets/clients/clients_card_widget.dart';
 
-import 'package:vertecx/data/mocks/products_mock_data.dart';
-
-class ProductsPage extends StatefulWidget {
-  const ProductsPage({super.key});
+class ClientsPage extends StatefulWidget {
+  const ClientsPage({super.key});
 
   @override
-  State<ProductsPage> createState() => _ProductsPageState();
+  State<ClientsPage> createState() => _ClientsPageState();
 }
 
-class _ProductsPageState extends State<ProductsPage> {
+class _ClientsPageState extends State<ClientsPage> {
   final ScrollController _scrollController = ScrollController();
-  int _productsToShow = 4; // cantidad inicial de productos
+  int _clientsToShow = 4; // cantidad inicial de clientes
   String _searchQuery = "";
 
-  void _loadMoreProducts() {
+  void _loadMoreClients() {
     setState(() {
-      _productsToShow = (_productsToShow + 2).clamp(0, mockProducts.length);
+      _clientsToShow = (_clientsToShow + 2).clamp(0, mockClients.length);
     });
   }
 
@@ -32,13 +31,13 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // filtrar productos por búsqueda
-    final filteredProducts = mockProducts
-        .where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+    // filtrar clientes por búsqueda
+    final filteredClients = mockClients
+        .where((c) => c.name.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
 
-    final products = filteredProducts.take(_productsToShow).toList();
-    final allProductsLoaded = _productsToShow >= filteredProducts.length;
+    final clients = filteredClients.take(_clientsToShow).toList();
+    final allClientsLoaded = _clientsToShow >= filteredClients.length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE8E8E8),
@@ -46,12 +45,13 @@ class _ProductsPageState extends State<ProductsPage> {
         controller: _scrollController,
         child: Column(
           children: [
-            
+       
+
             const SizedBox(height: 20),
 
             // buscador
             Buscar(
-              hintText: "Buscar producto...",
+              hintText: "Buscar cliente...",
               onChanged: (value) {
                 setState(() => _searchQuery = value);
               },
@@ -59,14 +59,14 @@ class _ProductsPageState extends State<ProductsPage> {
 
             const SizedBox(height: 20),
 
-            // lista de productos filtrados
-            if (products.isNotEmpty)
-              ...products.map((p) => ProductCardWidget(product: p))
+            // lista de clientes filtrados
+            if (clients.isNotEmpty)
+              ...clients.map((c) => ClientCardWidget(client: c))
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  "No se encontraron productos",
+                  "No se encontraron clientes",
                   style: TextStyle(
                     color: Color(0xFFB20000),
                     fontWeight: FontWeight.bold,
@@ -77,10 +77,10 @@ class _ProductsPageState extends State<ProductsPage> {
             const SizedBox(height: 20),
 
             // botón o mensaje final
-            if (filteredProducts.isNotEmpty)
-              if (!allProductsLoaded)
+            if (filteredClients.isNotEmpty)
+              if (!allClientsLoaded)
                 TextButton(
-                  onPressed: _loadMoreProducts,
+                  onPressed: _loadMoreClients,
                   child: Column(
                     children: [
                       Image.asset(
@@ -89,7 +89,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Cargar más productos",
+                        "Cargar más clientes",
                         style: TextStyle(color: Color(0xFFB20000)),
                       ),
                     ],
@@ -99,7 +99,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Ya están todos los productos",
+                    "Ya están todos los clientes",
                     style: TextStyle(
                       color: Color(0xFFB20000),
                       fontWeight: FontWeight.bold,

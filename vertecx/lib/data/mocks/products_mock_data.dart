@@ -18,6 +18,7 @@ final List<ProductModel> mockProducts = [
     description: "Computador con iPhone 15 Pro, 256GB.",
     imagePath: "assets/imgs/pcGamer.png",
     stock: 10,
+    category: "Computadores y laptops",
   ),
   ProductModel(
     id: "3",

@@ -9,6 +9,7 @@ class ProductModel {
   final double price;
   final String description;
   final String imagePath;
+  final String? category;
   final int? stock;
   ProductModel({
     required this.id,
@@ -18,6 +19,7 @@ class ProductModel {
     required this.description,
     required this.imagePath,
     this.stock,
+    this.category,
   });
 
   // Método de utilidad para mostrar el estado como texto
