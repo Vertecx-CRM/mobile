@@ -3,9 +3,7 @@ import 'package:vertecx/presentation/widgets/techniciansWidgets/technicians_card
 import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
 import 'package:vertecx/data/mocks/technicians_mock_data.dart';
-import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
-import 'package:vertecx/presentation/widgets/AppBottomNav.dart';
 
 class TechniciansPage extends StatefulWidget {
   const TechniciansPage({super.key});
@@ -18,8 +16,6 @@ class _TechniciansPageState extends State<TechniciansPage> {
   final ScrollController _scrollController = ScrollController();
   int _techniciansToShow = 4;
   String _searchQuery = "";
-  int _currentIndex = 2;
-  bool _menuOpen = false;
 
   void _loadMoreTechnicians() {
     setState(() {
@@ -34,27 +30,6 @@ class _TechniciansPageState extends State<TechniciansPage> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
-  }
-
-  void _onBottomItemTap(int i) {
-    switch (i) {
-      case 0:
-        Navigator.of(context).pushNamed(AppRoutes.userList);
-        break;
-      case 1:
-        Navigator.of(context).pushNamed(AppRoutes.categoryProduct);
-        break;
-      case 2:
-        Navigator.of(context).pushNamed(AppRoutes.dashboard);
-        break;
-      case 3:
-        Navigator.of(context).pushNamed(AppRoutes.appointment);
-        break;
-      case 4:
-        setState(() => _menuOpen = !_menuOpen);
-        break;
-    }
-    setState(() => _currentIndex = i);
   }
 
   @override

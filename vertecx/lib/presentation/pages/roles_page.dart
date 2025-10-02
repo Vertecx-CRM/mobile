@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/presentation/widgets/rolesWidgets/roles_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
-import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
-import 'package:vertecx/presentation/widgets/AppBottomNav.dart';
 import 'package:vertecx/data/mocks/roles_mock_data.dart';
 
 class RolesPage extends StatefulWidget {
@@ -31,26 +29,6 @@ class _RolesPageState extends State<RolesPage> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
-  }
-
-  void _goByBottomIndex(int i) {
-    switch (i) {
-      case 0:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.userList);
-        break;
-      case 1:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.categoryProduct);
-        break;
-      case 2:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
-        break;
-      case 3:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.appointment);
-        break;
-      case 4:
-        setState(() => _menuOpen = !_menuOpen);
-        break;
-    }
   }
 
   @override

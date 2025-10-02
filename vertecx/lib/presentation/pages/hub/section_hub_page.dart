@@ -163,3 +163,21 @@ class SalesHubPage extends StatelessWidget {
     );
   }
 }
+
+class TechnicianHubPage extends StatelessWidget {
+  const TechnicianHubPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SectionHubPage(
+      title: 'Panel Técnico',
+      items: const [
+        SectionHubItem(
+          icon: Icons.event,
+          label: 'Citas',
+          routeName: AppRoutes.techHome,
+        ),
+      ],
+    );
+  }
+}

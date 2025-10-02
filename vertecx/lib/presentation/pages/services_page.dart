@@ -3,8 +3,6 @@ import 'package:vertecx/data/mocks/services_mock_data.dart';
 import 'package:vertecx/presentation/widgets/servicesWidgets/services_card_widget.dart';
 import '../widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
-import 'package:vertecx/presentation/widgets/AppBottomNav.dart';
-import 'package:vertecx/presentation/routes/app_routes.dart';
 
 class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
@@ -17,8 +15,7 @@ class _ServicesPageState extends State<ServicesPage> {
   final ScrollController _scrollController = ScrollController();
   int _servicesToShow = 4;
   String _searchQuery = "";
-  int _currentIndex = 2;
-  bool _menuOpen = false;
+
 
   void _loadMoreServices() {
     setState(() {
@@ -33,28 +30,6 @@ class _ServicesPageState extends State<ServicesPage> {
       curve: Curves.easeInOut,
     );
   }
-
-  void _onBottomItemTap(int i) {
-    switch (i) {
-      case 0:
-        Navigator.of(context).pushNamed(AppRoutes.userList);
-        break;
-      case 1:
-        Navigator.of(context).pushNamed(AppRoutes.categoryProduct);
-        break;
-      case 2:
-        Navigator.of(context).pushNamed(AppRoutes.dashboard);
-        break;
-      case 3:
-        Navigator.of(context).pushNamed(AppRoutes.appointment);
-        break;
-      case 4:
-        setState(() => _menuOpen = !_menuOpen);
-        break;
-    }
-    setState(() => _currentIndex = i);
-  }
-
   @override
   Widget build(BuildContext context) {
     final filteredServices = mockServices

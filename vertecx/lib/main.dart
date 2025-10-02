@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
-
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page_tecnico.dart';
@@ -15,7 +13,6 @@ import 'package:vertecx/presentation/pages/dashboard_page.dart';
 import 'package:vertecx/presentation/pages/profile_page.dart';
 import 'package:vertecx/presentation/pages/login_page.dart';
 import 'package:vertecx/presentation/pages/home/homePage.dart';
-
 import 'package:vertecx/presentation/pages/hub/section_hub_page.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
 import 'package:vertecx/presentation/pages/technicians_page.dart';
@@ -56,7 +53,7 @@ class MainApp extends StatelessWidget {
           AppRoutes.servicesHub: (_) => const ServicesHubPage(),
           AppRoutes.salesHub: (_) => const SalesHubPage(),
           AppRoutes.providers: (_) => const _Placeholder('Proveedores'),
-          AppRoutes.purchaseOrders: (_) => const _Placeholder('Órdenes de compra'),
+          AppRoutes.purchaseOrders: (_) => const PurchaseOrdersPage(),
           AppRoutes.purchases: (_) => const _Placeholder('Compras'),
           AppRoutes.purchasesCharts: (_) => const _Placeholder('Gráficas de compras'),
           AppRoutes.productCategories: (_) => const _Placeholder('Categorías de productos'),
@@ -69,6 +66,8 @@ class MainApp extends StatelessWidget {
           AppRoutes.salesOrders: (_) => const OrderServicePage(),
           AppRoutes.salesAppointments: (_) => const _Placeholder('Citas'),
           AppRoutes.rolesList: (_) => const RolesPage(),
+          AppRoutes.techHome: (_) => const AppointmentPageTecnico(),
+          AppRoutes.techHub: (_) => const TechnicianHubPage(),
         },
       ),
     );

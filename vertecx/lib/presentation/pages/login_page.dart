@@ -1,23 +1,40 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 
+enum UserRole { admin, tecnico }
+
+class User {
+  final String email;
+  final UserRole role;
+  User(this.email, this.role);
+}
+
+class AuthService {
+  static Future<User> signIn(String email, String password) async {
+    await Future.delayed(const Duration(milliseconds: 450));
+    if (email.trim().isEmpty || password.isEmpty) {
+      throw Exception('Credenciales inválidas');
+    }
+    final lower = email.toLowerCase();
+    final role = lower.contains('admin') ? UserRole.admin : UserRole.tecnico;
+    return User(email, role);
+  }
+}
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
-  final _pass  = TextEditingController();
-  final _form  = GlobalKey<FormState>();
+  final _pass = TextEditingController();
+  final _form = GlobalKey<FormState>();
   bool _loading = false;
   bool _obscure = true;
 
-  static const bg  = Color(0xFF4D0E0E);
+  static const bg = Color(0xFF4D0E0E);
   static const red = Color(0xFFB20000);
 
   @override
@@ -30,12 +47,22 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
     setState(() => _loading = true);
-
-    // TODO: autenticación real
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.home, (r) => false);
+    try {
+      final user = await AuthService.signIn(_email.text.trim(), _pass.text);
+      if (!mounted) return;
+      if (user.role == UserRole.admin) {
+        Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.adminHome, (r) => false);
+      } else {
+        Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.techHub, (r) => false);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -57,7 +84,6 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // LOGO
                       Padding(
                         padding: const EdgeInsets.only(bottom: 18),
                         child: Image.asset(
@@ -87,6 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                           if (!ok) return 'Correo no válido';
                           return null;
                         },
+                        onFieldSubmitted: (_) => _submit(),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -102,20 +129,17 @@ class _LoginPageState extends State<LoginPage> {
                             icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                           ),
                         ),
-                        validator: (v) =>
-                            (v == null || v.isEmpty) ? 'Ingrese su contraseña' : null,
+                        validator: (v) => (v == null || v.isEmpty) ? 'Ingrese su contraseña' : null,
                         onFieldSubmitted: (_) => _submit(),
                       ),
                       const SizedBox(height: 22),
-
-                      // ====== Botón ROJO ======
                       SizedBox(
                         width: double.infinity,
                         height: 44,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: red,                 // rojo
-                            foregroundColor: Colors.white,        // texto blanco
+                            backgroundColor: red,
+                            foregroundColor: Colors.white,
                             disabledBackgroundColor: red.withOpacity(0.5),
                             disabledForegroundColor: Colors.white70,
                             shape: RoundedRectangleBorder(
