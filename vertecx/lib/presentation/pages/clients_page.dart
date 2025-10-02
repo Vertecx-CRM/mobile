@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/presentation/widgets/techniciansWidgets/technicians_card_widget.dart';
-import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
-import 'package:vertecx/data/mocks/technicians_mock_data.dart';
+import 'package:vertecx/data/mocks/clients_mock_data.dart';
+import '../widgets/clients/clients_card_widget.dart';
 
-class TechniciansPage extends StatefulWidget {
-  const TechniciansPage({super.key});
+class ClientsPage extends StatefulWidget {
+  const ClientsPage({super.key});
 
   @override
-  State<TechniciansPage> createState() => _TechniciansPageState();
+  State<ClientsPage> createState() => _ClientsPageState();
 }
 
-class _TechniciansPageState extends State<TechniciansPage> {
+class _ClientsPageState extends State<ClientsPage> {
   final ScrollController _scrollController = ScrollController();
-  int _techniciansToShow = 4; // cantidad inicial de técnicos
+  int _clientsToShow = 4; // cantidad inicial de clientes
   String _searchQuery = "";
 
-  void _loadMoreTechnicians() {
+  void _loadMoreClients() {
     setState(() {
-      _techniciansToShow = (_techniciansToShow + 2).clamp(
-        0,
-        mockTechnicians.length,
-      );
+      _clientsToShow = (_clientsToShow + 2).clamp(0, mockClients.length);
     });
   }
 
@@ -35,14 +31,13 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
   @override
   Widget build(BuildContext context) {
-    // filtrar técnicos por búsqueda
-    final filteredTechnicians = mockTechnicians
-        .where((t) => t.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+    // filtrar clientes por búsqueda
+    final filteredClients = mockClients
+        .where((c) => c.name.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
 
-    final technicians = filteredTechnicians.take(_techniciansToShow).toList();
-    final allTechniciansLoaded =
-        _techniciansToShow >= filteredTechnicians.length;
+    final clients = filteredClients.take(_clientsToShow).toList();
+    final allClientsLoaded = _clientsToShow >= filteredClients.length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE8E8E8),
@@ -50,12 +45,13 @@ class _TechniciansPageState extends State<TechniciansPage> {
         controller: _scrollController,
         child: Column(
           children: [
-      
+       
+
             const SizedBox(height: 20),
 
             // buscador
             Buscar(
-              hintText: "Buscar técnico...",
+              hintText: "Buscar cliente...",
               onChanged: (value) {
                 setState(() => _searchQuery = value);
               },
@@ -63,14 +59,14 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
             const SizedBox(height: 20),
 
-            // lista de técnicos filtrados
-            if (technicians.isNotEmpty)
-              ...technicians.map((t) => TechnicianCardWidget(technician: t))
+            // lista de clientes filtrados
+            if (clients.isNotEmpty)
+              ...clients.map((c) => ClientCardWidget(client: c))
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  "No se encontraron técnicos",
+                  "No se encontraron clientes",
                   style: TextStyle(
                     color: Color(0xFFB20000),
                     fontWeight: FontWeight.bold,
@@ -81,10 +77,10 @@ class _TechniciansPageState extends State<TechniciansPage> {
             const SizedBox(height: 20),
 
             // botón o mensaje final
-            if (filteredTechnicians.isNotEmpty)
-              if (!allTechniciansLoaded)
+            if (filteredClients.isNotEmpty)
+              if (!allClientsLoaded)
                 TextButton(
-                  onPressed: _loadMoreTechnicians,
+                  onPressed: _loadMoreClients,
                   child: Column(
                     children: [
                       Image.asset(
@@ -93,7 +89,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Cargar más técnicos",
+                        "Cargar más clientes",
                         style: TextStyle(color: Color(0xFFB20000)),
                       ),
                     ],
@@ -103,7 +99,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Ya están todos los técnicos",
+                    "Ya están todos los clientes",
                     style: TextStyle(
                       color: Color(0xFFB20000),
                       fontWeight: FontWeight.bold,

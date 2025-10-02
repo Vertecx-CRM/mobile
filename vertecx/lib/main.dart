@@ -12,6 +12,8 @@ import './presentation/pages/products_page.dart';
 import './presentation/pages/roles_page.dart';
 import './presentation/pages/technicians_page.dart';
 import './presentation/pages/services_page.dart';
+import './presentation/pages/clients_page.dart';
+import 'package:vertecx/presentation/widgets/general_scaffold.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,15 +37,35 @@ class MainApp extends StatelessWidget {
         initialRoute: AppRoutes.home,
         routes: {
           AppRoutes.home: (context) => const HomePage(),
-          AppRoutes.userList: (context) => const UserListPage(),
-          AppRoutes.categoryProduct: (context) =>
-              const CategoryProductListPage(),
-          AppRoutes.appointment: (context) => const CalendarPage(),
-          AppRoutes.dashboard: (context) => const DashboardPage(),
-          AppRoutes.products: (context) => const ProductsPage(),
-          AppRoutes.roles: (context) => const RolesPage(),
-          AppRoutes.technicians: (context) => const TechniciansPage(),
-          AppRoutes.services: (context) => const ServicesPage(),
+
+          AppRoutes.userList: (context) =>
+              const AppScaffold(title: "Usuarios", body: UserListPage()),
+
+          AppRoutes.categoryProduct: (context) => const AppScaffold(
+            title: "Categorías de Productos",
+            body: CategoryProductListPage(),
+          ),
+
+          AppRoutes.appointment: (context) =>
+              const AppScaffold(title: "Citas", body: CalendarPage()),
+
+          AppRoutes.dashboard: (context) =>
+              const AppScaffold(title: "Dashboard", body: DashboardPage()),
+
+          AppRoutes.products: (context) =>
+              const AppScaffold(title: "Productos", body: ProductsPage()),
+
+          AppRoutes.roles: (context) =>
+              const AppScaffold(title: "Roles", body: RolesPage()),
+
+          AppRoutes.technicians: (context) =>
+              const AppScaffold(title: "Técnicos", body: TechniciansPage()),
+
+          AppRoutes.services: (context) =>
+              const AppScaffold(title: "Servicios", body: ServicesPage()),
+
+          AppRoutes.clients: (context) =>
+              const AppScaffold(title: "Clientes", body: ClientsPage()),
         },
       ),
     );
@@ -107,6 +129,12 @@ class HomePage extends StatelessWidget {
               label: const Text('Ir a Servicios'),
               onPressed: () =>
                   Navigator.of(context).pushNamed(AppRoutes.services),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.person),
+              label: const Text('Ir a Clientes'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.clients),
             ),
           ],
         ),

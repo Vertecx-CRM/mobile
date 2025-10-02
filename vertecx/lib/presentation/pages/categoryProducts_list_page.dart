@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
 import '../widgets/categoryProductsWidgets/categoryProduct_card_widget.dart';
 import '../widgets/components/search/search.dart';
-import '../widgets/components/header/header.dart';
 import '../../data/repositories/categoryProductRepositories/bloc/category_product_bloc.dart';
 
 class CategoryProductListPage extends StatefulWidget {
@@ -57,12 +56,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                 controller: _scrollController,
                 child: Column(
                   children: [
-                    // encabezado
-                    const HearderUser(
-                      title: "Categorías de productos",
-                      iconPath: "assets/icons/userP.png",
-                      titleSize: 20,
-                    ),
+                 
 
                     const SizedBox(height: 20),
 

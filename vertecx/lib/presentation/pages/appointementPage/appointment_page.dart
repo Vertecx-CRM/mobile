@@ -7,7 +7,6 @@ import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_card.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../widgets/appointmentsWidgets/calendar_header.dart';
-import 'package:vertecx/presentation/widgets/components/header/header.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -28,9 +27,7 @@ class _CalendarPageState extends State<CalendarPage> {
       backgroundColor: const Color(0xFFE8E8E8),
       body: Column(
         children: [
-          // Encabezado
-          const HearderUser(title: "Citas", iconPath: "assets/icons/userP.png"),
-
+  
           const SizedBox(height: 10),
 
           // Buscador

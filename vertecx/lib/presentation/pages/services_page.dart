@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/mocks/services_mock_data.dart';
 import 'package:vertecx/presentation/widgets/servicesWidgets/services_card_widget.dart';
-import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
 
 class ServicesPage extends StatefulWidget {
@@ -46,13 +45,7 @@ class _ServicesPageState extends State<ServicesPage> {
         controller: _scrollController,
         child: Column(
           children: [
-            // encabezado
-            const HearderUser(
-              title: "Servicios",
-              iconPath:
-                  "assets/icons/userP.png", // cambia el ícono si lo tienes
-              titleSize: 30,
-            ),
+       
 
             const SizedBox(height: 20),
 
