@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/users/user_model.dart';
 import '../widgets/usersWidgets/user_card_widget.dart';
 import '../widgets/components/search/search.dart';
-import '../widgets/components/header/header.dart';
 import '../../data/repositories/userRepositories/bloc/user_bloc.dart';
 
 class UserListPage extends StatefulWidget {
@@ -53,12 +52,7 @@ class _UserListPageState extends State<UserListPage> {
                 controller: _scrollController,
                 child: Column(
                   children: [
-                    // encabezado
-                    const HearderUser(
-                      title: "Usuarios",
-                      iconPath: "assets/icons/userP.png",
-                    ),
-
+              
                     const SizedBox(height: 20),
 
                     //buscador

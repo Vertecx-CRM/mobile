@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
 import '../widgets/rolesWidgets/roles_card_widget.dart';
 import 'package:vertecx/data/mocks/roles_mock_data.dart';
@@ -46,12 +45,7 @@ class _RolesPageState extends State<RolesPage> {
         controller: _scrollController,
         child: Column(
           children: [
-            // encabezado
-            const HearderUser(
-              title: "Roles",
-              iconPath: "assets/icons/userP.png",
-              titleSize: 30,
-            ),
+      
 
             const SizedBox(height: 20),
 

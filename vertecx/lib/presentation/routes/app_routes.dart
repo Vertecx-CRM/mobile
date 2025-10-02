@@ -9,4 +9,7 @@ class AppRoutes {
   static const String services = '/services';
   static const String technicians = '/technicians';
   static const String appointmentTechnician = '/appointment/technician';
+  static const String clients = '/clients';
+  static const String sales = '/sales';
+  static const String purchaseOrders = '/purchaseOrders';
 }

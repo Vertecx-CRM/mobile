@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/presentation/widgets/techniciansWidgets/technicians_card_widget.dart';
-import '../widgets/components/header/header.dart';
-import '../widgets/components/search/search.dart';
-import 'package:vertecx/data/mocks/technicians_mock_data.dart';
+import 'package:vertecx/data/mocks/sales_mock_data.dart';
+import 'package:vertecx/presentation/widgets/salesWidgets/sales_card_widget.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
 
-class TechniciansPage extends StatefulWidget {
-  const TechniciansPage({super.key});
+class SalesPage extends StatefulWidget {
+  const SalesPage({super.key});
 
   @override
-  State<TechniciansPage> createState() => _TechniciansPageState();
+  State<SalesPage> createState() => _SalesPageState();
 }
 
-class _TechniciansPageState extends State<TechniciansPage> {
+class _SalesPageState extends State<SalesPage> {
   final ScrollController _scrollController = ScrollController();
-  int _techniciansToShow = 4; // cantidad inicial de técnicos
+  int _salesToShow = 4; // cantidad inicial de ventas
   String _searchQuery = "";
 
-  void _loadMoreTechnicians() {
+  void _loadMoreSales() {
     setState(() {
-      _techniciansToShow = (_techniciansToShow + 2).clamp(
-        0,
-        mockTechnicians.length,
-      );
+      _salesToShow = (_salesToShow + 2).clamp(0, mockSales.length);
     });
   }
 
@@ -35,14 +31,16 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
   @override
   Widget build(BuildContext context) {
-    // filtrar técnicos por búsqueda
-    final filteredTechnicians = mockTechnicians
-        .where((t) => t.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+    // Filtrar ventas por nombre de cliente o ID
+    final filteredSales = mockSales.where((s) {
+      final query = _searchQuery.toLowerCase();
+      return s.clientName.toLowerCase().contains(query) ||
+          s.id.toLowerCase().contains(query);
+    }).toList();
 
-    final technicians = filteredTechnicians.take(_techniciansToShow).toList();
-    final allTechniciansLoaded =
-        _techniciansToShow >= filteredTechnicians.length;
+    // Paginación
+    final sales = filteredSales.take(_salesToShow).toList();
+    final allSalesLoaded = _salesToShow >= filteredSales.length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE8E8E8),
@@ -50,27 +48,28 @@ class _TechniciansPageState extends State<TechniciansPage> {
         controller: _scrollController,
         child: Column(
           children: [
-      
             const SizedBox(height: 20),
 
-            // buscador
+            // 🔎 Buscador
             Buscar(
-              hintText: "Buscar técnico...",
+              hintText: "Buscar cliente o ID...",
               onChanged: (value) {
-                setState(() => _searchQuery = value);
+                setState(() {
+                  _searchQuery = value;
+                });
               },
             ),
 
             const SizedBox(height: 20),
 
-            // lista de técnicos filtrados
-            if (technicians.isNotEmpty)
-              ...technicians.map((t) => TechnicianCardWidget(technician: t))
+            // 📋 Lista de resultados
+            if (sales.isNotEmpty)
+              ...sales.map((s) => SaleCardWidget(sale: s))
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  "No se encontraron técnicos",
+                  "No se encontraron ventas",
                   style: TextStyle(
                     color: Color(0xFFB20000),
                     fontWeight: FontWeight.bold,
@@ -80,11 +79,11 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
             const SizedBox(height: 20),
 
-            // botón o mensaje final
-            if (filteredTechnicians.isNotEmpty)
-              if (!allTechniciansLoaded)
+            // Botón o mensaje de final
+            if (filteredSales.isNotEmpty)
+              if (!allSalesLoaded)
                 TextButton(
-                  onPressed: _loadMoreTechnicians,
+                  onPressed: _loadMoreSales,
                   child: Column(
                     children: [
                       Image.asset(
@@ -93,7 +92,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Cargar más técnicos",
+                        "Cargar más ventas",
                         style: TextStyle(color: Color(0xFFB20000)),
                       ),
                     ],
@@ -103,7 +102,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Ya están todos los técnicos",
+                    "Ya están todas las ventas",
                     style: TextStyle(
                       color: Color(0xFFB20000),
                       fontWeight: FontWeight.bold,
@@ -116,7 +115,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
         ),
       ),
 
-      // botón flotante para subir
+      // ⬆️ Botón flotante
       floatingActionButton: FloatingActionButton(
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),

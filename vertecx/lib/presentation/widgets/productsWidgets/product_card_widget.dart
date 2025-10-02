@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/models/products/product_model.dart';
+import 'product_detail_widget.dart';
 
 class ProductCardWidget extends StatelessWidget {
   final ProductModel product;
@@ -55,18 +56,16 @@ class ProductCardWidget extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: product.status == ProductStatus.activo
-                            ? Color(0xffD2F5D3)
-                            : Color(0xffFF8888),
+                            ? const Color(0xffD2F5D3)
+                            : const Color(0xffFF8888),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        product.status == ProductStatus.activo
-                            ? "Activo"
-                            : "Inactivo",
+                        product.statusString, // ← usa el getter
                         style: TextStyle(
                           color: product.status == ProductStatus.activo
-                              ? Color(0xff168700)
-                              : Color(0xff870000),
+                              ? const Color(0xff168700)
+                              : const Color(0xff870000),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -80,7 +79,7 @@ class ProductCardWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "\$${product.formattedPrice}",
+                        product.formattedPrice, // ← formateado en pesos
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
@@ -102,18 +101,23 @@ class ProductCardWidget extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffB20000),
+                        backgroundColor: const Color(0xffB20000),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                       onPressed: () {
-                        // Navegación al detalle
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (_) => ProductDetailWidget(product: product),
+                        );
                       },
                       child: const Text(
                         "Ver Detalles",
-                        style: TextStyle( color: Colors.white),
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
 import '../widgets/productsWidgets/product_card_widget.dart';
 
@@ -47,13 +46,7 @@ class _ProductsPageState extends State<ProductsPage> {
         controller: _scrollController,
         child: Column(
           children: [
-            // encabezado
-            const HearderUser(
-              title: "Productos",
-              iconPath: "assets/icons/userP.png",
-              titleSize: 30,
-            ),
-
+            
             const SizedBox(height: 20),
 
             // buscador

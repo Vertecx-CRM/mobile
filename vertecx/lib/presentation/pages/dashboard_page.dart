@@ -11,7 +11,6 @@ import 'package:vertecx/data/repositories/dashboard/bloc/dashboard_event.dart';
 import 'package:vertecx/data/repositories/dashboard/bloc/dashboard_states.dart';
 import 'package:vertecx/data/repositories/dashboard/dashboard_repository.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_card.dart';
-import 'package:vertecx/presentation/widgets/components/header/header.dart';
 import 'package:vertecx/presentation/widgets/dashboardWidgets/dashboardCards_widget.dart';
 import 'package:vertecx/presentation/widgets/dashboardWidgets/graphhStates_widget.dart';
 import 'package:vertecx/presentation/widgets/dashboardWidgets/pieChart_widget.dart';
@@ -58,10 +57,7 @@ class DashboardPage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const HearderUser(
-                title: "Dashboard",
-                iconPath: "assets/icons/userP.png",
-              ),
+           
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(

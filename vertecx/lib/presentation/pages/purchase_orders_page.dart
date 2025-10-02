@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/presentation/widgets/techniciansWidgets/technicians_card_widget.dart';
-import '../widgets/components/header/header.dart';
-import '../widgets/components/search/search.dart';
-import 'package:vertecx/data/mocks/technicians_mock_data.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
+import 'package:vertecx/data/mocks/purchase_orders_mock_data.dart';
+import 'package:vertecx/presentation/widgets/purchasesWidgets/purchase_orders_card_widget.dart';
 
-class TechniciansPage extends StatefulWidget {
-  const TechniciansPage({super.key});
+class PurchaseOrdersPage extends StatefulWidget {
+  const PurchaseOrdersPage({super.key});
 
   @override
-  State<TechniciansPage> createState() => _TechniciansPageState();
+  State<PurchaseOrdersPage> createState() => _PurchaseOrdersPageState();
 }
 
-class _TechniciansPageState extends State<TechniciansPage> {
+class _PurchaseOrdersPageState extends State<PurchaseOrdersPage> {
   final ScrollController _scrollController = ScrollController();
-  int _techniciansToShow = 4; // cantidad inicial de técnicos
+  int _ordersToShow = 4;
   String _searchQuery = "";
 
-  void _loadMoreTechnicians() {
+  void _loadMoreOrders() {
     setState(() {
-      _techniciansToShow = (_techniciansToShow + 2).clamp(
-        0,
-        mockTechnicians.length,
-      );
+      _ordersToShow = (_ordersToShow + 2).clamp(0, mockPurchaseOrders.length);
     });
   }
 
@@ -35,14 +31,16 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
   @override
   Widget build(BuildContext context) {
-    // filtrar técnicos por búsqueda
-    final filteredTechnicians = mockTechnicians
-        .where((t) => t.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+    final filteredOrders = mockPurchaseOrders
+        .where(
+          (o) =>
+              o.supplier.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              o.id.toLowerCase().contains(_searchQuery.toLowerCase()),
+        )
         .toList();
 
-    final technicians = filteredTechnicians.take(_techniciansToShow).toList();
-    final allTechniciansLoaded =
-        _techniciansToShow >= filteredTechnicians.length;
+    final orders = filteredOrders.take(_ordersToShow).toList();
+    final allOrdersLoaded = _ordersToShow >= filteredOrders.length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFE8E8E8),
@@ -50,12 +48,10 @@ class _TechniciansPageState extends State<TechniciansPage> {
         controller: _scrollController,
         child: Column(
           children: [
-      
             const SizedBox(height: 20),
 
-            // buscador
             Buscar(
-              hintText: "Buscar técnico...",
+              hintText: "Buscar solicitudes...",
               onChanged: (value) {
                 setState(() => _searchQuery = value);
               },
@@ -63,14 +59,13 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
             const SizedBox(height: 20),
 
-            // lista de técnicos filtrados
-            if (technicians.isNotEmpty)
-              ...technicians.map((t) => TechnicianCardWidget(technician: t))
+            if (orders.isNotEmpty)
+              ...orders.map((o) => PurchaseOrderCardWidget(order: o))
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  "No se encontraron técnicos",
+                  "No se encontraron órdenes",
                   style: TextStyle(
                     color: Color(0xFFB20000),
                     fontWeight: FontWeight.bold,
@@ -80,11 +75,10 @@ class _TechniciansPageState extends State<TechniciansPage> {
 
             const SizedBox(height: 20),
 
-            // botón o mensaje final
-            if (filteredTechnicians.isNotEmpty)
-              if (!allTechniciansLoaded)
+            if (filteredOrders.isNotEmpty)
+              if (!allOrdersLoaded)
                 TextButton(
-                  onPressed: _loadMoreTechnicians,
+                  onPressed: _loadMoreOrders,
                   child: Column(
                     children: [
                       Image.asset(
@@ -93,7 +87,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Cargar más técnicos",
+                        "Cargar más órdenes",
                         style: TextStyle(color: Color(0xFFB20000)),
                       ),
                     ],
@@ -103,7 +97,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Ya están todos los técnicos",
+                    "Ya están todas las órdenes",
                     style: TextStyle(
                       color: Color(0xFFB20000),
                       fontWeight: FontWeight.bold,
@@ -116,7 +110,6 @@ class _TechniciansPageState extends State<TechniciansPage> {
         ),
       ),
 
-      // botón flotante para subir
       floatingActionButton: FloatingActionButton(
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),

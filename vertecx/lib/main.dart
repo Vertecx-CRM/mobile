@@ -4,6 +4,7 @@ import 'package:vertecx/data/repositories/appointmentRepositories/appointment_re
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page_tecnico.dart';
+import 'package:vertecx/presentation/pages/purchase_orders_page.dart';
 import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
@@ -13,6 +14,9 @@ import './presentation/pages/products_page.dart';
 import './presentation/pages/roles_page.dart';
 import './presentation/pages/technicians_page.dart';
 import './presentation/pages/services_page.dart';
+import './presentation/pages/clients_page.dart';
+import 'package:vertecx/presentation/widgets/general_scaffold.dart';
+import 'package:vertecx/presentation/pages/sales_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,17 +40,44 @@ class MainApp extends StatelessWidget {
         initialRoute: AppRoutes.home,
         routes: {
           AppRoutes.home: (context) => const HomePage(),
-          AppRoutes.userList: (context) => const UserListPage(),
-          AppRoutes.categoryProduct: (context) =>
-              const CategoryProductListPage(),
-          AppRoutes.appointment: (context) => const CalendarPage(),
-          AppRoutes.dashboard: (context) => const DashboardPage(),
-          AppRoutes.products: (context) => const ProductsPage(),
-          AppRoutes.roles: (context) => const RolesPage(),
-          AppRoutes.technicians: (context) => const TechniciansPage(),
-          AppRoutes.services: (context) => const ServicesPage(),
-          AppRoutes.appointmentTechnician: (context) =>
-              const AppointmentPageTecnico(),
+
+          AppRoutes.userList: (context) =>
+              const AppScaffold(title: "Usuarios", body: UserListPage()),
+
+          AppRoutes.categoryProduct: (context) => const AppScaffold(
+            title: "Categorías de Productos",
+            body: CategoryProductListPage(),
+          ),
+
+          AppRoutes.appointment: (context) =>
+              const AppScaffold(title: "Citas", body: CalendarPage()),
+
+          AppRoutes.dashboard: (context) =>
+              const AppScaffold(title: "Dashboard", body: DashboardPage()),
+          
+          AppRoutes.dashboard: (context) =>
+              const AppScaffold(title: "Cita de técnico", body: AppointmentPageTecnico()),
+
+          AppRoutes.products: (context) =>
+              const AppScaffold(title: "Productos", body: ProductsPage()),
+
+          AppRoutes.roles: (context) =>
+              const AppScaffold(title: "Roles", body: RolesPage()),
+
+          AppRoutes.technicians: (context) =>
+              const AppScaffold(title: "Técnicos", body: TechniciansPage()),
+
+          AppRoutes.services: (context) =>
+              const AppScaffold(title: "Servicios", body: ServicesPage()),
+
+          AppRoutes.clients: (context) =>
+              const AppScaffold(title: "Clientes", body: ClientsPage()),
+          AppRoutes.sales: (context) =>
+              const AppScaffold(title: "Ventas", body: SalesPage()),
+          AppRoutes.purchaseOrders: (context) => const AppScaffold(
+            title: "Órdenes de Compra",
+            body: PurchaseOrdersPage(),
+          ),
         },
       ),
     );
@@ -117,6 +148,21 @@ class HomePage extends StatelessWidget {
               onPressed: () => Navigator.of(
                 context,
               ).pushNamed(AppRoutes.appointmentTechnician),
+              icon: const Icon(Icons.person),
+              label: const Text('Ir a Clientes'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.clients),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.point_of_sale),
+              label: const Text('Ir a Ventas'),
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.sales),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.receipt_long),
+              label: const Text('Ir a Órdenes de Compra'),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.purchaseOrders),
             ),
           ],
         ),
