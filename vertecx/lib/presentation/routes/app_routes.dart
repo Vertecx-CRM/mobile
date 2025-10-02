@@ -17,7 +17,6 @@ class AppRoutes {
 
   // Compras (subpantallas)
   static const String providers        = '/purchases/providers';
-  static const String purchaseOrders   = '/purchases/orders';
   static const String purchases        = '/purchases/list';
   static const String purchasesCharts  = '/purchases/charts';
 
@@ -31,7 +30,6 @@ class AppRoutes {
   static const String appointmentTechnician = '/appointment/technician';
 
   // Ventas (subpantallas)
-  static const String sales             = '/sales/list';
   static const String clients           = '/sales/clients';
   static const String requests          = '/sales/requests';
   static const String salesOrders       = '/sales/orders';
