@@ -110,7 +110,6 @@ class PurchasesHubPage extends StatelessWidget {
         SectionHubItem(icon: Icons.group,           label: 'Proveedores',         routeName: AppRoutes.providers),
         SectionHubItem(icon: Icons.list_alt,        label: 'Órdenes de compra',   routeName: AppRoutes.purchaseOrders),
         SectionHubItem(icon: Icons.shopping_cart,   label: 'Compras',             routeName: AppRoutes.purchases),
-        SectionHubItem(icon: Icons.insert_chart,    label: 'Gráficas',            routeName: AppRoutes.purchasesCharts),
       ],
     );
   }
@@ -159,7 +158,6 @@ class SalesHubPage extends StatelessWidget {
         SectionHubItem(icon: Icons.assignment,      label: 'Solicitudes',         routeName: AppRoutes.requests),
         SectionHubItem(icon: Icons.inventory,       label: 'Órdenes de Servicio', routeName: AppRoutes.salesOrders),
         SectionHubItem(icon: Icons.event,           label: 'Citas',               routeName: AppRoutes.salesAppointments),
-        SectionHubItem(icon: Icons.group,          label: 'Citas tecnicos',               routeName: AppRoutes.techHome),
       ],
     );
   }
