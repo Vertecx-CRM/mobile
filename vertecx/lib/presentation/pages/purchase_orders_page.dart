@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vertecx/presentation/widgets/app_top_bar.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/data/mocks/purchase_orders_mock_data.dart';
 import 'package:vertecx/presentation/widgets/purchasesWidgets/purchase_orders_card_widget.dart';
@@ -43,6 +44,7 @@ class _PurchaseOrdersPageState extends State<PurchaseOrdersPage> {
     final allOrdersLoaded = _ordersToShow >= filteredOrders.length;
 
     return Scaffold(
+      appBar: AppTopBar(),
       backgroundColor: const Color(0xFFE8E8E8),
       body: SingleChildScrollView(
         controller: _scrollController,

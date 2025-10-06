@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vertecx/presentation/widgets/app_top_bar.dart';
 import '../widgets/components/search/search.dart';
 import '../widgets/productsWidgets/product_card_widget.dart';
 
@@ -41,6 +42,7 @@ class _ProductsPageState extends State<ProductsPage> {
     final allProductsLoaded = _productsToShow >= filteredProducts.length;
 
     return Scaffold(
+      appBar: const AppTopBar(),
       backgroundColor: const Color(0xFFE8E8E8),
       body: SingleChildScrollView(
         controller: _scrollController,

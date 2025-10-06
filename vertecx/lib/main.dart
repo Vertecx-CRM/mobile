@@ -3,6 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
+import 'package:vertecx/presentation/pages/clients_page.dart';
+import 'package:vertecx/presentation/pages/products_page.dart';
+import 'package:vertecx/presentation/pages/purchases_page.dart';
+import 'package:vertecx/presentation/pages/sales_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
 import 'package:vertecx/presentation/pages/appointementPage/appointment_page_tecnico.dart';
@@ -52,19 +56,17 @@ class MainApp extends StatelessWidget {
           AppRoutes.productsHub: (_) => const ProductsHubPage(),
           AppRoutes.servicesHub: (_) => const ServicesHubPage(),
           AppRoutes.salesHub: (_) => const SalesHubPage(),
-          AppRoutes.providers: (_) => const _Placeholder('Proveedores'),
           AppRoutes.purchaseOrders: (_) => const PurchaseOrdersPage(),
-          AppRoutes.purchases: (_) => const _Placeholder('Compras'),
-          AppRoutes.purchasesCharts: (_) => const _Placeholder('Gráficas de compras'),
-          AppRoutes.productCategories: (_) => const _Placeholder('Categorías de productos'),
-          AppRoutes.productsList: (_) => const _Placeholder('Productos'),
+          AppRoutes.purchases: (_) => const PurchasesPage(),
+          AppRoutes.productCategories: (_) => CategoryProductListPage(),
+          AppRoutes.productsList: (_) => const ProductsPage(),
           AppRoutes.servicesList: (_) => const ServicesPage(),
           AppRoutes.techniciansList: (_) => const TechniciansPage(),
-          AppRoutes.sales: (_) => const _Placeholder('Ventas'),
-          AppRoutes.clients: (_) => const _Placeholder('Clientes'),
+          AppRoutes.sales: (_) => const SalesPage(),
+          AppRoutes.clients: (_) => const ClientsPage(),
           AppRoutes.requests: (_) => const RequestsPage(),
           AppRoutes.salesOrders: (_) => const OrderServicePage(),
-          AppRoutes.salesAppointments: (_) => const _Placeholder('Citas'),
+          AppRoutes.salesAppointments: (_) => const AppointmentPageTecnico(),
           AppRoutes.rolesList: (_) => const RolesPage(),
           AppRoutes.techHome: (_) => const AppointmentPageTecnico(),
           AppRoutes.techHub: (_) => const TechnicianHubPage(),

@@ -31,12 +31,28 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         return 'Dashboard';
       case AppRoutes.profile:
         return 'Mi Perfil';
-        case AppRoutes.rolesList:
+      case AppRoutes.rolesList:
         return 'Roles';
-        case AppRoutes.salesOrders:
+      case AppRoutes.salesOrders:
         return 'Ordenes de Servicio';
-        case AppRoutes.requests:
+      case AppRoutes.requests:
         return 'Solicitudes';
+      case AppRoutes.techniciansList:
+        return 'Técnicos';
+      case AppRoutes.servicesList:
+        return 'Servicios';
+      case AppRoutes.productsList:
+        return 'Productos';
+      case AppRoutes.sales:
+        return 'Ventas';
+      case AppRoutes.purchases:
+        return 'Compras';
+      case AppRoutes.providers:
+        return 'Proveedores';
+      case AppRoutes.clients:
+        return 'Clientes';
+      case AppRoutes.appointment:
+        return 'Citas';
       default:
         return 'Sistemas PC';
     }
@@ -47,8 +63,9 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _logout(BuildContext context) {
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   @override
@@ -61,9 +78,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: centerTitle,
       // 👇 esquinas redondeadas abajo
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(16),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
       ),
       clipBehavior: Clip.antiAlias, // asegura el recorte del fondo
       leading: showBack

@@ -29,18 +29,6 @@ class _CalendarPageState extends State<CalendarPage> {
       backgroundColor: const Color(0xFFE8E8E8),
       body: Column(
         children: [
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Buscar(
-              hintText: "Buscar cita...",
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value.toLowerCase();
-                });
-              },
-            ),
-          ),
           const SizedBox(height: 20),
           BlocBuilder<CalendarBloc, CalendarState>(
             builder: (context, state) {

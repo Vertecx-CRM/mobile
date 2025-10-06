@@ -30,18 +30,6 @@ class _CalendarPageTecnicoState extends State<AppointmentPageTecnico> {
       body: Column(
         children: [
 
-          const SizedBox(height: 10),
-
-          // Buscador
-          Buscar(
-            hintText: "Buscar cita...",
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value.toLowerCase();
-              });
-            },
-          ),
-
           const SizedBox(height: 30),
 
           // Calendario

@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
-import '../widgets/components/search/search.dart';
-import 'package:vertecx/data/mocks/clients_mock_data.dart';
-import '../widgets/clientsWidgets/clients_card_widget.dart';
-
-class ClientsPage extends StatefulWidget {
-  const ClientsPage({super.key});
+import 'package:vertecx/presentation/widgets/purchasesWidgets/purchase_card_widget.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
+import 'package:vertecx/data/mocks/purchases_mock_data.dart';
+class PurchasesPage extends StatefulWidget {
+  const PurchasesPage({super.key});
 
   @override
-  State<ClientsPage> createState() => _ClientsPageState();
+  State<PurchasesPage> createState() => _PurchasesPageState();
 }
 
-class _ClientsPageState extends State<ClientsPage> {
+class _PurchasesPageState extends State<PurchasesPage> {
   final ScrollController _scrollController = ScrollController();
-  int _clientsToShow = 4; // cantidad inicial de clientes
+  int _purchasesToShow = 4; // cantidad inicial de compras
   String _searchQuery = "";
 
-  void _loadMoreClients() {
+  // 🔹 Cargar más registros
+  void _loadMorePurchases() {
     setState(() {
-      _clientsToShow = (_clientsToShow + 2).clamp(0, mockClients.length);
+      _purchasesToShow = (_purchasesToShow + 2).clamp(0, mockPurchases.length);
     });
   }
 
+  // 🔹 Subir al inicio
   void _scrollToTop() {
     _scrollController.animateTo(
       0,
@@ -32,13 +33,17 @@ class _ClientsPageState extends State<ClientsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // filtrar clientes por búsqueda
-    final filteredClients = mockClients
-        .where((c) => c.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
+    // 🔎 Filtrar compras por proveedor o ID
+    final filteredPurchases = mockPurchases.where((p) {
+      final query = _searchQuery.toLowerCase();
+      return p.proveedor.toLowerCase().contains(query) ||
+          p.id.toLowerCase().contains(query) ||
+          p.factura.toLowerCase().contains(query);
+    }).toList();
 
-    final clients = filteredClients.take(_clientsToShow).toList();
-    final allClientsLoaded = _clientsToShow >= filteredClients.length;
+    // Paginación
+    final purchases = filteredPurchases.take(_purchasesToShow).toList();
+    final allPurchasesLoaded = _purchasesToShow >= filteredPurchases.length;
 
     return Scaffold(
       appBar: const AppTopBar(),
@@ -49,24 +54,26 @@ class _ClientsPageState extends State<ClientsPage> {
           children: [
             const SizedBox(height: 20),
 
-            // buscador
+            // 🔎 Buscador
             Buscar(
-              hintText: "Buscar cliente...",
+              hintText: "Buscar proveedor, OC o factura...",
               onChanged: (value) {
-                setState(() => _searchQuery = value);
+                setState(() {
+                  _searchQuery = value;
+                });
               },
             ),
 
             const SizedBox(height: 20),
 
-            // lista de clientes filtrados
-            if (clients.isNotEmpty)
-              ...clients.map((c) => ClientCardWidget(client: c))
+            // 📋 Lista de compras
+            if (purchases.isNotEmpty)
+              ...purchases.map((p) => PurchaseCardWidget(compra: p))
             else
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  "No se encontraron clientes",
+                  "No se encontraron compras",
                   style: TextStyle(
                     color: Color(0xFFB20000),
                     fontWeight: FontWeight.bold,
@@ -76,11 +83,11 @@ class _ClientsPageState extends State<ClientsPage> {
 
             const SizedBox(height: 20),
 
-            // botón o mensaje final
-            if (filteredClients.isNotEmpty)
-              if (!allClientsLoaded)
+            // 🔽 Botón cargar más o mensaje final
+            if (filteredPurchases.isNotEmpty)
+              if (!allPurchasesLoaded)
                 TextButton(
-                  onPressed: _loadMoreClients,
+                  onPressed: _loadMorePurchases,
                   child: Column(
                     children: [
                       Image.asset(
@@ -89,7 +96,7 @@ class _ClientsPageState extends State<ClientsPage> {
                         height: 20,
                       ),
                       const Text(
-                        "Cargar más clientes",
+                        "Cargar más compras",
                         style: TextStyle(color: Color(0xFFB20000)),
                       ),
                     ],
@@ -99,7 +106,7 @@ class _ClientsPageState extends State<ClientsPage> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "Ya están todos los clientes",
+                    "Ya están todas las compras",
                     style: TextStyle(
                       color: Color(0xFFB20000),
                       fontWeight: FontWeight.bold,
@@ -112,7 +119,7 @@ class _ClientsPageState extends State<ClientsPage> {
         ),
       ),
 
-      // botón flotante para subir
+      // ⬆️ Botón flotante para subir
       floatingActionButton: FloatingActionButton(
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),

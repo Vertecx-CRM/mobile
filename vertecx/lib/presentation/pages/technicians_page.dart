@@ -49,11 +49,7 @@ class _TechniciansPageState extends State<TechniciansPage> {
         controller: _scrollController,
         child: Column(
           children: [
-            const HearderUser(
-              title: "Técnicos",
-              iconPath: "assets/icons/userP.png",
-              titleSize: 30,
-            ),
+            
             const SizedBox(height: 20),
             Buscar(
               hintText: "Buscar técnico...",

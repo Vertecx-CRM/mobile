@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/mocks/sales_mock_data.dart';
+import 'package:vertecx/presentation/widgets/app_top_bar.dart';
 import 'package:vertecx/presentation/widgets/salesWidgets/sale_detail_widget.dart';
 import 'package:vertecx/presentation/widgets/salesWidgets/sales_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
@@ -44,6 +45,7 @@ class _SalesPageState extends State<SalesPage> {
     final allSalesLoaded = _salesToShow >= filteredSales.length;
 
     return Scaffold(
+      appBar: const AppTopBar(),
       backgroundColor: const Color(0xFFE8E8E8),
       body: SingleChildScrollView(
         controller: _scrollController,
