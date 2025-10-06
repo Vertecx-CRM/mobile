@@ -159,6 +159,7 @@ class SalesHubPage extends StatelessWidget {
         SectionHubItem(icon: Icons.assignment,      label: 'Solicitudes',         routeName: AppRoutes.requests),
         SectionHubItem(icon: Icons.inventory,       label: 'Órdenes de Servicio', routeName: AppRoutes.salesOrders),
         SectionHubItem(icon: Icons.event,           label: 'Citas',               routeName: AppRoutes.salesAppointments),
+        SectionHubItem(icon: Icons.group,          label: 'Citas tecnicos',               routeName: AppRoutes.techHome),
       ],
     );
   }
