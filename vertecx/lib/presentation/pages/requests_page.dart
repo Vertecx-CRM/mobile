@@ -7,7 +7,6 @@ import 'package:vertecx/blocs/requests_state.dart';
 import 'package:vertecx/data/repositories/request_repository.dart';
 import 'package:vertecx/presentation/widgets/request_card.dart';
 import 'package:vertecx/presentation/widgets/app_top_bar.dart';
-import 'package:vertecx/presentation/routes/app_routes.dart';
 
 class RequestsPage extends StatelessWidget {
   const RequestsPage({super.key});
@@ -55,8 +54,6 @@ class _RequestsScaffoldState extends State<_RequestsScaffold> {
         centerTitle: true,
         showBack: false,
       ),
-      // 👇 Menú lateral como en Dashboard
-      drawer: const AppSideMenu(),
       body: Column(
         children: [
           const Padding(
@@ -229,110 +226,6 @@ class _SearchBoxState extends State<_SearchBox> {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// ====================
-/// Menú lateral común
-/// ====================
-class AppSideMenu extends StatelessWidget {
-  const AppSideMenu({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    const wine = Color(0xFF5C0F0F);
-    const red  = Color(0xFFB20000);
-
-    Widget item({
-      required IconData icon,
-      required String label,
-      required String route,
-      bool selected = false,
-    }) {
-      return ListTile(
-        leading: Icon(icon, color: selected ? red : Colors.black87),
-        title: Text(
-          label,
-          style: TextStyle(
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? red : Colors.black87,
-          ),
-        ),
-        onTap: () {
-          Navigator.pop(context); // cierra el drawer
-          if (ModalRoute.of(context)?.settings.name != route) {
-            Navigator.of(context).pushNamed(route);
-          }
-        },
-      );
-    }
-
-    final current = ModalRoute.of(context)?.settings.name ?? '';
-
-    return Drawer(
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0x11000000))),
-              ),
-              child: Row(
-                children: const [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Color(0xFFE8E8E8),
-                    child: Icon(Icons.engineering, color: wine),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Vertecx',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: wine,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Items
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                children: [
-                  item(icon: Icons.dashboard_outlined, label: 'Dashboard', route: AppRoutes.dashboard, selected: current == AppRoutes.dashboard),
-                  item(icon: Icons.list_alt_outlined,    label: 'Solicitudes', route: AppRoutes.requests,   selected: current == AppRoutes.requests),
-                  item(icon: Icons.inventory_2_outlined, label: 'Órdenes',    route: AppRoutes.salesOrders,selected: current == AppRoutes.salesOrders),
-                  item(icon: Icons.event_note_outlined,  label: 'Citas',       route: AppRoutes.appointment,selected: current == AppRoutes.appointment),
-                  item(icon: Icons.store_mall_directory_outlined, label: 'Proveedores', route: AppRoutes.providers, selected: current == AppRoutes.providers),
-                  item(icon: Icons.people_alt_outlined,  label: 'Clientes',     route: AppRoutes.clients,    selected: current == AppRoutes.clients),
-                  item(icon: Icons.shopping_bag_outlined,label: 'Productos',    route: AppRoutes.productsList,selected: current == AppRoutes.productsList),
-                  item(icon: Icons.home_repair_service_outlined,label: 'Servicios', route: AppRoutes.servicesList, selected: current == AppRoutes.servicesList),
-                  const Divider(),
-                  item(icon: Icons.person_outline,       label: 'Mi Perfil',    route: AppRoutes.profile,    selected: current == AppRoutes.profile),
-                ],
-              ),
-            ),
-
-            // Footer versión / logo
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: Text(
-                'v1.0.0',
-                style: TextStyle(color: Colors.black45, fontSize: 12),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
