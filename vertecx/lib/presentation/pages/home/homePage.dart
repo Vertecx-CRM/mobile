@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:vertecx/presentation/pages/purchases_page.dart';
+import 'package:vertecx/presentation/pages/sales_page.dart';
 
 // Tabs
 import 'package:vertecx/presentation/pages/user_list_page.dart';
 import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
-import 'package:vertecx/presentation/pages/appointementPage/appointment_page.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';
 
 // Rutas
@@ -37,8 +38,8 @@ class _HomeState extends State<Home> {
             child: IndexedStack(
               index: _tab,
               children: const [
-                CategoryProductListPage(), // 1
-                CalendarPage(),            // 3
+                PurchasesPage(), // 1
+                SalesPage(),            // 3
                 DashboardPage(),           // 2 (inicio)
                 UserListPage(),            // 0
                 SizedBox.shrink(),         // 4 (botón menú)
