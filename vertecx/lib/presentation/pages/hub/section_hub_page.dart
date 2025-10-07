@@ -107,7 +107,6 @@ class PurchasesHubPage extends StatelessWidget {
     return SectionHubPage(
       title: 'Compras',
       items: const [
-        SectionHubItem(icon: Icons.group,           label: 'Proveedores',         routeName: AppRoutes.providers),
         SectionHubItem(icon: Icons.list_alt,        label: 'Órdenes de compra',   routeName: AppRoutes.purchaseOrders),
         SectionHubItem(icon: Icons.shopping_cart,   label: 'Compras',             routeName: AppRoutes.purchases),
       ],
