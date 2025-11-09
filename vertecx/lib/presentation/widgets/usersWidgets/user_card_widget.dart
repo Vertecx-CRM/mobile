@@ -3,7 +3,6 @@ import 'package:vertecx/presentation/animations/animated_status_chip.dart';
 import '../../../data/models/users/user_model.dart';
 import '../../helpers/app_dialogs.dart';
 
-
 class UserCardWidget extends StatelessWidget {
   final UserModel user;
   final VoidCallback? onToggleStatus;
@@ -44,11 +43,19 @@ class UserCardWidget extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      user.imagenPath,
-                      width: 60,
-                      height: 60,
-                    ),
+                    (user.imagenPath.startsWith('http'))
+                        ? Image.network(
+                            user.imagenPath,
+                            width: 60,
+                            height: 60,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset(
+                                  'assets/icons/userP.png',
+                                  width: 60,
+                                  height: 60,
+                                ),
+                          )
+                        : Image.asset(user.imagenPath, width: 60, height: 60),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
@@ -117,7 +124,8 @@ class UserCardWidget extends StatelessWidget {
                 const SizedBox(height: 20),
                 _buildContactRow(
                   iconPath: "assets/icons/usarioC.png",
-                  text: user.documentoId,
+                  text:
+                      "${user.tipoDocumento} ${user.documentoId}", 
                 ),
                 const SizedBox(height: 10),
                 _buildContactRow(

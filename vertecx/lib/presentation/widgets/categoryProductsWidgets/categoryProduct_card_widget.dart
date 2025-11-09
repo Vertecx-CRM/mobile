@@ -1,9 +1,7 @@
-// lib/presentation/widgets/category_card.dart
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
 import 'package:vertecx/presentation/animations/animated_status_chip.dart';
 import '../../helpers/app_dialogs.dart';
-
 
 class CategoryCard extends StatelessWidget {
   final CategoryProduct category;
@@ -49,11 +47,30 @@ class CategoryCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Icono
-              Image.asset(
-                category.imagenPath,
-                width: 40,
-                height: 40,
-              ),
+              // Icono
+              (category.imagenPath != null &&
+                      category.imagenPath!.startsWith('http'))
+                  ? Image.network(
+                      category.imagenPath!,
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.category,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                    )
+                  : Image.asset(
+                      'assets/icons/default_icon.png',
+                      width: 40,
+                      height: 40,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.category,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                    ),
+
               const SizedBox(width: 8),
 
               // ID + Nombre
@@ -112,11 +129,11 @@ class CategoryCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 48),
             child: Text(
-              category.descripcion,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xFF312C2C),
-              ),
+              category.descripcion?.isNotEmpty == true
+                  ? category.descripcion!
+                  : "No hay descripción",
+              style: const TextStyle(fontSize: 15, color: Color(0xFF312C2C)),
+              textAlign: TextAlign.start,
             ),
           ),
         ],
