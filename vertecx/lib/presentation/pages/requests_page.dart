@@ -5,8 +5,8 @@ import 'package:vertecx/blocs/requests_bloc.dart';
 import 'package:vertecx/blocs/requests_event.dart';
 import 'package:vertecx/blocs/requests_state.dart';
 import 'package:vertecx/data/repositories/request_repository.dart';
-import 'package:vertecx/presentation/widgets/request_card.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/requestWidgets/request_card.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class RequestsPage extends StatelessWidget {
   const RequestsPage({super.key});

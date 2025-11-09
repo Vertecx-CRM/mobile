@@ -3,7 +3,7 @@ import 'package:vertecx/presentation/widgets/techniciansWidgets/technicians_card
 import '../widgets/components/header/header.dart';
 import '../widgets/components/search/search.dart';
 import 'package:vertecx/data/mocks/technicians_mock_data.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class TechniciansPage extends StatefulWidget {
   const TechniciansPage({super.key});

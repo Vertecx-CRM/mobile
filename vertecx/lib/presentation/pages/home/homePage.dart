@@ -12,7 +12,7 @@ import 'package:vertecx/presentation/pages/dashboard_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 
 // BottomNav
-import 'package:vertecx/presentation/widgets/AppBottomNav.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/AppBottomNav.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});

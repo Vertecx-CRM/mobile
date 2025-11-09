@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class SectionHubItem {
   final IconData icon;

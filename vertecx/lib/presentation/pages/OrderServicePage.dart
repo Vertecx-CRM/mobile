@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vertecx/blocs/OrderServiceController.dart';
 import 'package:vertecx/data/repositories/order_repository.dart';
-import 'package:vertecx/presentation/widgets/OrderServiceCard.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/orderServicesWidgets/OrderServiceCard.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class OrderServicePage extends StatelessWidget {
   const OrderServicePage({super.key});
