@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vertecx/blocs/OrderServiceController.dart';
-import 'package:vertecx/data/repositories/order_repository.dart';
+import 'package:vertecx/data/repositories/orderServices/order_repository.dart';
 import 'package:vertecx/presentation/widgets/orderServicesWidgets/OrderServiceCard.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
@@ -84,7 +84,7 @@ class _OrderServiceViewState extends State<_OrderServiceView> {
             if (shown.isNotEmpty)
               ...shown.map((o) => Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                    child: OrderCard(order: o),
+                    child: OrderCard(order: o as dynamic),
                   ))
             else
               const Padding(
