@@ -1,8 +1,5 @@
 enum UserStatus { activo, inactivo }
 
-// Enum para manejar el rol del usuario de forma segura
-enum UserRole { administrador, cliente, tecnico }
-
 class UserModel {
   final String id;
   final String nombreCompleto;
@@ -10,8 +7,9 @@ class UserModel {
   final String telefono;
   final String email;
   final UserStatus estado;
-  final UserRole rol;
+  final String roleString;
   final String imagenPath;
+  final String tipoDocumento;
 
   UserModel({
     required this.id,
@@ -20,20 +18,42 @@ class UserModel {
     required this.telefono,
     required this.email,
     required this.estado,
-    required this.rol,
-    required this.imagenPath
+    required this.roleString,
+    required this.imagenPath,
+    required this.tipoDocumento,
   });
 
-  // Método de utilidad para mapear el enum a una cadena legible
-  String get roleString {
-    switch (rol) {
-      case UserRole.administrador:
-        return "Administrador";
-      case UserRole.cliente:
-        return "Cliente";
-      case UserRole.tecnico:
-        return "Técnico";
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    // Obtener el estado desde stateid
+    final stateId = json['stateid'] as int;
+    final estado = stateId == 1 ? UserStatus.activo : UserStatus.inactivo;
+
+    // Obtener el rol desde roleconfiguration.roles.name
+    String roleName = "Sin rol";
+    try {
+      roleName = json['roleconfiguration']['roles']['name'] as String;
+    } catch (e) {
+      // Si no existe, deja "Sin rol"
     }
+
+    String tipoDoc = "Sin tipo";
+    try {
+      tipoDoc = json['typeofdocuments']['name'] as String;
+    } catch (e) {
+      // Si no existe, usa "Sin tipo"
+    }
+
+    return UserModel(
+      id: json['userid'].toString(),
+      nombreCompleto: "${json['name']} ${json['lastname']}".trim(),
+      documentoId: json['documentnumber'],
+      telefono: json['phone'],
+      email: json['email'],
+      estado: estado,
+      roleString: roleName,
+      imagenPath: json['image'] ?? 'assets/icons/userP.png',
+      tipoDocumento: tipoDoc,
+    );
   }
 
   // Método de utilidad para mapear el enum a una cadena de estado legible
@@ -52,8 +72,9 @@ UserModel toggleStatus(UserModel user) {
     estado: user.estado == UserStatus.activo
         ? UserStatus.inactivo
         : UserStatus.activo,
-    rol: user.rol,
-    imagenPath: user.imagenPath
+    roleString: user.roleString,
+    imagenPath: user.imagenPath,
+    tipoDocumento: user.tipoDocumento,
   );
 }
 
@@ -70,12 +91,16 @@ extension UserSearch on UserModel {
     }
 
     //resto de campos usa búsqueda flexible con contains
-    return removeDiacritics(nombreCompleto.toLowerCase()).contains(normalizedQuery) ||
-           removeDiacritics(documentoId.toLowerCase()).contains(normalizedQuery) ||
-           removeDiacritics(telefono.toLowerCase()).contains(normalizedQuery) ||
-           removeDiacritics(email.toLowerCase()).contains(normalizedQuery) ||
-           removeDiacritics(roleString.toLowerCase()).contains(normalizedQuery) ||
-           removeDiacritics(statusString.toLowerCase()).contains(normalizedQuery);
+    return removeDiacritics(
+          nombreCompleto.toLowerCase(),
+        ).contains(normalizedQuery) ||
+        removeDiacritics(documentoId.toLowerCase()).contains(normalizedQuery) ||
+        removeDiacritics(telefono.toLowerCase()).contains(normalizedQuery) ||
+        removeDiacritics(email.toLowerCase()).contains(normalizedQuery) ||
+        removeDiacritics(roleString.toLowerCase()).contains(normalizedQuery) ||
+        removeDiacritics(roleString.toLowerCase()).contains(normalizedQuery) ||
+        removeDiacritics(tipoDocumento.toLowerCase()).contains(normalizedQuery) ||
+        removeDiacritics(statusString.toLowerCase()).contains(normalizedQuery);
   }
 }
 
@@ -91,4 +116,3 @@ String removeDiacritics(String input) {
     return char;
   }).join();
 }
-
