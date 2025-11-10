@@ -9,7 +9,6 @@
       "dependencies": [
         "awesome_dialog",
         "bloc",
-        "dio",
         "equatable",
         "fl_chart",
         "flutter",
