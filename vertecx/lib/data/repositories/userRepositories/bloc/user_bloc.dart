@@ -1,31 +1,47 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../data/mocks/user_mock_data.dart';
-import '../../../../data/models/users/user_model.dart';
+import 'package:vertecx/data/models/users/user_model.dart';
+import 'package:vertecx/data/services/user_service.dart';
+
 
 part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
-  UserBloc() : super(UserInitial()) {
+  final UserService _userService; 
+  UserBloc(this._userService) : super(UserInitial()) { 
     on<LoadUsers>(_onLoadUsers);
     on<ToggleUserStatus>(_onToggleUserStatus);
   }
 
-  void _onLoadUsers(LoadUsers event, Emitter<UserState> emit) {
-    emit(UserLoaded(List.from(mockUsers)));
+  Future<void> _onLoadUsers(LoadUsers event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    try {
+      final users = await _userService.getUsers();
+      emit(UserLoaded(users));
+    } catch (e) {
+      emit(UserError(e.toString()));
+    }
   }
 
-  void _onToggleUserStatus(ToggleUserStatus event, Emitter<UserState> emit) {
-    if (state is UserLoaded) {
-      final current = (state as UserLoaded).users;
-      final updated = current.map((u) {
-        if (u.id == event.userId) {
-          return toggleStatus(u);
-        }
-        return u;
-      }).toList();
+  Future<void> _onToggleUserStatus(
+      ToggleUserStatus event, Emitter<UserState> emit) async {
+    if (state is! UserLoaded) return;
 
-      emit(UserLoaded(updated));
+    final currentState = state as UserLoaded;
+    final users = List<UserModel>.from(currentState.users);
+
+    final index = users.indexWhere((u) => u.id == event.userId);
+    if (index == -1) return;
+
+    final user = users[index];
+    final newStatus = user.estado == UserStatus.activo ? false : true;
+
+    try {
+      final updatedUser = await _userService.updateUserStatus(user.id, newStatus);
+      users[index] = updatedUser;
+      emit(UserLoaded(users));
+    } catch (e) {
+      emit(UserError("Error al cambiar estado: $e"));
     }
   }
 }

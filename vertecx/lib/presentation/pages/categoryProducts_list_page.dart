@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
+import 'package:vertecx/presentation/helpers/app_dialogs.dart';
 import 'package:vertecx/presentation/widgets/categoryProductsWidgets/categoryProduct_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
-import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/data/services/category_products_service.dart';
 import 'package:vertecx/data/repositories/categoryProductRepositories/bloc/category_product_bloc.dart';
 
 class CategoryProductListPage extends StatefulWidget {
@@ -36,27 +38,44 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CategoryProductBloc()..add(LoadCategories()),
+      create: (_) =>
+          CategoryProductBloc(CategoryProductsService())..add(LoadCategories()),
       child: Scaffold(
         appBar: const AppTopBar(title: 'Categorías de productos'),
         backgroundColor: const Color(0xFFE8E8E8),
         body: BlocBuilder<CategoryProductBloc, CategoryProductState>(
           builder: (context, state) {
+            if (state is CategoryProductLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is CategoryProductError) {
+              return Center(
+                child: Text(
+                  'Error: ${state.message}',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              );
+            }
+
             if (state is CategoryProductLoaded) {
               final filteredCategories = state.categories
                   .where((c) => c.matchesQuery(_searchQuery))
                   .toList();
 
-              final categories =
-                  filteredCategories.take(_categoriesToShow).toList();
+              final categories = filteredCategories
+                  .take(_categoriesToShow)
+                  .toList();
               final allCategoriesLoaded =
                   _categoriesToShow >= filteredCategories.length;
 
               return SingleChildScrollView(
                 controller: _scrollController,
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Column(
                     children: [
                       const SizedBox(height: 8),
@@ -71,13 +90,15 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                         (category) => CategoryCard(
                           category: category,
                           onToggleStatus: () {
-                            context
-                                .read<CategoryProductBloc>()
-                                .add(ToggleCategoryStatus(category.id));
+                            context.read<CategoryProductBloc>().add(
+                              ToggleCategoryStatus(category.id),
+                            );
                           },
                         ),
                       ),
                       const SizedBox(height: 20),
+
+                      // Botón para cargar más
                       if (filteredCategories.isNotEmpty)
                         if (!allCategoriesLoaded)
                           TextButton(
@@ -101,7 +122,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "Ya están todas las categoría de productos",
+                              "Ya están todas las categorías de productos",
                               style: TextStyle(
                                 color: Color(0xFFB20000),
                                 fontWeight: FontWeight.bold,
@@ -112,7 +133,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
                           child: Text(
-                            "No se encontraron categoría de productos",
+                            "No se encontraron categorías de productos",
                             style: TextStyle(
                               color: Color(0xFFB20000),
                               fontWeight: FontWeight.bold,
@@ -125,6 +146,8 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                 ),
               );
             }
+
+            // Estado inicial vacío
             return const Center(child: CircularProgressIndicator());
           },
         ),

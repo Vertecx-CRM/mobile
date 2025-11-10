@@ -2,37 +2,45 @@ enum CategoryStatus { activo, inactivo }
 
 class CategoryProduct {
   final int id;
-  final String imagenPath;
+  final String? imagenPath;
   final String nombre;
   final String descripcion;
   final CategoryStatus estado;
 
   CategoryProduct({
     required this.id,
-    required this.imagenPath,
+    this.imagenPath,
     required this.nombre,
     required this.descripcion,
     required this.estado,
   });
 
+  factory CategoryProduct.fromJson(Map<String, dynamic> json) {
+    return CategoryProduct(
+      id: json['id'],
+      imagenPath: json['icon'],
+      nombre: json['name'],
+      descripcion: json['description'] ?? '',
+      estado: json['status'] == true
+          ? CategoryStatus.activo
+          : CategoryStatus.inactivo,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': nombre,
+      'description': descripcion,
+      'status': estado == CategoryStatus.activo,
+      'icon': imagenPath,
+    };
+  }
+
   String get statusString =>
       estado == CategoryStatus.activo ? "Activo" : "Inactivo";
 }
 
-/// Alternar estado
-CategoryProduct toggleCategoryStatus(CategoryProduct category) {
-  return CategoryProduct(
-    id: category.id,
-    imagenPath: category.imagenPath,
-    nombre: category.nombre,
-    descripcion: category.descripcion,
-    estado: category.estado == CategoryStatus.activo
-        ? CategoryStatus.inactivo
-        : CategoryStatus.activo,
-  );
-}
-
-/// Lógica de búsqueda
 extension CategorySearch on CategoryProduct {
   bool matchesQuery(String query) {
     final normalizedQuery = removeDiacritics(query.toLowerCase());
@@ -50,7 +58,7 @@ extension CategorySearch on CategoryProduct {
   }
 }
 
-/// Función utilitaria para quitar tildes
+/// Función utilitaria para quitar tildes y normalizar texto
 String removeDiacritics(String input) {
   const withDiacritics = 'áéíóúÁÉÍÓÚñÑ';
   const withoutDiacritics = 'aeiouAEIOUnN';

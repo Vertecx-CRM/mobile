@@ -19,9 +19,9 @@ class AppDialogs {
         builder: (context, value, child) {
           return Transform.scale(scale: value, child: child);
         },
-        child: const CircleAvatar(
+        child: CircleAvatar(
           backgroundColor: Colors.orange,
-          radius: 40,
+          radius: 43,
           child: Icon(
             Icons.warning_amber_rounded,
             color: Colors.white,
@@ -29,10 +29,12 @@ class AppDialogs {
           ),
         ),
       ),
-      title: "Warning",
-      desc: "¿Quieres marcar como INACTIVO?",
+      title: title,
+      desc: message,
+      btnCancelText: "Cancelar",
+      btnOkText: "Acepto",
       btnCancelOnPress: () {},
-      btnOkOnPress: () {},
+      btnOkOnPress: onConfirm,
     ).show();
   }
 
