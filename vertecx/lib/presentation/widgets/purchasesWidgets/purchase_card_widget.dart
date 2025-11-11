@@ -1,122 +1,160 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/data/models/purchases/purchase_model.dart';
+import 'package:vertecx/presentation/animations/animated_status_chip.dart';
+import 'package:vertecx/presentation/helpers/app_dialogs.dart';
+import '../../../data/models/purchases/purchase_model.dart';
 
 class PurchaseCardWidget extends StatelessWidget {
   final PurchaseModel compra;
+  final VoidCallback? onToggleStatus;
 
-  const PurchaseCardWidget({super.key, required this.compra});
+  const PurchaseCardWidget({
+    super.key,
+    required this.compra,
+    this.onToggleStatus,
+  });
+
+  // 🔹 Colores de estado (igual al UserCard)
+  Color _getStatusColor(PurchaseStatus status) {
+    return status == PurchaseStatus.Approved
+        ? const Color(0xFFD2F5D3)
+        : const Color(0xABFF8888);
+  }
+
+  Color _getStatusTextColor(PurchaseStatus status) {
+    return status == PurchaseStatus.Approved
+        ? const Color(0xFF168700)
+        : const Color(0xFF870000);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 🔹 Encabezado: Código y total
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final statusBgColor = _getStatusColor(compra.estado);
+    final statusTextColor = _getStatusTextColor(compra.estado);
+
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: const Color(0xFFF4F4F4),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Código OC y factura
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      compra.id,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Text(
-                      compra.factura,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-                // Total y fecha
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      compra.precioFormateado,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Text(
-                      compra.fechaFormateada,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            // 🔹 Proveedor
-            Text(
-              compra.proveedor,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            ),
-
-            const SizedBox(height: 10),
-
-            // 🔹 Estado + Iconos
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Estado
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: compra.estadoColorFondo,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    compra.estadoTexto,
-                    style: TextStyle(
-                      color: compra.estadoColorTexto,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-
-                // Íconos (ver detalle y acción secundaria)
+                // 🔹 Encabezado con imagen y datos principales
                 Row(
-                  children: const [
-                    Icon(
-                      Icons.remove_red_eye_outlined,
-                      size: 20,
-                      color: Colors.black54,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 🔹 Información principal
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "OC #${compra.id}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 20,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              // Chip animado reutilizable
+                              AnimatedStatusChip(
+                                label: compra.estadoTexto,
+                                bgColor: statusBgColor,
+                                textColor: statusTextColor,
+                                onPressed: () {
+                                  if (onToggleStatus == null) return;
+                                  AppDialogs.showConfirmChangeStatus(
+                                    context: context,
+                                    title: "Confirmar cambio de estado",
+                                    message:
+                                        compra.estado == PurchaseStatus.Approved
+                                        ? "¿Deseas marcar la compra #${compra.id} como REVOCADA?"
+                                        : "¿Deseas marcar la compra #${compra.id} como APROBADA?",
+                                    onConfirm: () {
+                                      onToggleStatus!();
+                                      AppDialogs.showSuccessMessage(
+                                        context,
+                                        "Estado de la compra #${compra.id} cambiado correctamente.",
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: const Color(0xFFE8E8E8),
+                                ),
+                                child: Text(
+                                  compra.proveedor,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(width: 8),
-                    Icon(Icons.more_horiz, size: 20, color: Colors.black54),
                   ],
+                ),
+
+                const SizedBox(height: 20),
+
+                // 🔹 Detalles de la compra
+                _buildDetailRow(
+                  iconPath: "assets/icons/dinero.png",
+                  text: "Total: ${compra.precioFormateado}",
+                ),
+                const SizedBox(height: 10),
+                _buildDetailRow(
+                  iconPath: "assets/icons/calendario.png",
+                  text: "Fecha: ${compra.fechaFormateada}",
+                ),
+                const SizedBox(height: 10),
+                _buildDetailRow(
+                  iconPath: "assets/icons/factura.png",
+                  text: "Factura: ${compra.factura}",
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow({required String iconPath, required String text}) {
+    return Row(
+      children: [
+        Image.asset(iconPath, width: 20, height: 20),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: Color(0xFF797979)),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }

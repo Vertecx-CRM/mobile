@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:vertecx/data/models/sales/sale_item_model.dart';
 
 enum SaleStatus { finalizado, anulado }
@@ -25,6 +26,37 @@ class SaleModel {
     required this.status,
     required this.items,
   });
+
+  factory SaleModel.fromJson(Map<String, dynamic> json) {
+    // Obtener el estado desde stateid
+    final stateId = json['stateid'] as int;
+    final status = stateId == 1 ? SaleStatus.finalizado : SaleStatus.anulado;
+
+    // Parsear la lista de items
+    List<SaleItemModel> items = [];
+    try {
+      final itemsJson = json['saleitems'] as List<dynamic>;
+      items = itemsJson
+          .map((itemJson) => SaleItemModel.fromJson(itemJson))
+          .toList();
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error al parsear items de venta: $e");
+      }
+    }
+
+    return SaleModel(
+      id: json['saleid'].toString(),
+      clientName: json['clientname'] ?? 'Cliente sin nombre',
+      date: DateTime.parse(json['date']),
+      subtotal: (json['subtotal'] as num).toDouble(),
+      iva: (json['iva'] as num).toDouble(),
+      discount: (json['discount'] as num).toDouble(),
+      total: (json['total'] as num).toDouble(),
+      status: status,
+      items: items,
+    );
+  }
 
   // Texto del estado
   String get statusString =>

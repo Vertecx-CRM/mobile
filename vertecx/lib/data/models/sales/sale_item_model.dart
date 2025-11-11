@@ -13,6 +13,20 @@ class SaleItemModel {
     required this.type,
   });
 
+  factory SaleItemModel.fromJson(Map<String, dynamic> json) {
+    final itemTypeStr = json['itemtype'] as String;
+    final itemType = itemTypeStr.toLowerCase() == 'product'
+        ? SaleItemType.product
+        : SaleItemType.service;
+
+    return SaleItemModel(
+      name: json['name'] ?? 'Nombre no disponible',
+      price: (json['price'] as num).toDouble(),
+      quantity: json['quantity'] as int,
+      type: itemType,
+    );
+  }
+
   double get total => price * quantity;
 
   String get formattedPrice {

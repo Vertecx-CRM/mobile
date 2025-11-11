@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-enum PurchaseStatus { aprobado, anulado }
+enum PurchaseStatus { Approved, revoke }
 
 class PurchaseModel {
   final String id;
@@ -19,17 +19,33 @@ class PurchaseModel {
     required this.estado,
   });
 
+  factory PurchaseModel.fromJson(Map<String, dynamic> json) {
+    // Obtener el estado desde statusid
+    final statusId = json['statusid'] as int;
+    final estado =
+        statusId == 1 ? PurchaseStatus.Approved : PurchaseStatus.revoke;
+
+    return PurchaseModel(
+      id: json['purchaseid'].toString(),
+      factura: json['invoice'] ?? 'Sin factura',
+      proveedor: json['supplier']['name'] ?? 'Proveedor desconocido',
+      fecha: DateTime.parse(json['date']),
+      total: (json['total'] as num).toDouble(),
+      estado: estado,
+    );
+  }
+
   // 🔹 Texto del estado
   String get estadoTexto =>
-      estado == PurchaseStatus.aprobado ? "Aprobado" : "Anulado";
+      estado == PurchaseStatus.Approved ? "Approved" : "revoke";
 
   // 🔹 Color de fondo del estado
-  Color get estadoColorFondo => estado == PurchaseStatus.aprobado
+  Color get estadoColorFondo => estado == PurchaseStatus.Approved
       ? const Color(0xFFD2F5D3)
       : const Color(0xFFF5D2D2);
 
   // 🔹 Color del texto del estado
-  Color get estadoColorTexto => estado == PurchaseStatus.aprobado
+  Color get estadoColorTexto => estado == PurchaseStatus.Approved
       ? const Color(0xFF168700)
       : const Color(0xFF870000);
 
@@ -42,4 +58,19 @@ class PurchaseModel {
   String get fechaFormateada {
     return "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}";
   }
+}
+
+PurchaseModel toggleStatus(PurchaseModel purchase) {
+  final newStatus = purchase.estado == PurchaseStatus.Approved
+      ? PurchaseStatus.revoke
+      : PurchaseStatus.Approved;
+
+  return PurchaseModel(
+    id: purchase.id,
+    factura: purchase.factura,
+    proveedor: purchase.proveedor,
+    fecha: purchase.fecha,
+    total: purchase.total,
+    estado: newStatus,
+  );
 }
