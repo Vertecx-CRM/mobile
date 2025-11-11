@@ -4,7 +4,7 @@ import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart
 import 'package:vertecx/presentation/helpers/app_dialogs.dart';
 import 'package:vertecx/presentation/widgets/categoryProductsWidgets/categoryProduct_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/data/services/category_products_service.dart';
 import 'package:vertecx/data/repositories/categoryProductRepositories/bloc/category_product_bloc.dart';
 

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:vertecx/blocs/requests_bloc.dart';
-import 'package:vertecx/blocs/requests_event.dart';
-import 'package:vertecx/blocs/requests_state.dart';
-import 'package:vertecx/data/repositories/request_repository.dart';
-import 'package:vertecx/presentation/widgets/request_card.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/data/repositories/request/bloc/requests_bloc.dart';
+import 'package:vertecx/data/repositories/request/bloc/requests_event.dart';
+import 'package:vertecx/data/repositories/request/bloc/requests_state.dart';
+import 'package:vertecx/data/repositories/request/request_repository.dart';
+import 'package:vertecx/data/services/service_requests_service.dart';
+import 'package:vertecx/presentation/widgets/requestWidgets/request_card.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class RequestsPage extends StatelessWidget {
   const RequestsPage({super.key});
@@ -14,8 +15,11 @@ class RequestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RequestsBloc>(
-      create: (_) => RequestsBloc(RequestRepositoryMock())
-        ..add(const RequestsLoadRequested()),
+      create: (_) => RequestsBloc(
+        RequestsRepository(
+          const ServiceRequestsService(baseUrl: 'http://localhost:3001'),
+        ),
+      )..add(const RequestsLoadRequested()),
       child: const _RequestsScaffold(),
     );
   }
@@ -92,8 +96,6 @@ class _RequestsList extends StatelessWidget {
             ),
           );
         }
-
-        // Sin resultados (lista vacía)
         if (state.visible.isEmpty) {
           return const Center(
             child: Padding(
@@ -112,14 +114,13 @@ class _RequestsList extends StatelessWidget {
         return ListView.separated(
           controller: controller,
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 20),
-          itemCount: state.visible.length + 1, // Uno extra para el footer
+          itemCount: state.visible.length + 1,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (_, i) {
             if (i < state.visible.length) {
               return RequestCard(data: state.visible[i]);
             }
 
-            // FOOTER
             if (state.hasMore) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -127,9 +128,7 @@ class _RequestsList extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: state.loadingMore
                         ? null
-                        : () => context
-                            .read<RequestsBloc>()
-                            .add(const RequestsLoadMorePressed()),
+                        : () => context.read<RequestsBloc>().add(const RequestsLoadMorePressed()),
                     icon: state.loadingMore
                         ? const SizedBox(
                             width: 16,

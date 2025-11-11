@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/mocks/sales_mock_data.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/presentation/widgets/salesWidgets/sale_detail_widget.dart';
 import 'package:vertecx/presentation/widgets/salesWidgets/sales_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';

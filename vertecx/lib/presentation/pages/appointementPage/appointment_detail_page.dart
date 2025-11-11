@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/data/models/appointments/appointment_model.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_additional_info.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_service_detail.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_technicians_card.dart';

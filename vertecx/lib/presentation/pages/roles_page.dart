@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/presentation/widgets/rolesWidgets/roles_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/data/mocks/roles_mock_data.dart';
 
 class RolesPage extends StatefulWidget {

@@ -18,7 +18,7 @@ import 'package:vertecx/presentation/pages/profile_page.dart';
 import 'package:vertecx/presentation/pages/login_page.dart';
 import 'package:vertecx/presentation/pages/home/homePage.dart';
 import 'package:vertecx/presentation/pages/hub/section_hub_page.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/presentation/pages/technicians_page.dart';
 import 'package:vertecx/presentation/pages/services_page.dart';
 import 'package:vertecx/presentation/pages/roles_page.dart';
