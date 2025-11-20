@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/dashboard/dashboard_models.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
@@ -89,18 +89,18 @@ class DashboardPage extends StatelessWidget {
                     BlocBuilder<AppointmentsBloc, AppointmentsState>(
                       builder: (context, state) {
                         if (state is AppointmentsLoaded) {
-                          final total = state.completadas + state.pendientes + state.enProgreso + state.anuladas;
+                          final total = state.total;
                           return SummaryCard(
                             icon: Icons.event_note,
                             iconColor: Colors.black87,
-                            title: "Citas:",
+                            title: "Solicitudes de servicio:",
                             value: total.toString(),
                           );
                         }
                         return const SummaryCard(
                           icon: Icons.event_note,
                           iconColor: Colors.black87,
-                          title: "Citas:",
+                          title: "Solicitudes de servicio:",
                           value: "...",
                         );
                       },
@@ -108,18 +108,18 @@ class DashboardPage extends StatelessWidget {
                     BlocBuilder<OrdersBloc, OrdersState>(
                       builder: (context, state) {
                         if (state is OrdersLoaded) {
-                          final total = state.completadas + state.pendientes + state.enProceso + state.canceladas;
+                          final total = state.total;
                           return SummaryCard(
                             icon: Icons.inventory,
                             iconColor: Colors.black87,
-                            title: "Órdenes:",
+                            title: "Ordenes:",
                             value: total.toString(),
                           );
                         }
                         return const SummaryCard(
                           icon: Icons.inventory,
                           iconColor: Colors.black87,
-                          title: "Órdenes:",
+                          title: "Ordenes:",
                           value: "...",
                         );
                       },
@@ -198,11 +198,14 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<AppointmentsBloc, AppointmentsState>(
                   builder: (context, state) {
                     if (state is AppointmentsLoaded) {
+                      if (state.states.isEmpty) return const SizedBox(height: 20);
+                      final labels = state.states.keys.toList();
+                      final values = state.states.values.toList();
                       return StateChartWidget(
-                        title: "Citas",
-                        description: "Comparación de citas en pendientes, en proceso y completadas",
-                        labels: ["Completados", "Pendientes", "En progreso", "Anulada"],
-                        values: [state.completadas, state.pendientes, state.enProgreso, state.anuladas],
+                        title: "Solicitudes de servicio",
+                        description: "Comparacion de solicitudes por estado",
+                        labels: labels,
+                        values: values,
                       );
                     }
                     return const SizedBox(height: 20);
@@ -212,11 +215,14 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<OrdersBloc, OrdersState>(
                   builder: (context, state) {
                     if (state is OrdersLoaded) {
+                      if (state.states.isEmpty) return const SizedBox(height: 20);
+                      final labels = state.states.keys.toList();
+                      final values = state.states.values.toList();
                       return StateChartWidget(
-                        title: "Órdenes",
-                        description: "Comparación de órdenes en pendientes, en proceso y completadas",
-                        labels: ["Completados", "Pendientes", "En progreso", "Anulada"],
-                        values: [state.completadas, state.pendientes, state.enProceso, state.canceladas],
+                        title: "Ordenes",
+                        description: "Comparacion de ordenes por estado",
+                        labels: labels,
+                        values: values,
                       );
                     }
                     return const SizedBox(height: 20);

@@ -69,16 +69,12 @@ class AppointmentsInitial extends AppointmentsState {}
 class AppointmentsLoading extends AppointmentsState {}
 
 class AppointmentsLoaded extends AppointmentsState {
-  final int completadas;
-  final int pendientes;
-  final int enProgreso;
-  final int anuladas;
+  final Map<String, int> states;
+  final int total;
 
   AppointmentsLoaded({
-    required this.completadas,
-    required this.pendientes,
-    required this.enProgreso,
-    required this.anuladas,
+    required this.states,
+    required this.total,
   });
 }
 
@@ -93,16 +89,12 @@ class OrdersInitial extends OrdersState {}
 class OrdersLoading extends OrdersState {}
 
 class OrdersLoaded extends OrdersState {
-  final int completadas;
-  final int pendientes;
-  final int enProceso;
-  final int canceladas;
+  final Map<String, int> states;
+  final int total;
 
   OrdersLoaded({
-    required this.completadas,
-    required this.pendientes,
-    required this.enProceso,
-    required this.canceladas,
+    required this.states,
+    required this.total,
   });
 }
 
