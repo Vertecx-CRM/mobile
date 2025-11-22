@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import '../widgets/components/search/search.dart';
 import '../widgets/productsWidgets/product_card_widget.dart';
 

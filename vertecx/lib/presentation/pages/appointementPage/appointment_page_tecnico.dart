@@ -4,7 +4,7 @@ import 'package:vertecx/data/mocks/appointments_mock_data.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_event.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_state.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_card.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../widgets/appointmentsWidgets/calendar_header.dart';

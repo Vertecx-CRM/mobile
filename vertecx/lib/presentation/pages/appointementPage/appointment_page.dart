@@ -8,7 +8,7 @@ import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/appointment_card.dart';
 import 'package:vertecx/presentation/widgets/appointmentsWidgets/calendar_header.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});

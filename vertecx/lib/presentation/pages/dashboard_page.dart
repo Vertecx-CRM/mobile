@@ -15,7 +15,7 @@ import 'package:vertecx/presentation/widgets/dashboardWidgets/graphhStates_widge
 import 'package:vertecx/presentation/widgets/dashboardWidgets/pieChart_widget.dart';
 import '../widgets/dashboardWidgets/barChart_widget.dart';
 import '../widgets/dashboardWidgets/graphLines_widget.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});

@@ -5,7 +5,7 @@ import 'package:vertecx/data/services/user_service.dart';
 import 'package:vertecx/presentation/helpers/app_dialogs.dart';
 import 'package:vertecx/presentation/widgets/usersWidgets/user_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
-import 'package:vertecx/presentation/widgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/data/repositories/userRepositories/bloc/user_bloc.dart';
 
 class UserListPage extends StatefulWidget {
