@@ -1,4 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+﻿import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/repositories/dashboard/bloc/dashboard_event.dart';
 import 'package:vertecx/data/repositories/dashboard/bloc/dashboard_states.dart';
 import 'package:vertecx/data/repositories/dashboard/dashboard_repository.dart';
@@ -89,12 +89,8 @@ class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
       emit(AppointmentsLoading());
       try {
         final data = await repository.fetchAppointmentsStats();
-        emit(AppointmentsLoaded(
-          completadas: data["completadas"]!,
-          pendientes: data["pendientes"]!,
-          enProgreso: data["enProgreso"]!,
-          anuladas: data["anuladas"]!,
-        ));
+        final total = data.values.fold<int>(0, (a, b) => a + b);
+        emit(AppointmentsLoaded(states: data, total: total));
       } catch (e) {
         emit(AppointmentsError("Error al cargar citas"));
       }
@@ -110,14 +106,10 @@ class OrdersBloc extends Bloc<OrdersEvent, OrdersState> {
       emit(OrdersLoading());
       try {
         final data = await repository.fetchOrdersStats();
-        emit(OrdersLoaded(
-          completadas: data["completadas"]!,
-          pendientes: data["pendientes"]!,
-          enProceso: data["enProceso"]!,
-          canceladas: data["canceladas"]!,
-        ));
+        final total = data.values.fold<int>(0, (a, b) => a + b);
+        emit(OrdersLoaded(states: data, total: total));
       } catch (e) {
-        emit(OrdersError("Error al cargar órdenes"));
+        emit(OrdersError("Error al cargar ordenes"));
       }
     });
   }
@@ -139,6 +131,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     });
   }
 }
+
 
 
 

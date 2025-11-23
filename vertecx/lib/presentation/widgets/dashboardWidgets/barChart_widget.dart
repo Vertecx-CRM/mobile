@@ -123,7 +123,12 @@ class YearSalesChartWidget extends StatelessWidget {
                                 response.spot != null) {
                               final touchedIndex =
                                   response.spot!.touchedBarGroupIndex;
-                              final selectedMonth = touchedIndex + 1;
+
+                              // Usa el mes real de la data para evitar ir siempre a enero
+                              final selectedMonth = (touchedIndex >= 0 &&
+                                      touchedIndex < sales.length)
+                                  ? sales[touchedIndex].month
+                                  : response.spot!.touchedBarGroup.x.toInt() + 1;
 
                               if (isClientChart) {
                                 context.read<ClientsBloc>().add(
