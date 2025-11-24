@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
+// Calendar
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
+
+// Roles
+import 'package:vertecx/data/repositories/roles/roles_repository.dart';
+import 'package:vertecx/data/repositories/roles/bloc/roles_bloc.dart';
+import 'package:vertecx/data/repositories/roles/bloc/roles_event.dart';
+
+// Technicians
+import 'package:vertecx/data/repositories/technicians/technicians_repository.dart';
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_bloc.dart';
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_event.dart';
+
+// Pages
 import 'package:vertecx/presentation/pages/clients_page.dart';
 import 'package:vertecx/presentation/pages/products_page.dart';
 import 'package:vertecx/presentation/pages/purchases_page.dart';
@@ -25,7 +39,6 @@ import 'package:vertecx/presentation/pages/roles_page.dart';
 import 'package:vertecx/presentation/pages/OrderServicePage.dart';
 import 'package:vertecx/presentation/pages/requests_page.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('es_ES', null);
@@ -39,7 +52,21 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => CalendarBloc(AppointmentRepository())),
+        /// CALENDAR
+        BlocProvider(
+          create: (_) => CalendarBloc(AppointmentRepository()),
+        ),
+
+        /// ROLES
+        BlocProvider(
+          create: (_) => RolesBloc(RolesRepository())..add(LoadRolesEvent()),
+        ),
+
+        /// 🔥 TÉCNICOS (nuevo, solo lectura)
+        BlocProvider(
+          create: (_) => TechniciansBloc(TechniciansRepository())
+            ..add(LoadTechniciansEvent()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -91,5 +118,5 @@ class _Placeholder extends StatelessWidget {
         ),
       ),
     );
-    }
+  }
 }

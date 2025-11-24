@@ -1,23 +1,25 @@
 enum RoleStatus { activo, inactivo }
 
 class RoleModel {
-  final String id;
+  final int id;
   final String name;
   final RoleStatus status;
-  RoleModel({required this.id, required this.name, required this.status});
 
-  // Método de utilidad para mostrar el estado como texto
-  String get statusString =>
-      status == RoleStatus.activo ? "Activo" : "Inactivo";
+  RoleModel({
+    required this.id,
+    required this.name,
+    required this.status,
+  });
 
-  // Método para cambiar el estado
-  RoleModel toggleStatus() {
+  factory RoleModel.fromJson(Map<String, dynamic> json) {
+    final raw = (json['status'] ?? '').toString().toLowerCase();
+
     return RoleModel(
-      id: id,
-      name: name,
-      status: status == RoleStatus.activo
-          ? RoleStatus.inactivo
-          : RoleStatus.activo,
+      id: json['roleid'] ?? 0,
+      name: json['name'] ?? '',
+      status: (raw == 'active' || raw == 'activo')
+          ? RoleStatus.activo
+          : RoleStatus.inactivo,
     );
   }
 }
