@@ -23,6 +23,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _tab = 2;
   bool _menuOpen = false;
+  final GlobalKey<UserListPageState> _usersKey = GlobalKey<UserListPageState>();
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +38,12 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.only(bottom: navHeight),
             child: IndexedStack(
               index: _tab,
-              children: const [
-                PurchasesPage(), // 1
-                SalesPage(),            // 3
-                DashboardPage(),           // 2 (inicio)
-                UserListPage(),            // 0
-                SizedBox.shrink(),         // 4 (botón menú)
+              children: [
+                const PurchasesPage(), // 1
+                const SalesPage(), // 3
+                const DashboardPage(), // 2 (inicio)
+                UserListPage(key: _usersKey), // 0
+                const SizedBox.shrink(), // 4 (boton menu)
               ],
             ),
           ),
@@ -75,6 +76,9 @@ class _HomeState extends State<Home> {
               setState(() => _menuOpen = !_menuOpen);
             } else {
               setState(() => _tab = i);
+              if (i == 3) {
+                _usersKey.currentState?.reloadUsers();
+              }
             }
           },
           onMenuToggle: () => setState(() => _menuOpen = !_menuOpen),
@@ -99,10 +103,10 @@ class _QuickActionsPanel extends StatelessWidget {
     const red = Color(0xFFB20000);
 
     final actions = const [
-      ('Compras',   'assets/image/truck.svg'),
-      ('Usuarios',  'assets/image/user.svg'),
-      ('Roles',     'assets/image/icon.svg'),
-      ('Ventas',    'assets/image/fi-rs-shopping-cart-add.svg'),
+      ('Compras', 'assets/image/truck.svg'),
+      ('Usuarios', 'assets/image/user.svg'),
+      ('Roles', 'assets/image/icon.svg'),
+      ('Ventas', 'assets/image/fi-rs-shopping-cart-add.svg'),
       ('Productos', 'assets/image/box.svg'),
       ('Servicios', 'assets/image/tool.svg'),
     ];
@@ -126,7 +130,7 @@ class _QuickActionsPanel extends StatelessWidget {
           Navigator.of(context).pushNamed(AppRoutes.salesHub);
           break;
         case 'Roles':
-          Navigator.of(context).pushNamed(AppRoutes.rolesList); // placeholder
+          Navigator.of(context).pushNamed(AppRoutes.rolesList);
           break;
         default:
           break;
