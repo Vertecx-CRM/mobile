@@ -27,11 +27,11 @@ class TechnicianCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar + Nombre + Estado
+          /// Avatar + Nombre + Estado
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar
+              /// Avatar
               Container(
                 width: 80,
                 height: 80,
@@ -43,7 +43,7 @@ class TechnicianCardWidget extends StatelessWidget {
               ),
               const SizedBox(width: 14),
 
-              // Nombre y estado
+              /// Nombre + Estado
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +69,7 @@ class TechnicianCardWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        technician.statusString,
+                        isActive ? "Activo" : "Inactivo",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w900,
@@ -85,22 +85,20 @@ class TechnicianCardWidget extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // Información debajo alineada al centro de la imagen
+          /// Información extra
           Padding(
-            padding: const EdgeInsets.only(
-              left: 32,
-            ), // empuja info hacia la derecha
+            padding: const EdgeInsets.only(left: 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Documento
+                /// Documento
                 Row(
                   children: [
                     const Icon(Icons.credit_card, size: 18, color: Colors.grey),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        technician.id,
+                        technician.id.toString(),
                         style: const TextStyle(fontSize: 14),
                       ),
                     ),
@@ -108,7 +106,7 @@ class TechnicianCardWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
 
-                // Teléfono
+                /// Teléfono
                 Row(
                   children: [
                     const Icon(Icons.phone, size: 18, color: Colors.grey),
@@ -123,7 +121,7 @@ class TechnicianCardWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
 
-                // Correo
+                /// Correo
                 Row(
                   children: [
                     const Icon(Icons.email, size: 18, color: Colors.grey),

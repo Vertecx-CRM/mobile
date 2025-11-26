@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/presentation/widgets/techniciansWidgets/technicians_card_widget.dart';
-import '../widgets/components/header/header.dart';
-import '../widgets/components/search/search.dart';
-import 'package:vertecx/data/mocks/technicians_mock_data.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_bloc.dart';
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_event.dart';
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_state.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
 
 class TechniciansPage extends StatefulWidget {
   const TechniciansPage({super.key});
@@ -18,10 +21,13 @@ class _TechniciansPageState extends State<TechniciansPage> {
   String _searchQuery = "";
 
   void _loadMoreTechnicians() {
-    setState(() {
-      _techniciansToShow =
-          (_techniciansToShow + 2).clamp(0, mockTechnicians.length);
-    });
+    final state = context.read<TechniciansBloc>().state;
+    if (state is TechniciansLoaded) {
+      setState(() {
+        _techniciansToShow =
+            (_techniciansToShow + 2).clamp(0, state.technicians.length);
+      });
+    }
   }
 
   void _scrollToTop() {
@@ -33,79 +39,106 @@ class _TechniciansPageState extends State<TechniciansPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    context.read<TechniciansBloc>().add(LoadTechniciansEvent());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final filteredTechnicians = mockTechnicians
-        .where((t) => t.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
-
-    final technicians = filteredTechnicians.take(_techniciansToShow).toList();
-    final allTechniciansLoaded =
-        _techniciansToShow >= filteredTechnicians.length;
-
     return Scaffold(
       appBar: const AppTopBar(),
       backgroundColor: const Color(0xFFE8E8E8),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            
-            const SizedBox(height: 20),
-            Buscar(
-              hintText: "Buscar técnico...",
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-              },
-            ),
-            const SizedBox(height: 20),
-            if (technicians.isNotEmpty)
-              ...technicians.map((t) => TechnicianCardWidget(technician: t))
-            else
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  "No se encontraron técnicos",
-                  style: TextStyle(
-                    color: Color(0xFFB20000),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      body: BlocBuilder<TechniciansBloc, TechniciansState>(
+        builder: (context, state) {
+          if (state is TechniciansLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is TechniciansError) {
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
               ),
-            const SizedBox(height: 20),
-            if (filteredTechnicians.isNotEmpty)
-              if (!allTechniciansLoaded)
-                TextButton(
-                  onPressed: _loadMoreTechnicians,
+            );
+          }
+
+          if (state is TechniciansLoaded) {
+            final list = state.technicians;
+
+            final filtered = list
+                .where((t) => t.name
+                    .toLowerCase()
+                    .contains(_searchQuery.toLowerCase()))
+                .toList();
+
+            final page =
+                filtered.take(_techniciansToShow).toList();
+
+            final allLoaded =
+                _techniciansToShow >= filtered.length;
+
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/icons/Vector.png",
-                        width: 20,
-                        height: 20,
+                      Buscar(
+                        hintText: "Buscar técnico...",
+                        onChanged: (v) =>
+                            setState(() => _searchQuery = v),
                       ),
-                      const Text(
-                        "Cargar más técnicos",
-                        style: TextStyle(color: Color(0xFFB20000)),
-                      ),
+                      const SizedBox(height: 20),
+
+                      if (page.isNotEmpty)
+                        ...page.map(
+                            (t) => TechnicianCardWidget(technician: t))
+                      else
+                        const Text(
+                          "No se encontraron técnicos",
+                          style: TextStyle(
+                            color: Color(0xFFB20000),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                      const SizedBox(height: 20),
+
+                      if (filtered.isNotEmpty)
+                        !allLoaded
+                            ? TextButton(
+                                onPressed: _loadMoreTechnicians,
+                                child: const Text(
+                                  "Cargar más técnicos",
+                                  style: TextStyle(
+                                    color: Color(0xFFB20000),
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                "Ya están todos los técnicos",
+                                style: TextStyle(
+                                  color: Color(0xFFB20000),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                      const SizedBox(height: 40),
                     ],
                   ),
-                )
-              else
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "Ya están todos los técnicos",
-                    style: TextStyle(
-                      color: Color(0xFFB20000),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ),
-            const SizedBox(height: 40),
-          ],
-        ),
+              ],
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "technicians_fab",
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),
         child: const Icon(Icons.arrow_upward, color: Colors.white),
