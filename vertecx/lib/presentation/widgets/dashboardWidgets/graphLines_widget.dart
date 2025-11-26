@@ -9,6 +9,7 @@ class MonthSalesChartWidget extends StatelessWidget {
   final int month;
   final bool isClientChart;
   final bool isPurchasesChart;
+  final int year;
 
   const MonthSalesChartWidget({
     super.key,
@@ -16,6 +17,7 @@ class MonthSalesChartWidget extends StatelessWidget {
     required this.month,
     this.isClientChart = false,
     this.isPurchasesChart = false,
+    required this.year,
   });
 
   //Nombres de los meses
@@ -31,6 +33,9 @@ class MonthSalesChartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = dailySales.fold<double>(0, (a, b) => a + b);
     final monthName = getMonthName(month);
+    final maxValue = dailySales.isEmpty ? 0.0 : dailySales.reduce((a, b) => a > b ? a : b);
+    final interval = maxValue <= 0 ? 1.0 : (maxValue / 5).ceilToDouble();
+    final chartMaxY = (maxValue + interval).clamp(interval, double.infinity);
 
     return Container(
       height: 300,
@@ -47,10 +52,10 @@ class MonthSalesChartWidget extends StatelessWidget {
             children: [
               Text(
                 isClientChart
-                    ? "Clientes $monthName: ${total.toStringAsFixed(0)}"
+                    ? "Clientes $monthName $year: ${total.toStringAsFixed(0)}"
                     : isPurchasesChart
-                        ? "Compras $monthName: \$${total.toStringAsFixed(0)}"
-                        : "Ventas $monthName: \$${total.toStringAsFixed(0)}",
+                        ? "Compras $monthName $year: \$${total.toStringAsFixed(0)}"
+                        : "Ventas $monthName $year: \$${total.toStringAsFixed(0)}",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -62,11 +67,17 @@ class MonthSalesChartWidget extends StatelessWidget {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   if (isClientChart) {
-                    context.read<ClientsBloc>().add(LoadClientsEvent());
+                    context.read<ClientsBloc>().add(
+                          LoadClientsEvent(year: year),
+                        );
                   } else if (isPurchasesChart) {
-                    context.read<PurchasesBloc>().add(LoadPurchasesEvent());
+                    context.read<PurchasesBloc>().add(
+                          LoadPurchasesEvent(year: year),
+                        );
                   } else {
-                    context.read<SalesBloc>().add(LoadSalesEvent());
+                    context.read<SalesBloc>().add(
+                          LoadSalesEvent(year: year),
+                        );
                   }
                 },
               ),
@@ -82,7 +93,7 @@ class MonthSalesChartWidget extends StatelessWidget {
                   show: true,
                   drawHorizontalLine: true,
                   drawVerticalLine: false,
-                  horizontalInterval: 300,
+                  horizontalInterval: interval,
                   getDrawingHorizontalLine: (value) => FlLine(
                     color: Colors.grey.withOpacity(0.2),
                     strokeWidth: 1,
@@ -116,9 +127,9 @@ class MonthSalesChartWidget extends StatelessWidget {
                     sideTitles: SideTitles(
                       showTitles: true,
                       reservedSize: 40,
-                      interval: 300,
+                      interval: interval,
                       getTitlesWidget: (value, meta) {
-                        if (value % 300 == 0) {
+                        if (value % interval == 0) {
                           return Text(
                             isClientChart
                                 ? "${value.toInt()}" 
@@ -142,8 +153,7 @@ class MonthSalesChartWidget extends StatelessWidget {
                 minX: 0,
                 maxX: dailySales.length.toDouble() - 1,
                 minY: 0,
-                maxY: (dailySales.reduce((a, b) => a > b ? a : b) + 300)
-                    .toDouble(),
+                maxY: chartMaxY,
                 lineBarsData: [
                   LineChartBarData(
                     spots: dailySales
