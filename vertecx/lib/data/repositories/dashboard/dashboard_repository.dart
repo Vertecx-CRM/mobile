@@ -7,13 +7,13 @@ class SalesRepository {
 
   final DashboardService service;
 
-  Future<List<Sales>> fetchSales() async {
-    final data = await service.fetchSalesByYear();
+  Future<List<Sales>> fetchSales({int? year}) async {
+    final data = await service.fetchSalesByYear(year);
     return _mapSalesData(data);
   }
 
-  Future<List<double>> fetchDailySales(int month) async {
-    final data = await service.fetchDailySales(month);
+  Future<List<double>> fetchDailySales(int month, {int? year}) async {
+    final data = await service.fetchDailySales(month, year);
     return _mapDailyTotals(data);
   }
 }
@@ -24,13 +24,13 @@ class ClientsRepository {
 
   final DashboardService service;
 
-  Future<List<Clients>> fetchClients() async {
-    final data = await service.fetchClientsByYear();
+  Future<List<Clients>> fetchClients({int? year}) async {
+    final data = await service.fetchClientsByYear(year);
     return _mapClientsData(data);
   }
 
-  Future<List<double>> fetchDailyClients(int month) async {
-    final data = await service.fetchDailyClients(month);
+  Future<List<double>> fetchDailyClients(int month, {int? year}) async {
+    final data = await service.fetchDailyClients(month, year);
     return _mapDailyTotals(data);
   }
 }
@@ -41,13 +41,13 @@ class PurchasesRepository {
 
   final DashboardService service;
 
-  Future<List<Sales>> fetchPurchases() async {
-    final data = await service.fetchPurchasesByYear();
+  Future<List<Sales>> fetchPurchases({int? year}) async {
+    final data = await service.fetchPurchasesByYear(year);
     return _mapSalesData(data);
   }
 
-  Future<List<double>> fetchDailyPurchases(int month) async {
-    final data = await service.fetchDailyPurchases(month);
+  Future<List<double>> fetchDailyPurchases(int month, {int? year}) async {
+    final data = await service.fetchDailyPurchases(month, year);
     return _mapDailyTotals(data);
   }
 }
@@ -58,10 +58,10 @@ class AppointmentsRepository {
 
   final DashboardService service;
 
-  Future<Map<String, int>> fetchAppointmentsStats() async {
-    final stateData = await service.fetchServiceRequestsByState();
+  Future<Map<String, int>> fetchAppointmentsStats({int? year}) async {
+    final stateData = await service.fetchServiceRequestsByState(year);
     final counts = _mapStatesAsIs(stateData);
-    return _ensureStateTotals(counts, await service.fetchTotalServiceRequests());
+    return _ensureStateTotals(counts, await service.fetchTotalServiceRequests(year));
   }
 }
 
@@ -71,9 +71,9 @@ class OrdersRepository {
 
   final DashboardService service;
 
-  Future<Map<String, int>> fetchOrdersStats() async {
-    final data = await service.fetchOrdersByState();
-    return _ensureStateTotals(_mapStatesAsIs(data), await service.fetchTotalOrders());
+  Future<Map<String, int>> fetchOrdersStats({int? year}) async {
+    final data = await service.fetchOrdersByState(year);
+    return _ensureStateTotals(_mapStatesAsIs(data), await service.fetchTotalOrders(year));
   }
 }
 
@@ -83,8 +83,8 @@ class ProductsRepository {
 
   final DashboardService service;
 
-  Future<Map<String, double>> fetchProductsByCategory() async {
-    final data = await service.fetchProductsByCategory();
+  Future<Map<String, double>> fetchProductsByCategory({int? year}) async {
+    final data = await service.fetchProductsByCategory(year);
     return _mapCategoryTotals(data);
   }
 }

@@ -8,28 +8,56 @@ class DashboardService {
   final String baseUrl;
   String get _dashboardBase => '$baseUrl/dashboard';
 
-  Future<List<dynamic>> fetchSalesByYear() => _getList('$_dashboardBase/sales/year');
-  Future<Map<String, dynamic>> fetchTotalSales() => _getMap('$_dashboardBase/sales/total');
-  Future<List<dynamic>> fetchDailySales(int month) => _getList('$_dashboardBase/sales/month/$month');
+  Uri _uri(String path, [int? year]) {
+    final parsed = Uri.parse(path);
+    if (year == null) return parsed;
+    return parsed.replace(
+      queryParameters: {
+        ...parsed.queryParameters,
+        'year': '$year',
+      },
+    );
+  }
 
-  Future<List<dynamic>> fetchPurchasesByYear() => _getList('$_dashboardBase/purchases/year');
-  Future<Map<String, dynamic>> fetchTotalPurchases() => _getMap('$_dashboardBase/purchases/total');
-  Future<List<dynamic>> fetchDailyPurchases(int month) => _getList('$_dashboardBase/purchases/month/$month');
+  Future<List<dynamic>> fetchSalesByYear([int? year]) =>
+      _getList(_uri('$_dashboardBase/sales/year', year));
+  Future<Map<String, dynamic>> fetchTotalSales([int? year]) =>
+      _getMap(_uri('$_dashboardBase/sales/total', year));
+  Future<List<dynamic>> fetchDailySales(int month, [int? year]) =>
+      _getList(_uri('$_dashboardBase/sales/month/$month', year));
 
-  Future<List<dynamic>> fetchClientsByYear() => _getList('$_dashboardBase/clients/year');
-  Future<Map<String, dynamic>> fetchTotalClients() => _getMap('$_dashboardBase/clients/total');
-  Future<List<dynamic>> fetchDailyClients(int month) => _getList('$_dashboardBase/clients/month/$month');
+  Future<List<dynamic>> fetchPurchasesByYear([int? year]) =>
+      _getList(_uri('$_dashboardBase/purchases/year', year));
+  Future<Map<String, dynamic>> fetchTotalPurchases([int? year]) =>
+      _getMap(_uri('$_dashboardBase/purchases/total', year));
+  Future<List<dynamic>> fetchDailyPurchases(int month, [int? year]) =>
+      _getList(_uri('$_dashboardBase/purchases/month/$month', year));
 
-  Future<List<dynamic>> fetchProductsByCategory() => _getList('$_dashboardBase/categories/products');
+  Future<List<dynamic>> fetchClientsByYear([int? year]) =>
+      _getList(_uri('$_dashboardBase/clients/year', year));
+  Future<Map<String, dynamic>> fetchTotalClients([int? year]) =>
+      _getMap(_uri('$_dashboardBase/clients/total', year));
+  Future<List<dynamic>> fetchDailyClients(int month, [int? year]) =>
+      _getList(_uri('$_dashboardBase/clients/month/$month', year));
 
-  Future<List<dynamic>> fetchOrdersByState() => _getList('$_dashboardBase/orders/state');
-  Future<Map<String, dynamic>> fetchTotalOrders() => _getMap('$_dashboardBase/orders/total');
+  Future<List<dynamic>> fetchProductsByCategory([int? year]) =>
+      _getList(_uri('$_dashboardBase/categories/products', year));
 
-  Future<List<dynamic>> fetchServiceRequestsByState() => _getList('$_dashboardBase/service-requests/state');
-  Future<Map<String, dynamic>> fetchTotalServiceRequests() => _getMap('$_dashboardBase/service-requests/total');
+  Future<List<dynamic>> fetchOrdersByState([int? year]) =>
+      _getList(_uri('$_dashboardBase/orders/state', year));
+  Future<Map<String, dynamic>> fetchTotalOrders([int? year]) =>
+      _getMap(_uri('$_dashboardBase/orders/total', year));
 
-  Future<dynamic> _get(String url) async {
-    final uri = Uri.parse(url);
+  Future<List<dynamic>> fetchServiceRequestsByState([int? year]) =>
+      _getList(_uri('$_dashboardBase/service-requests/state', year));
+  Future<Map<String, dynamic>> fetchTotalServiceRequests([int? year]) =>
+      _getMap(_uri('$_dashboardBase/service-requests/total', year));
+
+  Future<dynamic> _get(Uri uri) async {
+    // Loggeamos siempre para validar el año que se envía
+    // ignore: avoid_print
+    print('GET $uri');
+
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
@@ -41,8 +69,8 @@ class DashboardService {
     );
   }
 
-  Future<List<dynamic>> _getList(String url) async {
-    final decoded = await _get(url);
+  Future<List<dynamic>> _getList(Uri uri) async {
+    final decoded = await _get(uri);
 
     if (decoded is Map<String, dynamic> && decoded['data'] is List) {
       return List<dynamic>.from(decoded['data'] as List);
@@ -51,11 +79,11 @@ class DashboardService {
       return List<dynamic>.from(decoded);
     }
 
-    throw Exception('Formato inesperado de respuesta en $url');
+    throw Exception('Formato inesperado de respuesta en $uri');
   }
 
-  Future<Map<String, dynamic>> _getMap(String url) async {
-    final decoded = await _get(url);
+  Future<Map<String, dynamic>> _getMap(Uri uri) async {
+    final decoded = await _get(uri);
 
     if (decoded is Map<String, dynamic>) {
       if (decoded['data'] is Map<String, dynamic>) {
@@ -64,6 +92,6 @@ class DashboardService {
       return Map<String, dynamic>.from(decoded);
     }
 
-    throw Exception('Formato inesperado de respuesta en $url');
+    throw Exception('Formato inesperado de respuesta en $uri');
   }
 }

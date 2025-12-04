@@ -11,6 +11,7 @@ class YearSalesChartWidget extends StatelessWidget {
   final String title;
   final bool isClientChart;
   final bool isPurchasesChart;
+  final int year;
 
   const YearSalesChartWidget({
     super.key,
@@ -18,6 +19,7 @@ class YearSalesChartWidget extends StatelessWidget {
     required this.title,
     this.isClientChart = false,
     this.isPurchasesChart = false,
+    required this.year,
   });
 
   @override
@@ -40,8 +42,8 @@ class YearSalesChartWidget extends StatelessWidget {
             children: [
               Text(
                 isClientChart
-                    ? "$title: ${maxVenta.toStringAsFixed(0)}"
-                    : "$title: \$${maxVenta.toStringAsFixed(0)}",
+                    ? "$title $year: ${maxVenta.toStringAsFixed(0)}"
+                    : "$title $year: \$${maxVenta.toStringAsFixed(0)}",
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -130,21 +132,30 @@ class YearSalesChartWidget extends StatelessWidget {
                                   ? sales[touchedIndex].month
                                   : response.spot!.touchedBarGroup.x.toInt() + 1;
 
-                              if (isClientChart) {
-                                context.read<ClientsBloc>().add(
-                                  LoadMonthlyClientsEvent(selectedMonth),
-                                );
-                              } else if (isPurchasesChart) {
-                                context.read<PurchasesBloc>().add(
-                                  LoadMonthlyPurchasesEvent(selectedMonth),
-                                );
-                              } else {
-                                context.read<SalesBloc>().add(
-                                  LoadMonthlySalesEvent(selectedMonth),
-                                );
-                              }
+                            if (isClientChart) {
+                              context.read<ClientsBloc>().add(
+                                LoadMonthlyClientsEvent(
+                                  selectedMonth,
+                                  year: year,
+                                ),
+                              );
+                            } else if (isPurchasesChart) {
+                              context.read<PurchasesBloc>().add(
+                                LoadMonthlyPurchasesEvent(
+                                  selectedMonth,
+                                  year: year,
+                                ),
+                              );
+                            } else {
+                              context.read<SalesBloc>().add(
+                                LoadMonthlySalesEvent(
+                                  selectedMonth,
+                                  year: year,
+                                ),
+                              );
                             }
-                          },
+                          }
+                        },
                         ),
 
                         barGroups: sales.map((s) {

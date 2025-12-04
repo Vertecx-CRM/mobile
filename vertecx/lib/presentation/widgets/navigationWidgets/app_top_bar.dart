@@ -7,11 +7,13 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.centerTitle = true,
     this.showBack = false,
+    this.extraActions,
   });
 
   final String? title;
   final bool centerTitle;
   final bool showBack;
+  final List<Widget>? extraActions;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -95,6 +97,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       actions: [
+        if (extraActions != null) ...extraActions!,
         PopupMenuButton<_ProfileAction>(
           icon: const CircleAvatar(
             radius: 16,
