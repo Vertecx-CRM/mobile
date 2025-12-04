@@ -2,9 +2,11 @@ import 'package:vertecx/data/models/roles/role_model.dart';
 import 'package:vertecx/data/services/roles_service.dart';
 
 class RolesRepository {
-  final RolesService _service = RolesService();
+  final RolesService _service;
 
-  Future<List<RoleModel>> fetchRoles() {
-    return _service.getRoles();
+  RolesRepository({RolesService? service}) : _service = service ?? RolesService();
+
+  Future<List<RoleModel>> fetchRoles({String? token}) {
+    return _service.getRoles(token: token);
   }
 }

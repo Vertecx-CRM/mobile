@@ -1,27 +1,46 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http; 
-import 'package:vertecx/data/models/roles/role_model.dart';  
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:vertecx/data/models/roles/role_model.dart';
 
 class RolesService {
-  final String baseUrl = "http://192.168.1.9:3001";
+  final String baseUrl = "http://192.168.1.54:3001";
 
-  Future<List<RoleModel>> getRoles() async {
+  Future<List<RoleModel>> getRoles({String? token}) async {
     final uri = Uri.parse('$baseUrl/roles/list');
 
-    final response = await http.get(uri);
+    http.Response response;
 
-    if (response.statusCode == 200) {
-      final jsonBody = jsonDecode(response.body);
+    try {
+      response = await http
+          .get(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
+    } on SocketException {
+      throw Exception('Sin conexión. Verifica red/IP del backend.');
+    } catch (e) {
+      throw Exception('Error de red: $e');
+    }
 
-      final List<dynamic> data = jsonBody['data'] as List<dynamic>;
-
-      return data
-          .map((e) => RoleModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-    } else {
+    if (response.statusCode != 200) {
       throw Exception(
-        'Error al obtener roles: ${response.statusCode} ${response.reasonPhrase}',
+        'Error al obtener roles: ${response.statusCode}. Body: ${response.body}',
       );
     }
+
+    final decoded = jsonDecode(response.body);
+
+    final data = (decoded is Map<String, dynamic>) ? decoded['data'] : null;
+    if (data is! List) return [];
+
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(RoleModel.fromJson)
+        .toList();
   }
 }
