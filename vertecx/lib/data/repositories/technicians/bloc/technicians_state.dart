@@ -14,5 +14,6 @@ class TechniciansLoaded extends TechniciansState {
 
 class TechniciansError extends TechniciansState {
   final String message;
+
   TechniciansError(this.message);
 }

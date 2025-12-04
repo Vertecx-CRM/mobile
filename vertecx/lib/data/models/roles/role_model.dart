@@ -11,15 +11,24 @@ class RoleModel {
     required this.status,
   });
 
-  factory RoleModel.fromJson(Map<String, dynamic> json) {
-    final raw = (json['status'] ?? '').toString().toLowerCase();
+  static int _asInt(dynamic v) {
+    if (v is int) return v;
+    return int.tryParse(v?.toString() ?? '') ?? 0;
+  }
 
+  static RoleStatus _parseStatus(dynamic v) {
+    final raw = (v ?? '').toString().toLowerCase().trim();
+    if (raw == 'active' || raw == 'activo' || raw == '1' || raw == 'true') return RoleStatus.activo;
+    if (raw == 'inactive' || raw == 'inactivo' || raw == '0' || raw == 'false') return RoleStatus.inactivo;
+    if (raw.isEmpty) return RoleStatus.activo;
+    return RoleStatus.inactivo;
+  }
+
+  factory RoleModel.fromJson(Map<String, dynamic> json) {
     return RoleModel(
-      id: json['roleid'] ?? 0,
-      name: json['name'] ?? '',
-      status: (raw == 'active' || raw == 'activo')
-          ? RoleStatus.activo
-          : RoleStatus.inactivo,
+      id: _asInt(json['roleid'] ?? json['roleId'] ?? json['id']),
+      name: (json['name'] ?? json['rolename'] ?? '').toString(),
+      status: _parseStatus(json['status']),
     );
   }
 }

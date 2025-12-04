@@ -1,7 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/data/repositories/technicians/technicians_repository.dart';
+
 import 'technicians_event.dart';
 import 'technicians_state.dart';
-import 'package:vertecx/data/repositories/technicians/technicians_repository.dart';
 
 class TechniciansBloc extends Bloc<TechniciansEvent, TechniciansState> {
   final TechniciansRepository repo;
