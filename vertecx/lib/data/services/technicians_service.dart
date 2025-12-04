@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:vertecx/data/models/technicians/technician_model.dart';
 
 class TechniciansService {
-  final String baseUrl = "http://192.168.1.9:3001";
+  final String baseUrl = "http://192.168.1.54:3001";
 
   final http.Client _client;
 
