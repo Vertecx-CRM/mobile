@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vertecx/blocs/OrderServiceController.dart';
 import 'package:vertecx/data/repositories/orderServices/order_repository.dart';
-import 'package:vertecx/presentation/widgets/orderServicesWidgets/OrderServiceCard.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/orderServicesWidgets/OrderServiceCard.dart';
 
 class OrderServicePage extends StatelessWidget {
   const OrderServicePage({super.key});
@@ -36,7 +36,11 @@ class _OrderServiceViewState extends State<_OrderServiceView> {
   }
 
   void _scrollToTop() {
-    _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -51,6 +55,44 @@ class _OrderServiceViewState extends State<_OrderServiceView> {
     final all = controller.orders;
     final shown = all.take(_ordersToShow).toList();
     final allLoaded = _ordersToShow >= all.length;
+
+    Widget content;
+    if (controller.isLoading && all.isEmpty) {
+      content = const Padding(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    } else if (controller.error != null && all.isEmpty) {
+      content = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Text(
+          controller.error!,
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
+    } else if (shown.isEmpty) {
+      content = const Padding(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        child: Text(
+          'No se encontraron órdenes',
+          style: TextStyle(
+            color: Color(0xFFB20000),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    } else {
+      content = Column(
+        children: shown
+            .map(
+              (o) => Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: OrderCard(order: o),
+              ),
+            )
+            .toList(),
+      );
+    }
 
     return Scaffold(
       appBar: const AppTopBar(
@@ -68,9 +110,12 @@ class _OrderServiceViewState extends State<_OrderServiceView> {
               child: TextField(
                 onChanged: controller.search,
                 decoration: InputDecoration(
-                  hintText: 'Buscar Solicitudes...',
+                  hintText: 'Buscar órdenes...',
                   prefixIcon: const Icon(Icons.search),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 12,
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF3F4F6),
                   border: OutlineInputBorder(
@@ -81,28 +126,17 @@ class _OrderServiceViewState extends State<_OrderServiceView> {
               ),
             ),
             const SizedBox(height: 8),
-            if (shown.isNotEmpty)
-              ...shown.map((o) => Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-                    child: OrderCard(order: o as dynamic),
-                  ))
-            else
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  'No se encontraron órdenes',
-                  style: TextStyle(color: Color(0xFFB20000), fontWeight: FontWeight.bold),
-                ),
-              ),
+            content,
             const SizedBox(height: 8),
-            if (all.isNotEmpty)
+            if (!controller.isLoading &&
+                controller.error == null &&
+                all.isNotEmpty)
               if (!allLoaded)
                 TextButton(
                   onPressed: _loadMore,
-                  child: Column(
-                    children: const [
-                      Text('Cargar más órdenes', style: TextStyle(color: Color(0xFFB20000))),
-                    ],
+                  child: const Text(
+                    'Cargar más órdenes',
+                    style: TextStyle(color: Color(0xFFB20000)),
                   ),
                 )
               else
@@ -110,7 +144,10 @@ class _OrderServiceViewState extends State<_OrderServiceView> {
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
                     'Ya están todas las órdenes',
-                    style: TextStyle(color: Color(0xFFB20000), fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Color(0xFFB20000),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
             const SizedBox(height: 40),

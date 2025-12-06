@@ -34,5 +34,6 @@ class AppointmentColors {
     "solicitud": const Color(0xFF32329A),
     "ejecucion": const Color(0xFFE45BFF),
     "garantia": const Color(0xFFFF6347),
+    "orden": const Color(0xFF00897B),
   };
 }

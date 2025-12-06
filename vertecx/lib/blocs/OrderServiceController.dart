@@ -11,12 +11,29 @@ class OrderServiceController extends ChangeNotifier {
   List<OrderService> _all = [];
   List<OrderService> _visible = [];
   String _query = '';
+  bool _loading = false;
+  String? _error;
 
   List<OrderService> get orders => _visible;
+  bool get isLoading => _loading;
+  String? get error => _error;
 
   Future<void> load() async {
-    _all = await _repo.getAll();
-    _applyFilter();
+    _loading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _all = await _repo.getAll();
+      _applyFilter();
+    } catch (e) {
+      _visible = [];
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
   }
 
   void search(String q) {
@@ -53,7 +70,10 @@ class OrderServiceController extends ChangeNotifier {
       _visible = List.of(_all);
     } else {
       final q = _norm(_query.trim());
-      final tokens = q.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+      final tokens = q
+          .split(RegExp(r'\s+'))
+          .where((t) => t.isNotEmpty)
+          .toList();
 
       final f1 = DateFormat('dd/MM/yyyy');
       final f2 = DateFormat('yyyy-MM-dd');
@@ -74,7 +94,11 @@ class OrderServiceController extends ChangeNotifier {
           ..write(' ')
           ..write(f2.format(o.fechaCreacion))
           ..write(' ')
-          ..write(o.fechaCreacion.toIso8601String());
+          ..write(o.fechaCreacion.toIso8601String())
+          ..write(' ')
+          ..write(o.estadoLabel.toLowerCase())
+          ..write(' ')
+          ..write(o.techniciansLabel.toLowerCase());
 
         final haystack = _norm(bag.toString());
         return tokens.every((t) => haystack.contains(t));
