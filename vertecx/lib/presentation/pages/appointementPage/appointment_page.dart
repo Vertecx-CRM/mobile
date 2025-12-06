@@ -70,14 +70,13 @@ class _CalendarPageState extends State<CalendarPage> {
         },
         child: BlocBuilder<CalendarBloc, CalendarState>(
           builder: (context, state) {
-            final fallbackMap = state is CalendarLoaded
+            final stateMap = state is CalendarLoaded
                 ? state.appointmentsByDay
                 : state is CalendarMonthLoaded
-                ? state.appointmentsByDay
-                : {};
-            final appointmentsByDay = _eventsByDayCache.isNotEmpty
-                ? _eventsByDayCache
-                : fallbackMap;
+                    ? state.appointmentsByDay
+                    : null;
+            final appointmentsByDay = stateMap ??
+                (_eventsByDayCache.isNotEmpty ? _eventsByDayCache : {});
             final dayAppointments = state is CalendarLoaded
                 ? state.appointments
                 : [];

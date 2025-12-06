@@ -59,4 +59,30 @@ class OrderServicesService {
       rethrow;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getOrderHistory(int id) async {
+    final url = _uri('/orders-services/$id/history');
+    try {
+      final res = await http
+          .get(url, headers: {'Accept': 'application/json'})
+          .timeout(const Duration(seconds: 15));
+
+      if (res.statusCode != 200) {
+        throw Exception('GET ${url.path}: ${res.statusCode} - ${res.body}');
+      }
+
+      final body = jsonDecode(res.body);
+      final List data = body is Map<String, dynamic>
+          ? (body['data'] is List
+                ? body['data'] as List
+                : (body['history'] is List ? body['history'] as List : []))
+          : (body is List ? body : []);
+
+      return data.whereType<Map<String, dynamic>>().toList();
+    } on TimeoutException {
+      throw Exception('GET ${url.path}: timeout');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

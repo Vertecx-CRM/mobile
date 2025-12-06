@@ -27,7 +27,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         return 'Usuarios';
       case AppRoutes.categoryProduct:
         return 'Productos';
-      case AppRoutes.appointment:
+      case AppRoutes.salesAppointments:
         return 'Citas';
       case AppRoutes.dashboard:
         return 'Dashboard';
@@ -53,8 +53,16 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         return 'Proveedores';
       case AppRoutes.clients:
         return 'Clientes';
-      case AppRoutes.appointment:
-        return 'Citas';
+      case AppRoutes.salesHub:
+        return 'Ventas';
+      case AppRoutes.purchasesHub:
+        return 'Compras';
+      case AppRoutes.productsHub:
+        return 'Productos';
+      case AppRoutes.servicesHub:
+        return 'Servicios';
+      case AppRoutes.purchaseOrders:
+        return 'Orden de Compra';
       default:
         return 'Sistemas PC';
     }

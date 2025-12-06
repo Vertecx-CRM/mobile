@@ -1,4 +1,5 @@
 import 'package:vertecx/data/constants/api_constants.dart';
+import 'package:vertecx/data/models/orderServices/order_service_history_model.dart';
 import 'package:vertecx/data/models/orderServices/order_service_models.dart';
 import 'package:vertecx/data/services/order_services_service.dart';
 
@@ -16,5 +17,10 @@ class OrderRepository {
   Future<OrderService> getById(int id) async {
     final json = await _service.getOrderById(id);
     return OrderService.fromJson(json);
+  }
+
+  Future<List<OrderServiceHistoryEntry>> getHistory(int id) async {
+    final json = await _service.getOrderHistory(id);
+    return json.map(OrderServiceHistoryEntry.fromJson).toList();
   }
 }
