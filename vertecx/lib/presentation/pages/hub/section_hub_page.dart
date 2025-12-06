@@ -22,18 +22,6 @@ class SectionHubPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFFB20000),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
             Expanded(
               child: GridView.builder(
                 itemCount: items.length,

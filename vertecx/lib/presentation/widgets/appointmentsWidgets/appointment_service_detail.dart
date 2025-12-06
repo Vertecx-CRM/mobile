@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:vertecx/data/models/appointments/appointment_model.dart';
+import 'package:vertecx/data/models/orderServices/order_service_history_model.dart';
 import 'package:vertecx/data/models/orderServices/order_service_models.dart';
 import 'package:vertecx/data/models/request/request_model.dart';
-import 'package:vertecx/data/repositories/orderServices/order_repository.dart';
-import 'package:vertecx/data/repositories/request/request_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_event.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_state.dart';
+import 'package:vertecx/data/repositories/orderServices/order_repository.dart';
+import 'package:vertecx/data/repositories/request/request_repository.dart';
 import 'package:vertecx/presentation/helpers/app_dialogs.dart';
 import '../../themes/appointment_colors.dart';
 import '../../../data/domain/rules/appointment_state_rules.dart';
@@ -17,8 +18,13 @@ enum AppointmentDetailSource { serviceRequest, orderService, fallback }
 
 class AppointmentServiceDetail extends StatefulWidget {
   final AppointmentEvent cita;
+  final Future<AppointmentDetailData> detailFuture;
 
-  const AppointmentServiceDetail({super.key, required this.cita});
+  const AppointmentServiceDetail({
+    super.key,
+    required this.cita,
+    required this.detailFuture,
+  });
 
   @override
   State<AppointmentServiceDetail> createState() =>
@@ -26,99 +32,6 @@ class AppointmentServiceDetail extends StatefulWidget {
 }
 
 class _AppointmentServiceDetailState extends State<AppointmentServiceDetail> {
-  final OrderRepository _orderRepo = OrderRepository();
-  final RequestsRepository _requestRepo = RequestsRepository();
-
-  late Future<AppointmentDetailData> _detailFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _detailFuture = _fetchDetail(widget.cita);
-  }
-
-  @override
-  void didUpdateWidget(AppointmentServiceDetail oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.cita.id != widget.cita.id) {
-      _detailFuture = _fetchDetail(widget.cita);
-    }
-  }
-
-  Future<AppointmentDetailData> _fetchDetail(AppointmentEvent cita) async {
-    final source = _resolveSource(cita);
-    final idLabel = _sourceToIdLabel(source);
-    final detailId = _resolveId(cita, source);
-    if (detailId == null || source == AppointmentDetailSource.fallback) {
-      return AppointmentDetailData.fromFallback(cita, idLabel: idLabel);
-    }
-
-    try {
-      if (source == AppointmentDetailSource.serviceRequest) {
-        final request = await _requestRepo.getById(detailId);
-        return AppointmentDetailData.fromServiceRequest(request, cita);
-      }
-      final order = await _orderRepo.getById(detailId);
-      return AppointmentDetailData.fromOrder(order, cita);
-    } catch (e) {
-      return AppointmentDetailData.fromFallback(cita, idLabel: idLabel);
-    }
-  }
-
-  AppointmentDetailSource _resolveSource(AppointmentEvent cita) {
-    final tipo = cita.tipoCita.toLowerCase();
-    if (cita.orden.serviceRequestId != null ||
-        tipo.contains('solicitud') ||
-        tipo.contains('request')) {
-      return AppointmentDetailSource.serviceRequest;
-    }
-    if (cita.orden.orderServiceId != null ||
-        tipo.contains('orden') ||
-        tipo.contains('ejecucion')) {
-      return AppointmentDetailSource.orderService;
-    }
-    return AppointmentDetailSource.fallback;
-  }
-
-  int? _resolveId(AppointmentEvent cita, AppointmentDetailSource source) {
-    switch (source) {
-      case AppointmentDetailSource.serviceRequest:
-        return cita.orden.serviceRequestId ?? _extractDigits(cita.orden.id);
-      case AppointmentDetailSource.orderService:
-        return cita.orden.orderServiceId ?? _extractDigits(cita.orden.id);
-      case AppointmentDetailSource.fallback:
-        return null;
-    }
-  }
-
-  String _sourceToIdLabel(AppointmentDetailSource source) {
-    switch (source) {
-      case AppointmentDetailSource.serviceRequest:
-        return "ID de solicitud:";
-      case AppointmentDetailSource.orderService:
-      case AppointmentDetailSource.fallback:
-        return "ID de orden:";
-    }
-  }
-
-  String _typeLabelForSource(AppointmentDetailSource source) {
-    switch (source) {
-      case AppointmentDetailSource.serviceRequest:
-        return "Solicitud de servicio";
-      case AppointmentDetailSource.orderService:
-        return "Orden de servicio";
-      case AppointmentDetailSource.fallback:
-        return "Orden de servicio";
-    }
-  }
-
-  int? _extractDigits(String raw) {
-    final matches = RegExp(r'\d+').allMatches(raw);
-    final joined = matches.map((m) => m.group(0)).whereType<String>().join();
-    if (joined.isEmpty) return null;
-    return int.tryParse(joined);
-  }
-
   String formatFecha(DateTime fecha, String inicio, String fin) {
     final formato = DateFormat("dd/MM/yyyy");
     return "${formato.format(fecha)}, $inicio - $fin";
@@ -163,9 +76,12 @@ class _AppointmentServiceDetailState extends State<AppointmentServiceDetail> {
           currentCita = updated;
         }
 
-        final source = _resolveSource(currentCita);
-        final typeLabel = _typeLabelForSource(source);
-        final fallbackIdLabel = _sourceToIdLabel(source);
+      final source = resolveDetailSource(currentCita);
+      final typeLabel = typeLabelForSource(source);
+      final fallbackIdLabel = sourceIdLabel(source);
+      final detailId = resolveDetailId(currentCita, source);
+      final fallbackId =
+          formatFallbackId(currentCita, source, detailId: detailId);
         final fecha = DateTime(
           currentCita.anio,
           currentCita.mes,
@@ -262,12 +178,17 @@ class _AppointmentServiceDetailState extends State<AppointmentServiceDetail> {
                                   ),
                                 ),
                               ),
-                              const Spacer(),
-                              Text(
-                                typeLabel,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFFC20000),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    typeLabel,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                      color: Color(0xFFC20000),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -301,13 +222,14 @@ class _AppointmentServiceDetailState extends State<AppointmentServiceDetail> {
                         ),
                         const SizedBox(height: 10),
                         FutureBuilder<AppointmentDetailData>(
-                          future: _detailFuture,
+                          future: widget.detailFuture,
                           builder: (context, snapshot) {
                             final detail =
                                 snapshot.data ??
                                 AppointmentDetailData.fromFallback(
                                   currentCita,
                                   idLabel: fallbackIdLabel,
+                                  idOverride: fallbackId,
                                 );
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,6 +279,7 @@ class AppointmentDetailData {
   final String descripcion;
   final String monto;
   final String idLabel;
+  final List<OrderServiceHistoryEntry>? history;
 
   const AppointmentDetailData({
     required this.id,
@@ -367,14 +290,17 @@ class AppointmentDetailData {
     required this.descripcion,
     required this.monto,
     required this.idLabel,
+    this.history,
   });
 
   factory AppointmentDetailData.fromFallback(
     AppointmentEvent cita, {
     String idLabel = "ID de orden:",
+    String? idOverride,
+    List<OrderServiceHistoryEntry>? history,
   }) {
     return AppointmentDetailData(
-      id: cita.orden.id,
+      id: idOverride ?? cita.orden.id,
       cliente: cita.orden.nombreCliente,
       direccion: cita.orden.direccion,
       servicio: cita.orden.servicio ?? cita.orden.tipoServicio,
@@ -382,6 +308,7 @@ class AppointmentDetailData {
       descripcion: cita.orden.descripcion,
       monto: cita.orden.monto,
       idLabel: idLabel,
+      history: history,
     );
   }
 
@@ -406,7 +333,7 @@ class AppointmentDetailData {
     const monto = 'Valor no registrado';
 
     return AppointmentDetailData(
-      id: _formatServiceRequestCode(request.serviceRequestId),
+      id: formatServiceRequestCode(request.serviceRequestId),
       cliente: clientName,
       direccion: direccion,
       servicio: servicio,
@@ -414,13 +341,15 @@ class AppointmentDetailData {
       descripcion: descripcion,
       monto: monto,
       idLabel: "ID de solicitud:",
+      history: null,
     );
   }
 
   factory AppointmentDetailData.fromOrder(
     OrderService order,
-    AppointmentEvent cita,
-  ) {
+    AppointmentEvent cita, {
+    List<OrderServiceHistoryEntry>? history,
+  }) {
     final servicio = order.titulo.isNotEmpty
         ? order.titulo
         : cita.orden.servicio ?? order.description;
@@ -436,7 +365,7 @@ class AppointmentDetailData {
     final monto = _formatCurrency(order.total);
 
     return AppointmentDetailData(
-      id: _formatOrderCode(order.id),
+      id: formatOrderCode(order.id),
       cliente: cliente,
       direccion: direccion,
       servicio: servicio,
@@ -444,6 +373,23 @@ class AppointmentDetailData {
       descripcion: descripcion,
       monto: monto,
       idLabel: "ID de orden:",
+      history: history ?? order.history,
+    );
+  }
+
+  AppointmentDetailData copyWith({
+    List<OrderServiceHistoryEntry>? history,
+  }) {
+    return AppointmentDetailData(
+      id: id,
+      cliente: cliente,
+      direccion: direccion,
+      servicio: servicio,
+      mantenimiento: mantenimiento,
+      descripcion: descripcion,
+      monto: monto,
+      idLabel: idLabel,
+      history: history ?? this.history,
     );
   }
 
@@ -485,10 +431,130 @@ class AppointmentDetailData {
     );
     return formatter.format(value);
   }
+}
 
-  static String _formatServiceRequestCode(int id) =>
-      'SRV-${id.toString().padLeft(6, '0')}';
+String formatServiceRequestCode(int id) =>
+    'SRV-${id.toString().padLeft(6, '0')}';
 
-  static String _formatOrderCode(int id) =>
-      'OS-${id.toString().padLeft(6, '0')}';
+String formatOrderCode(int id) => 'OS-${id.toString().padLeft(6, '0')}';
+
+AppointmentDetailSource resolveDetailSource(AppointmentEvent cita) {
+  final tipo = cita.tipoCita.toLowerCase();
+  if (cita.orden.serviceRequestId != null ||
+      tipo.contains('solicitud') ||
+      tipo.contains('request')) {
+    return AppointmentDetailSource.serviceRequest;
+  }
+  if (cita.orden.orderServiceId != null ||
+      tipo.contains('orden') ||
+      tipo.contains('ejecucion')) {
+    return AppointmentDetailSource.orderService;
+  }
+  return AppointmentDetailSource.fallback;
+}
+
+int? resolveDetailId(AppointmentEvent cita, AppointmentDetailSource source) {
+  switch (source) {
+    case AppointmentDetailSource.serviceRequest:
+      return cita.orden.serviceRequestId ?? extractDigits(cita.orden.id);
+    case AppointmentDetailSource.orderService:
+      return cita.orden.orderServiceId ?? extractDigits(cita.orden.id);
+    case AppointmentDetailSource.fallback:
+      return null;
+  }
+}
+
+String sourceIdLabel(AppointmentDetailSource source) {
+  switch (source) {
+    case AppointmentDetailSource.serviceRequest:
+      return "ID de solicitud:";
+    case AppointmentDetailSource.orderService:
+    case AppointmentDetailSource.fallback:
+      return "ID de orden:";
+  }
+}
+
+String typeLabelForSource(AppointmentDetailSource source) {
+  switch (source) {
+    case AppointmentDetailSource.serviceRequest:
+      return "Solicitud de servicio";
+    case AppointmentDetailSource.orderService:
+      return "Orden de servicio";
+    case AppointmentDetailSource.fallback:
+      return "Orden de servicio";
+  }
+}
+
+String formatFallbackId(
+  AppointmentEvent cita,
+  AppointmentDetailSource source, {
+  int? detailId,
+}) {
+  final digits = extractDigits(cita.orden.id);
+  switch (source) {
+    case AppointmentDetailSource.serviceRequest:
+      final idValue = detailId ?? cita.orden.serviceRequestId ?? digits;
+      return idValue != null
+        ? formatServiceRequestCode(idValue)
+        : cita.orden.id;
+    case AppointmentDetailSource.orderService:
+      final idValue = detailId ?? cita.orden.orderServiceId ?? digits;
+      return idValue != null ? formatOrderCode(idValue) : cita.orden.id;
+    case AppointmentDetailSource.fallback:
+      return cita.orden.id;
+  }
+}
+
+int? extractDigits(String raw) {
+  final matches = RegExp(r'\d+').allMatches(raw);
+  final joined = matches.map((m) => m.group(0)).whereType<String>().join();
+  if (joined.isEmpty) return null;
+  return int.tryParse(joined);
+}
+
+Future<AppointmentDetailData> loadAppointmentDetail(
+  AppointmentEvent cita,
+) async {
+  final source = resolveDetailSource(cita);
+  final idLabel = sourceIdLabel(source);
+  final detailId = resolveDetailId(cita, source);
+  final fallbackId = formatFallbackId(
+    cita,
+    source,
+    detailId: detailId,
+  );
+  if (detailId == null || source == AppointmentDetailSource.fallback) {
+    return AppointmentDetailData.fromFallback(
+      cita,
+      idLabel: idLabel,
+      idOverride: fallbackId,
+    );
+  }
+
+  try {
+    if (source == AppointmentDetailSource.serviceRequest) {
+      final request = await RequestsRepository().getById(detailId);
+      return AppointmentDetailData.fromServiceRequest(request, cita);
+    }
+    final repository = OrderRepository();
+    final historyFuture = repository.getHistory(detailId);
+    final order = await repository.getById(detailId);
+    List<OrderServiceHistoryEntry> history;
+    try {
+      history = await historyFuture;
+    } catch (_) {
+      history = order.history;
+    }
+    return AppointmentDetailData.fromOrder(
+      order,
+      cita,
+      history: history,
+    );
+  } catch (_) {
+    return AppointmentDetailData.fromFallback(
+      cita,
+      idLabel: idLabel,
+      idOverride: fallbackId,
+    );
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:vertecx/data/models/orderServices/order_service_history_model.dart';
+
 enum OrderServiceStatus { pendiente, enProgreso, completada, anulada }
 
 class OrderService {
@@ -16,6 +18,7 @@ class OrderService {
   final String description;
   final Map<String, dynamic>? client;
   final Map<String, dynamic>? state;
+  final List<OrderServiceHistoryEntry> history;
 
   const OrderService({
     required this.id,
@@ -33,6 +36,7 @@ class OrderService {
     this.description = '',
     this.client,
     this.state,
+    required this.history,
   });
 
   String get techniciansLabel {
@@ -78,6 +82,10 @@ class OrderService {
       description: description,
       client: clientRaw,
       state: stateRaw,
+      history: ((json['history'] as List<dynamic>?) ?? [])
+          .whereType<Map<String, dynamic>>()
+          .map(OrderServiceHistoryEntry.fromJson)
+          .toList(),
     );
   }
 
