@@ -1,37 +1,35 @@
-import 'dart:convert';
 import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'package:vertecx/data/models/request/request_model.dart';
+import 'dart:convert';
 
-class ServiceRequestsService {
+import 'package:http/http.dart' as http;
+
+class OrderServicesService {
   final String baseUrl;
-  const ServiceRequestsService({required this.baseUrl});
+
+  const OrderServicesService({required this.baseUrl});
 
   Uri _uri(String path, [Map<String, dynamic>? q]) {
     final uri = Uri.parse('$baseUrl$path');
     return q == null ? uri : uri.replace(queryParameters: q);
   }
 
-  Future<List<ServiceRequestModel>> getRequests({
-    int page = 1,
-    int limit = 50,
-  }) async {
-    final url = _uri('/service-requests', {'page': '$page', 'limit': '$limit'});
+  Future<List<Map<String, dynamic>>> getOrders() async {
+    final url = _uri('/orders-services');
     try {
       final res = await http
           .get(url, headers: {'Accept': 'application/json'})
           .timeout(const Duration(seconds: 15));
+
       if (res.statusCode != 200) {
         throw Exception('GET ${url.path}: ${res.statusCode} - ${res.body}');
       }
+
       final body = jsonDecode(res.body);
       final List data = body is Map<String, dynamic>
           ? (body['data'] is List ? body['data'] as List : [])
           : (body is List ? body : []);
-      return data
-          .whereType<Map<String, dynamic>>()
-          .map(ServiceRequestModel.fromJson)
-          .toList();
+
+      return data.whereType<Map<String, dynamic>>().toList();
     } on TimeoutException {
       throw Exception('GET ${url.path}: timeout');
     } catch (e) {
@@ -39,8 +37,8 @@ class ServiceRequestsService {
     }
   }
 
-  Future<Map<String, dynamic>> getRequestById(int id) async {
-    final url = _uri('/service-requests/$id');
+  Future<Map<String, dynamic>> getOrderById(int id) async {
+    final url = _uri('/orders-services/$id');
     try {
       final res = await http
           .get(url, headers: {'Accept': 'application/json'})

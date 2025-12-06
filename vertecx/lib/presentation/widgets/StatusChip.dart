@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/data/models/order_service_models.dart';
+import 'package:vertecx/data/models/orderServices/order_service_models.dart';
 
 class StatusChip extends StatelessWidget {
   const StatusChip({super.key, required this.status});
@@ -17,7 +17,11 @@ class StatusChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color),
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
       ),
     );
   }
