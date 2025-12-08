@@ -21,6 +21,10 @@ import 'package:vertecx/data/repositories/services/services_repository.dart';
 import 'package:vertecx/data/repositories/services/bloc/services_bloc.dart';
 import 'package:vertecx/data/repositories/services/bloc/services_event.dart';
 
+// Products
+import 'package:vertecx/data/repositories/products/products_repository.dart';
+import 'package:vertecx/data/repositories/products/bloc/products_bloc.dart';
+
 // Pages
 import 'package:vertecx/presentation/pages/clients_page.dart';
 import 'package:vertecx/presentation/pages/products_page.dart';
@@ -69,6 +73,9 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => ServicesBloc(ServicesRepository())..add(LoadServicesEvent()),
+        ),
+        BlocProvider(
+          create: (_) => ProductsBloc(ProductsRepository()),
         ),
       ],
       child: MaterialApp(
