@@ -6,75 +6,107 @@ class ServiceCardWidget extends StatelessWidget {
 
   const ServiceCardWidget({super.key, required this.service});
 
+  bool get isActive {
+    final s = (service.stateName ?? '').toLowerCase().trim();
+    if (s == 'activo' || s == 'active') return true;
+    if (service.stateId == 1) return true;
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: service.image.isNotEmpty
+                  ? Image.network(
+                      service.image,
+                      width: 52,
+                      height: 52,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _fallbackImg(),
+                    )
+                  : _fallbackImg(),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    service.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "ID: ${service.id}",
+                    style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: service.typeColor.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          service.typeName ?? "Tipo",
+                          style: TextStyle(
+                            color: service.typeColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isActive ? const Color(0xffD2F5D3) : const Color(0xffFF8888),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          isActive ? "Activo" : "Inactivo",
+                          style: TextStyle(
+                            color: isActive ? const Color(0xff168700) : const Color(0xff870000),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _fallbackImg() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      padding: const EdgeInsets.all(16),
+      width: 52,
+      height: 52,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xffEFEFEF),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
-        ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagen del servicio
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              service.image,
-              width: 100,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          const SizedBox(width: 14),
-
-          // Información
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Nombre
-                Text(
-                  service.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-
-                // ID
-                Text(
-                  "ID: ${service.id}",
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(height: 6),
-
-                // Tipo
-                Text(
-                  service.type.name,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: service.type.color,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      child: const Icon(Icons.miscellaneous_services, color: Color(0xffB20000)),
     );
   }
 }

@@ -16,6 +16,11 @@ import 'package:vertecx/data/repositories/technicians/technicians_repository.dar
 import 'package:vertecx/data/repositories/technicians/bloc/technicians_bloc.dart';
 import 'package:vertecx/data/repositories/technicians/bloc/technicians_event.dart';
 
+// Services
+import 'package:vertecx/data/repositories/services/services_repository.dart';
+import 'package:vertecx/data/repositories/services/bloc/services_bloc.dart';
+import 'package:vertecx/data/repositories/services/bloc/services_event.dart';
+
 // Pages
 import 'package:vertecx/presentation/pages/clients_page.dart';
 import 'package:vertecx/presentation/pages/products_page.dart';
@@ -52,20 +57,18 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        /// CALENDAR
         BlocProvider(
           create: (_) => CalendarBloc(AppointmentRepository()),
         ),
-
-        /// ROLES
         BlocProvider(
           create: (_) => RolesBloc(RolesRepository())..add(LoadRolesEvent()),
         ),
-
-        /// 🔥 TÉCNICOS (nuevo, solo lectura)
         BlocProvider(
           create: (_) => TechniciansBloc(TechniciansRepository())
             ..add(LoadTechniciansEvent()),
+        ),
+        BlocProvider(
+          create: (_) => ServicesBloc(ServicesRepository())..add(LoadServicesEvent()),
         ),
       ],
       child: MaterialApp(
@@ -85,7 +88,7 @@ class MainApp extends StatelessWidget {
           AppRoutes.salesHub: (_) => const SalesHubPage(),
           AppRoutes.purchaseOrders: (_) => const PurchaseOrdersPage(),
           AppRoutes.purchases: (_) => const PurchasesPage(),
-          AppRoutes.productCategories: (_) => CategoryProductListPage(),
+          AppRoutes.productCategories: (_) => const CategoryProductListPage(),
           AppRoutes.productsList: (_) => const ProductsPage(),
           AppRoutes.servicesList: (_) => const ServicesPage(),
           AppRoutes.techniciansList: (_) => const TechniciansPage(),
