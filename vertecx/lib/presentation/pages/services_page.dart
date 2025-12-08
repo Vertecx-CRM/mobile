@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/data/mocks/services_mock_data.dart';
-import 'package:vertecx/presentation/widgets/servicesWidgets/services_card_widget.dart';
-import '../widgets/components/search/search.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/servicesWidgets/services_card_widget.dart';
+
+import 'package:vertecx/data/repositories/services/bloc/services_bloc.dart';
+import 'package:vertecx/data/repositories/services/bloc/services_event.dart';
+import 'package:vertecx/data/repositories/services/bloc/services_state.dart';
 
 class ServicesPage extends StatefulWidget {
   const ServicesPage({super.key});
@@ -13,15 +17,7 @@ class ServicesPage extends StatefulWidget {
 
 class _ServicesPageState extends State<ServicesPage> {
   final ScrollController _scrollController = ScrollController();
-  int _servicesToShow = 4;
   String _searchQuery = "";
-
-
-  void _loadMoreServices() {
-    setState(() {
-      _servicesToShow = (_servicesToShow + 2).clamp(0, mockServices.length);
-    });
-  }
 
   void _scrollToTop() {
     _scrollController.animateTo(
@@ -30,78 +26,128 @@ class _ServicesPageState extends State<ServicesPage> {
       curve: Curves.easeInOut,
     );
   }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ServicesBloc>().add(LoadServicesEvent());
+  }
+
+  bool _matchesSearch(dynamic s) {
+    final q = _searchQuery.trim().toLowerCase();
+    if (q.isEmpty) return true;
+
+    final name = (s.name).toLowerCase();
+    final desc = (s.description).toLowerCase();
+    final type = (s.typeName ?? '').toLowerCase();
+    final state = (s.stateName ?? '').toLowerCase();
+
+    return name.contains(q) ||
+        desc.contains(q) ||
+        type.contains(q) ||
+        state.contains(q);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final filteredServices = mockServices
-        .where((s) => s.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
-
-    final services = filteredServices.take(_servicesToShow).toList();
-    final allServicesLoaded = _servicesToShow >= filteredServices.length;
-
     return Scaffold(
       appBar: const AppTopBar(),
       backgroundColor: const Color(0xFFE8E8E8),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Buscar(
-              hintText: "Buscar servicio...",
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-              },
-            ),
-            const SizedBox(height: 20),
-            if (services.isNotEmpty)
-              ...services.map((s) => ServiceCardWidget(service: s))
-            else
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  "No se encontraron servicios",
-                  style: TextStyle(
-                    color: Color(0xFFB20000),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      body: BlocBuilder<ServicesBloc, ServicesState>(
+        builder: (context, state) {
+          if (state is ServicesLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ServicesError) {
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
               ),
-            const SizedBox(height: 20),
-            if (filteredServices.isNotEmpty)
-              if (!allServicesLoaded)
-                TextButton(
-                  onPressed: _loadMoreServices,
+            );
+          }
+
+          if (state is ServicesLoaded) {
+            final filtered = state.services.where(_matchesSearch).toList();
+
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
                   child: Column(
                     children: [
-                      Image.asset(
-                        "assets/icons/Vector.png",
-                        width: 20,
-                        height: 20,
+                      Buscar(
+                        hintText: "Buscar servicio...",
+                        onChanged: (value) => setState(() => _searchQuery = value),
                       ),
-                      const Text(
-                        "Cargar más servicios",
-                        style: TextStyle(color: Color(0xFFB20000)),
-                      ),
+                      const SizedBox(height: 20),
+
+                      if (filtered.isNotEmpty)
+                        ...filtered.map((s) => ServiceCardWidget(service: s))
+                      else
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Text(
+                            "No se encontraron servicios",
+                            style: TextStyle(
+                              color: Color(0xFFB20000),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                      const SizedBox(height: 20),
+
+                      if (_searchQuery.trim().isEmpty)
+                        if (state.services.isNotEmpty)
+                          if (state.hasMore)
+                            TextButton(
+                              onPressed: state.loadingMore
+                                  ? null
+                                  : () => context.read<ServicesBloc>().add(LoadMoreServicesEvent()),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    "assets/icons/Vector.png",
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    state.loadingMore ? "Cargando..." : "Cargar más servicios",
+                                    style: const TextStyle(color: Color(0xFFB20000)),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10),
+                              child: Text(
+                                "Ya están todos los servicios",
+                                style: TextStyle(
+                                  color: Color(0xFFB20000),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+
+                      const SizedBox(height: 40),
                     ],
                   ),
-                )
-              else
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "Ya están todos los servicios",
-                    style: TextStyle(
-                      color: Color(0xFFB20000),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ),
-            const SizedBox(height: 40),
-          ],
-        ),
+              ],
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: "services_fab",
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),
         child: const Icon(Icons.arrow_upward, color: Colors.white),

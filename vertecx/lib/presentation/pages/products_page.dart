@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
-import '../widgets/components/search/search.dart';
-import '../widgets/productsWidgets/product_card_widget.dart';
+import 'package:vertecx/presentation/widgets/components/search/search.dart';
+import 'package:vertecx/presentation/widgets/productsWidgets/product_card_widget.dart';
 
-import 'package:vertecx/data/mocks/products_mock_data.dart';
+import 'package:vertecx/data/repositories/products/bloc/products_bloc.dart';
+import 'package:vertecx/data/repositories/products/bloc/products_event.dart';
+import 'package:vertecx/data/repositories/products/bloc/products_state.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -14,12 +17,12 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   final ScrollController _scrollController = ScrollController();
-  int _productsToShow = 4; // cantidad inicial de productos
+  int _productsToShow = 4;
   String _searchQuery = "";
 
-  void _loadMoreProducts() {
+  void _loadMoreProducts(int max) {
     setState(() {
-      _productsToShow = (_productsToShow + 2).clamp(0, mockProducts.length);
+      _productsToShow = (_productsToShow + 2).clamp(0, max);
     });
   }
 
@@ -32,90 +35,135 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    context.read<ProductsBloc>().add(LoadProductsEvent());
+  }
+
+  String _normalize(String s) {
+    var v = s.toLowerCase().trim();
+
+    const from = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ'];
+    const to = ['a', 'e', 'i', 'o', 'u', 'u', 'n'];
+
+    for (var i = 0; i < from.length; i++) {
+      v = v.replaceAll(from[i], to[i]);
+    }
+
+    v = v.replaceAll(RegExp(r'\s+'), ' ');
+    return v;
+  }
+
+  bool _matchesSearch(dynamic p) {
+    final q = _normalize(_searchQuery);
+    if (q.isEmpty) return true;
+
+    final name = _normalize(p.name ?? '');
+    final desc = _normalize(p.description ?? '');
+    final cat = _normalize(p.category ?? '');
+    final supCat = _normalize(p.supplierCategory ?? '');
+    final code = _normalize(p.code ?? '');
+    final status = _normalize(p.statusString ?? '');
+
+    return name.contains(q) ||
+        desc.contains(q) ||
+        cat.contains(q) ||
+        supCat.contains(q) ||
+        code.contains(q) ||
+        status.contains(q);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // filtrar productos por búsqueda
-    final filteredProducts = mockProducts
-        .where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase()))
-        .toList();
-
-    final products = filteredProducts.take(_productsToShow).toList();
-    final allProductsLoaded = _productsToShow >= filteredProducts.length;
-
     return Scaffold(
       appBar: const AppTopBar(),
       backgroundColor: const Color(0xFFE8E8E8),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            
-            const SizedBox(height: 20),
+      body: BlocBuilder<ProductsBloc, ProductsState>(
+        builder: (context, state) {
+          if (state is ProductsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            // buscador
-            Buscar(
-              hintText: "Buscar producto...",
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-              },
-            ),
-
-            const SizedBox(height: 20),
-
-            // lista de productos filtrados
-            if (products.isNotEmpty)
-              ...products.map((p) => ProductCardWidget(product: p))
-            else
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  "No se encontraron productos",
-                  style: TextStyle(
-                    color: Color(0xFFB20000),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          if (state is ProductsError) {
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
               ),
+            );
+          }
 
-            const SizedBox(height: 20),
+          if (state is ProductsLoaded) {
+            final filtered = state.products.where(_matchesSearch).toList();
+            final page = filtered.take(_productsToShow).toList();
+            final allLoaded = _productsToShow >= filtered.length;
 
-            // botón o mensaje final
-            if (filteredProducts.isNotEmpty)
-              if (!allProductsLoaded)
-                TextButton(
-                  onPressed: _loadMoreProducts,
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        "assets/icons/Vector.png",
-                        width: 20,
-                        height: 20,
-                      ),
-                      const Text(
-                        "Cargar más productos",
-                        style: TextStyle(color: Color(0xFFB20000)),
-                      ),
-                    ],
+            return SingleChildScrollView(
+              controller: _scrollController,
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 90),
+              child: Column(
+                children: [
+                  const SizedBox(height: 4),
+                  Buscar(
+                    hintText: "Buscar producto...",
+                    onChanged: (value) => setState(() => _searchQuery = value),
                   ),
-                )
-              else
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "Ya están todos los productos",
-                    style: TextStyle(
-                      color: Color(0xFFB20000),
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 20),
+                  if (page.isNotEmpty)
+                    ...page.map((p) => ProductCardWidget(product: p))
+                  else
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Text(
+                        "No se encontraron productos",
+                        style: TextStyle(
+                          color: Color(0xFFB20000),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  const SizedBox(height: 20),
+                  if (filtered.isNotEmpty)
+                    if (!allLoaded)
+                      TextButton(
+                        onPressed: () => _loadMoreProducts(filtered.length),
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              "assets/icons/Vector.png",
+                              width: 20,
+                              height: 20,
+                            ),
+                            const Text(
+                              "Cargar más productos",
+                              style: TextStyle(color: Color(0xFFB20000)),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          "Ya están todos los productos",
+                          style: TextStyle(
+                            color: Color(0xFFB20000),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          }
 
-            const SizedBox(height: 40),
-          ],
-        ),
+          return const SizedBox.shrink();
+        },
       ),
-
-      // botón flotante para subir
       floatingActionButton: FloatingActionButton(
+        heroTag: "products_fab",
         onPressed: _scrollToTop,
         backgroundColor: const Color(0xFFB20000),
         child: const Icon(Icons.arrow_upward, color: Colors.white),

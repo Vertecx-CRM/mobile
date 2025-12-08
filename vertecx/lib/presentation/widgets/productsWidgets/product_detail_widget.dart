@@ -22,15 +22,12 @@ class ProductDetailWidget extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // Contenido principal
               SingleChildScrollView(
                 controller: scrollController,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 10),
-
-                    // Barra para arrastrar
                     Center(
                       child: Container(
                         height: 5,
@@ -42,8 +39,6 @@ class ProductDetailWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    // Nombre
                     Text(
                       product.name,
                       style: const TextStyle(
@@ -51,36 +46,45 @@ class ProductDetailWidget extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     const SizedBox(height: 14),
-
-                    // Imagen
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        product.imagePath,
+                      child: Image.network(
+                        product.imageUrl,
                         height: 200,
                         width: double.infinity,
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                         filterQuality: FilterQuality.high,
+                        errorBuilder: (_, __, ___) {
+                          return Container(
+                            height: 200,
+                            width: double.infinity,
+                            color: const Color(0xFFEFEFEF),
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.broken_image, size: 40),
+                          );
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 200,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(),
+                          );
+                        },
                       ),
                     ),
-
                     const SizedBox(height: 14),
-
-                    // Descripción
                     Text(
-                      product.description,
+                      product.description.isEmpty ? "Sin descripción" : product.description,
                       style: const TextStyle(
                         fontSize: 18,
                         color: Colors.black87,
                       ),
                     ),
-
                     const SizedBox(height: 24),
                     const Divider(thickness: 1),
-
-                    // Estado
                     Row(
                       children: [
                         const Text(
@@ -103,11 +107,8 @@ class ProductDetailWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 18),
                     const Divider(thickness: 1),
-
-                    // Precio
                     Row(
                       children: [
                         const Text(
@@ -127,11 +128,25 @@ class ProductDetailWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-
+                    const SizedBox(height: 12),
+                    if (product.priceOfSale != null || product.priceOfSupplier != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (product.priceOfSale != null)
+                            Text(
+                              "Venta: ${product.formatMoney(product.priceOfSale)}",
+                              style: const TextStyle(fontSize: 14, color: Color(0xff525252)),
+                            ),
+                          if (product.priceOfSupplier != null)
+                            Text(
+                              "Proveedor: ${product.formatMoney(product.priceOfSupplier)}",
+                              style: const TextStyle(fontSize: 14, color: Color(0xff525252)),
+                            ),
+                        ],
+                      ),
                     const SizedBox(height: 18),
                     const Divider(thickness: 1),
-
-                    // Stock
                     Row(
                       children: [
                         const Text(
@@ -151,11 +166,8 @@ class ProductDetailWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 18),
                     const Divider(thickness: 1),
-
-                    // Categoría
                     Row(
                       children: [
                         const Text(
@@ -166,20 +178,63 @@ class ProductDetailWidget extends StatelessWidget {
                             color: Color(0xff525252),
                           ),
                         ),
-                        Text(
-                          product.category ?? "N/A",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            product.category ?? "N/A",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 18),
                     const Divider(thickness: 1),
-
-                    // ID
+                    if ((product.supplierCategory ?? '').isNotEmpty)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Categoría proveedor:",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xff525252),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            product.supplierCategory ?? "",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 18),
+                          const Divider(thickness: 1),
+                        ],
+                      ),
+                    if ((product.code ?? '').isNotEmpty)
+                      Row(
+                        children: [
+                          const Text(
+                            "Código: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xff525252),
+                            ),
+                          ),
+                          Text(
+                            product.code ?? "",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    if ((product.code ?? '').isNotEmpty) const SizedBox(height: 18),
+                    if ((product.code ?? '').isNotEmpty) const Divider(thickness: 1),
                     Row(
                       children: [
                         const Text(
@@ -191,7 +246,7 @@ class ProductDetailWidget extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          product.id,
+                          "${product.id}",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -203,12 +258,10 @@ class ProductDetailWidget extends StatelessWidget {
                   ],
                 ),
               ),
-
-              // ❌ Botón de cerrar arriba a la derecha
               Positioned(
                 right: 0,
                 child: IconButton(
-                  icon: ImageIcon(AssetImage("assets/icons/Close.png")),
+                  icon: const ImageIcon(AssetImage("assets/icons/Close.png")),
                   iconSize: 44,
                   onPressed: () => Navigator.pop(context),
                 ),
