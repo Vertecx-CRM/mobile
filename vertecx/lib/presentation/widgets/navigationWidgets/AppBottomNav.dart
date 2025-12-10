@@ -5,19 +5,17 @@ class AppBottomNav extends StatelessWidget {
   const AppBottomNav({
     super.key,
     required this.currentIndex,
-    required this.menuOpen,
     required this.onItemTap,
-    required this.onMenuToggle,
+    required this.onProfileTap,
     this.topRadius = 18,
   });
 
   final int currentIndex;
-  final bool menuOpen;
   final ValueChanged<int> onItemTap;
-  final VoidCallback onMenuToggle;
+  final VoidCallback onProfileTap;
   final double topRadius;
 
-  BottomNavigationBarItem _item(String path) => BottomNavigationBarItem(
+  BottomNavigationBarItem _item(String path, String label) => BottomNavigationBarItem(
     icon: SvgPicture.asset(
       path, width: 24, height: 24,
       colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn),
@@ -26,7 +24,7 @@ class AppBottomNav extends StatelessWidget {
       path, width: 24, height: 24,
       colorFilter: const ColorFilter.mode(Color(0xFFB20000), BlendMode.srcIn),
     ),
-    label: '',
+    label: label,
   );
 
   @override
@@ -50,19 +48,27 @@ class AppBottomNav extends StatelessWidget {
           child: Container(
             color: Colors.white,
             child: BottomNavigationBar(
-              currentIndex: menuOpen ? 4 : currentIndex,
-              onTap: (i) => i == 4 ? onMenuToggle() : onItemTap(i),
+              currentIndex: currentIndex,
+              onTap: (i) {
+                if (i == 4) {
+                  onProfileTap();
+                } else {
+                  onItemTap(i);
+                }
+              },
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
               elevation: 0,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              selectedItemColor: const Color(0xFFB20000),
+              unselectedItemColor: Colors.black87,
               items: [
-                _item('assets/image/truck.svg'),
-                _item('assets/image/tag.svg'),
-                _item('assets/image/home.svg'),
-                _item('assets/image/user.svg'),
-                _item('assets/image/menu.svg'),
+                _item('assets/image/truck.svg', 'Compras'),
+                _item('assets/image/tag.svg', 'Ventas'),
+                _item('assets/image/home.svg', 'Dashboard'),
+                _item('assets/image/user.svg', 'Usuarios'),
+                _item('assets/image/userPerfil.svg', 'Perfil'),
               ],
             ),
           ),

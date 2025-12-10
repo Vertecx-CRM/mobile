@@ -1,2 +1,2 @@
 /// URL base del backend local.
-const String kBackendBaseUrl = 'http://192.168.1.9:3001';
+const String kBackendBaseUrl = 'http://10.1.91.73:3001';

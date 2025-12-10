@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 /// ---- Modelo de datos ----
@@ -138,6 +139,11 @@ class _ProfileScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brandRed = const Color(0xFFB20000);
+
+    void _logout() {
+      Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
       appBar: const AppTopBar(
@@ -185,7 +191,22 @@ class _ProfileScaffold extends StatelessWidget {
                   _StatsGrid(profile: p),
                   const SizedBox(height: 12),
                   _InfoCard(profile: p),
-                  // (sin acciones abajo)
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: _logout,
+                    icon: const Icon(Icons.logout_outlined, color: Colors.white,),
+                    label: const Text(
+                      'Cerrar sesión',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: brandRed,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

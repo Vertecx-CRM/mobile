@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:vertecx/data/models/roles/role_model.dart';
 
 class RolesService {
-  final String baseUrl = "http://192.168.1.54:3001";
+  final String baseUrl = "http://192.168.1.9:3001";
 
   Future<List<RoleModel>> getRoles({String? token}) async {
     final uri = Uri.parse('$baseUrl/roles/list');
