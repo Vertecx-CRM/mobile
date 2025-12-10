@@ -68,16 +68,6 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
-  void _goProfile(BuildContext context) {
-    Navigator.of(context).pushNamed(AppRoutes.profile);
-  }
-
-  void _logout(BuildContext context) {
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
-  }
-
   @override
   Widget build(BuildContext context) {
     final resolvedTitle = title ?? _titleFromRoute(context);
@@ -104,49 +94,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [
-        if (extraActions != null) ...extraActions!,
-        PopupMenuButton<_ProfileAction>(
-          icon: const CircleAvatar(
-            radius: 16,
-            backgroundColor: Color(0xFFEAEAEA),
-            child: Icon(Icons.person, color: Colors.black87),
-          ),
-          itemBuilder: (_) => const [
-            PopupMenuItem(
-              value: _ProfileAction.view,
-              child: ListTile(
-                leading: Icon(Icons.account_circle_outlined),
-                title: Text('Ver perfil'),
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-              ),
-            ),
-            PopupMenuItem(
-              value: _ProfileAction.logout,
-              child: ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Cerrar sesión'),
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-              ),
-            ),
-          ],
-          onSelected: (value) {
-            switch (value) {
-              case _ProfileAction.view:
-                _goProfile(context);
-                break;
-              case _ProfileAction.logout:
-                _logout(context);
-                break;
-            }
-          },
-        ),
-        const SizedBox(width: 8),
-      ],
+      actions: extraActions ?? [],
     );
   }
 }
-
-enum _ProfileAction { view, logout }

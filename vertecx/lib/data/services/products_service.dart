@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:vertecx/data/models/products/product_model.dart';
 
 class ProductsService {
-  final String baseUrl = "http://192.168.1.54:3001";
+  final String baseUrl = "http://192.168.1.9:3001";
   final http.Client _client;
 
   ProductsService({http.Client? client}) : _client = client ?? http.Client();
