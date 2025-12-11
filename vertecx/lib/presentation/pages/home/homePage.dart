@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';
-
-// Rutas
 import 'package:vertecx/presentation/routes/app_routes.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,9 +12,79 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _menuOpen = false;
+  late final List<String> _permissions;
+  late final bool _hasDashboard;
 
   void _logout() {
-    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.login,
+      (route) => false,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final perms = args is List<String> ? args : const <String>[];
+    _permissions = perms;
+    final permsLower = perms.map((p) => p.toLowerCase()).toSet();
+    _hasDashboard = permsLower.contains('dashboard.read');
+  }
+
+  Widget _buildWelcomeContent() {
+    final topBar = const AppTopBar(
+      title: 'Inicio',
+      centerTitle: true,
+      showBack: false,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(
+          height: topBar.preferredSize.height,
+          child: topBar,
+        ),
+        Expanded(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'Bienvenido a Vertecx',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Selecciona un módulo desde el menú lateral para comenzar.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent() {
+    if (_hasDashboard) {
+      return const DashboardPage();
+    }
+    return _buildWelcomeContent();
   }
 
   @override
@@ -24,7 +93,7 @@ class _HomeState extends State<Home> {
       extendBody: true,
       body: Stack(
         children: [
-          const DashboardPage(),
+          _buildContent(),
           Positioned(
             top: 8,
             left: 8,
@@ -58,6 +127,7 @@ class _HomeState extends State<Home> {
             bottom: 0,
             left: _menuOpen ? 0 : -260,
             child: _SideMenuPanel(
+              permissions: _permissions,
               onClose: () => setState(() => _menuOpen = false),
               onLogout: () {
                 setState(() => _menuOpen = false);
@@ -75,10 +145,12 @@ const _sideMenuWine = Color(0xFFB20000);
 
 class _SideMenuPanel extends StatefulWidget {
   const _SideMenuPanel({
+    required this.permissions,
     required this.onClose,
     required this.onLogout,
   });
 
+  final List<String> permissions;
   final VoidCallback onClose;
   final VoidCallback onLogout;
 
@@ -88,6 +160,9 @@ class _SideMenuPanel extends StatefulWidget {
 
 class _SideMenuPanelState extends State<_SideMenuPanel> {
   final _expanded = <String>{};
+
+  Set<String> get _permSet =>
+      widget.permissions.map((p) => p.toLowerCase()).toSet();
 
   void _toggle(String label) {
     setState(() {
@@ -104,13 +179,45 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
     Navigator.of(context).pushNamed(route);
   }
 
+  bool _hasPermission(_SideMenuItem item) {
+    if (item.requiredPermissions == null ||
+        item.requiredPermissions!.isEmpty) {
+      return true;
+    }
+    return item.requiredPermissions!
+        .map((p) => p.toLowerCase())
+        .any(_permSet.contains);
+  }
+
+  List<_SideMenuItem> _visibleChildren(List<_SideMenuItem> children) {
+    return children
+        .where((child) => _hasPermission(child))
+        .toList(growable: false);
+  }
+
   Widget _buildItem(_SideMenuItem item) {
+    if (!item.hasChildren && !_hasPermission(item)) {
+      return const SizedBox.shrink();
+    }
+
+    final children = item.children != null
+        ? _visibleChildren(item.children!)
+        : const <_SideMenuItem>[];
+
+    final showGroup = item.hasChildren &&
+        (children.isNotEmpty || _hasPermission(item));
+
+    if (item.hasChildren && !showGroup) {
+      return const SizedBox.shrink();
+    }
+
     final leading = item.iconAsset != null
         ? SvgPicture.asset(
             item.iconAsset!,
             width: 24,
             height: 24,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            colorFilter:
+                const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           )
         : item.icon != null
             ? Icon(item.icon, color: Colors.white)
@@ -139,12 +246,16 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
           leading: leading,
           title: Text(
             item.label,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           trailing: AnimatedRotation(
             turns: isExpanded ? 0.5 : 0,
             duration: const Duration(milliseconds: 380),
-            child: const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
+            child:
+                const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
           ),
           onTap: () => _toggle(item.label),
         ),
@@ -154,11 +265,12 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
           child: Column(
             children: [
               if (isExpanded)
-                ...item.children!.map(
+                ...children.map(
                   (child) => Padding(
                     padding: const EdgeInsets.only(left: 48),
                     child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 0),
                       dense: true,
                       leading: const SizedBox.shrink(),
                       title: Text(
@@ -202,7 +314,8 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -259,8 +372,10 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
                     ),
                     const Divider(color: Colors.white24, height: 1),
                     ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                      leading: const Icon(Icons.logout, color: Colors.white),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 16),
+                      leading:
+                          const Icon(Icons.logout, color: Colors.white),
                       title: const Text(
                         'Salir',
                         style: TextStyle(
@@ -289,6 +404,7 @@ class _SideMenuItem {
     this.iconAsset,
     this.route,
     this.children,
+    this.requiredPermissions,
   });
 
   final String label;
@@ -296,6 +412,7 @@ class _SideMenuItem {
   final String? iconAsset;
   final String? route;
   final List<_SideMenuItem>? children;
+  final List<String>? requiredPermissions;
 
   bool get hasChildren => children != null && children!.isNotEmpty;
 }
@@ -305,55 +422,123 @@ const _menuItems = [
     label: 'Perfil',
     iconAsset: 'assets/image/userPerfil.svg',
     route: AppRoutes.profile,
+    requiredPermissions: null,
   ),
   _SideMenuItem(
     label: 'Dashboard',
     icon: Icons.home,
     route: AppRoutes.dashboard,
+    requiredPermissions: ['dashboard.read'],
   ),
   _SideMenuItem(
     label: 'Usuarios',
     icon: Icons.person,
     route: AppRoutes.userList,
+    requiredPermissions: ['users.read'],
   ),
   _SideMenuItem(
     label: 'Roles',
     icon: Icons.group,
     route: AppRoutes.rolesList,
+    requiredPermissions: ['roles.read'],
   ),
   _SideMenuItem(
     label: 'Compras',
     icon: Icons.local_shipping,
+    requiredPermissions: [
+      'purchases.read',
+      'purchaseorders.read',
+      'suppliers.read',
+    ],
     children: [
-      _SideMenuItem(label: 'Compras', route: AppRoutes.purchases),
-      _SideMenuItem(label: 'Orden de compra', route: AppRoutes.purchaseOrders),
+      _SideMenuItem(
+        label: 'Compras',
+        route: AppRoutes.purchases,
+        requiredPermissions: ['purchases.read'],
+      ),
+      _SideMenuItem(
+        label: 'Orden de compra',
+        route: AppRoutes.purchaseOrders,
+        requiredPermissions: ['purchaseorders.read'],
+      ),
     ],
   ),
   _SideMenuItem(
     label: 'Productos',
     icon: Icons.widgets,
+    requiredPermissions: [
+      'products.read',
+      'categoryproducts.read',
+    ],
     children: [
-      _SideMenuItem(label: 'Productos', route: AppRoutes.productsList),
-      _SideMenuItem(label: 'Categorías', route: AppRoutes.productCategories),
+      _SideMenuItem(
+        label: 'Productos',
+        route: AppRoutes.productsList,
+        requiredPermissions: ['products.read'],
+      ),
+      _SideMenuItem(
+        label: 'Categorías',
+        route: AppRoutes.productCategories,
+        requiredPermissions: ['categoryproducts.read'],
+      ),
     ],
   ),
   _SideMenuItem(
     label: 'Servicios',
     icon: Icons.build,
+    requiredPermissions: [
+      'services.read',
+      'technicians.read',
+    ],
     children: [
-      _SideMenuItem(label: 'Servicios', route: AppRoutes.servicesList),
-      _SideMenuItem(label: 'Técnicos', route: AppRoutes.techniciansList),
+      _SideMenuItem(
+        label: 'Servicios',
+        route: AppRoutes.servicesList,
+        requiredPermissions: ['services.read'],
+      ),
+      _SideMenuItem(
+        label: 'Técnicos',
+        route: AppRoutes.techniciansList,
+        requiredPermissions: ['technicians.read'],
+      ),
     ],
   ),
   _SideMenuItem(
     label: 'Ventas',
     icon: Icons.shopping_cart,
+    requiredPermissions: [
+      'sales.read',
+      'customers.read',
+      'servicesrequest.read',
+      'orderservices.read',
+      'appointments.read',
+    ],
     children: [
-      _SideMenuItem(label: 'Ventas', route: AppRoutes.sales),
-      _SideMenuItem(label: 'Clientes', route: AppRoutes.clients),
-      _SideMenuItem(label: 'Solicitudes', route: AppRoutes.requests),
-      _SideMenuItem(label: 'Ordenes', route: AppRoutes.salesOrders),
-      _SideMenuItem(label: 'Citas', route: AppRoutes.salesAppointments),
+      _SideMenuItem(
+        label: 'Ventas',
+        route: AppRoutes.sales,
+        requiredPermissions: ['sales.read'],
+      ),
+      _SideMenuItem(
+        label: 'Clientes',
+        route: AppRoutes.clients,
+        requiredPermissions: ['customers.read'],
+      ),
+      _SideMenuItem(
+        label: 'Solicitudes',
+        route: AppRoutes.requests,
+        requiredPermissions: ['servicesrequest.read'],
+      ),
+      _SideMenuItem(
+        label: 'Ordenes',
+        route: AppRoutes.salesOrders,
+        requiredPermissions: ['orderservices.read'],
+      ),
+      _SideMenuItem(
+        label: 'Citas',
+        route: AppRoutes.salesAppointments,
+        requiredPermissions: ['appointments.read'],
+      ),
     ],
   ),
 ];

@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:vertecx/data/models/request_model.dart';
+import 'package:vertecx/data/models/request/request_model.dart';
 
 class RequestsState extends Equatable {
-  final List<RequestModel> all;        // todos
-  final List<RequestModel> filtered;   // filtrados por query
-  final List<RequestModel> visible;    // los que se muestran (paginación)
+  final List<ServiceRequestModel> all;
+  final List<ServiceRequestModel> filtered;
+  final List<ServiceRequestModel> visible;
   final String query;
   final bool loading;
   final bool loadingMore;
@@ -27,9 +27,9 @@ class RequestsState extends Equatable {
   bool get hasMore => visible.length < filtered.length;
 
   RequestsState copyWith({
-    List<RequestModel>? all,
-    List<RequestModel>? filtered,
-    List<RequestModel>? visible,
+    List<ServiceRequestModel>? all,
+    List<ServiceRequestModel>? filtered,
+    List<ServiceRequestModel>? visible,
     String? query,
     bool? loading,
     bool? loadingMore,

@@ -4,7 +4,11 @@ import 'package:vertecx/data/models/orderServices/order_service_models.dart';
 import 'package:vertecx/presentation/widgets/StatusChip.dart';
 
 class OrderCard extends StatelessWidget {
-  const OrderCard({super.key, required this.order, this.onTap});
+  const OrderCard({
+    super.key,
+    required this.order,
+    this.onTap,
+  });
 
   final OrderService order;
   final VoidCallback? onTap;
@@ -16,13 +20,16 @@ class OrderCard extends StatelessWidget {
       locale: 'es_CO',
       decimalDigits: 0,
     );
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Card(
         elevation: 0,
         color: Colors.grey.shade100,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -32,14 +39,21 @@ class OrderCard extends StatelessWidget {
                 children: [
                   const Text(
                     'Id: ',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Text(
                     '${order.id}',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const Spacer(),
-                  StatusChip(status: order.estado),
+                  StatusChip(
+                    status: order.estado,
+                    label: order.estadoLabel,
+                  ),
                 ],
               ),
               const SizedBox(height: 6),
@@ -63,25 +77,35 @@ class OrderCard extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 'Técnico(s): ${order.techniciansLabel}',
-                style: TextStyle(color: Colors.grey.shade700),
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
               ),
               Text(
                 'Fecha creación: ${f.format(order.fechaCreacion)}',
-                style: TextStyle(color: Colors.grey.shade700),
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
               ),
               if (order.startAt != null)
                 Text(
                   'Inicio: ${f.format(order.startAt!)}',
-                  style: TextStyle(color: Colors.grey.shade700),
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                  ),
                 ),
               if (order.total > 0)
                 Text(
                   'Valor estimado: ${currency.format(order.total)}',
-                  style: TextStyle(color: Colors.grey.shade700),
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                  ),
                 ),
               Text(
                 'Estado registrado: ${order.estadoLabel}',
-                style: TextStyle(color: Colors.grey.shade700),
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
               ),
             ],
           ),
