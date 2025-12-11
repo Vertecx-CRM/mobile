@@ -1,40 +1,59 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_config.dart';
 import 'package:vertecx/data/models/request/request_model.dart';
 
 class ServiceRequestsService {
   final String baseUrl;
-  const ServiceRequestsService({required this.baseUrl});
+
+  const ServiceRequestsService({String? baseUrl})
+      : baseUrl = baseUrl ?? ApiConfig.baseUrl;
 
   Uri _uri(String path, [Map<String, dynamic>? q]) {
     final uri = Uri.parse('$baseUrl$path');
-    return q == null ? uri : uri.replace(queryParameters: q);
+    if (q == null) {
+      return uri;
+    }
+    return uri.replace(
+      queryParameters: q.map(
+        (key, value) => MapEntry(key, value.toString()),
+      ),
+    );
   }
 
   Future<List<ServiceRequestModel>> getRequests({
     int page = 1,
     int limit = 50,
   }) async {
-    final url = _uri('/service-requests', {'page': '$page', 'limit': '$limit'});
+    final url = _uri('/service-requests', {'page': page, 'limit': limit});
     try {
       final res = await http
-          .get(url, headers: {'Accept': 'application/json'})
+          .get(
+            url,
+            headers: {
+              'Accept': 'application/json',
+            },
+          )
           .timeout(const Duration(seconds: 15));
+
       if (res.statusCode != 200) {
         throw Exception('GET ${url.path}: ${res.statusCode} - ${res.body}');
       }
-      final body = jsonDecode(res.body);
-      final List data = body is Map<String, dynamic>
-          ? (body['data'] is List ? body['data'] as List : [])
-          : (body is List ? body : []);
+
+      final dynamic body = jsonDecode(res.body);
+
+      final List<dynamic> data = body is Map<String, dynamic>
+          ? (body['data'] is List ? body['data'] as List<dynamic> : const [])
+          : (body is List ? body as List<dynamic> : const []);
+
       return data
           .whereType<Map<String, dynamic>>()
           .map(ServiceRequestModel.fromJson)
           .toList();
     } on TimeoutException {
       throw Exception('GET ${url.path}: timeout');
-    } catch (e) {
+    } catch (_) {
       rethrow;
     }
   }
@@ -43,21 +62,27 @@ class ServiceRequestsService {
     final url = _uri('/service-requests/$id');
     try {
       final res = await http
-          .get(url, headers: {'Accept': 'application/json'})
+          .get(
+            url,
+            headers: {
+              'Accept': 'application/json',
+            },
+          )
           .timeout(const Duration(seconds: 15));
 
       if (res.statusCode != 200) {
         throw Exception('GET ${url.path}: ${res.statusCode} - ${res.body}');
       }
 
-      final body = jsonDecode(res.body);
+      final dynamic body = jsonDecode(res.body);
       if (body is Map<String, dynamic>) {
         return body;
       }
+
       throw Exception('GET ${url.path}: respuesta inesperada');
     } on TimeoutException {
       throw Exception('GET ${url.path}: timeout');
-    } catch (e) {
+    } catch (_) {
       rethrow;
     }
   }

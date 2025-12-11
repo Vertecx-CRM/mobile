@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:vertecx/data/models/orderServices/order_service_models.dart';
 
 class StatusChip extends StatelessWidget {
-  const StatusChip({super.key, required this.status});
+  const StatusChip({
+    super.key,
+    required this.status,
+    required this.label,
+  });
 
   final OrderServiceStatus status;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    final (label, color, bg) = _map(status);
+    final (color, bg) = _map(status);
+    final text = label.trim().isEmpty ? 'Sin estado' : label.trim();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -16,7 +23,7 @@ class StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
-        label,
+        text,
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
@@ -26,16 +33,16 @@ class StatusChip extends StatelessWidget {
     );
   }
 
-  (String, Color, Color) _map(OrderServiceStatus s) {
+  (Color, Color) _map(OrderServiceStatus s) {
     switch (s) {
       case OrderServiceStatus.completada:
-        return ('Completada', Colors.green.shade700, Colors.green.shade100);
+        return (Colors.green, const Color(0xFFE8F5E9));
       case OrderServiceStatus.pendiente:
-        return ('Pendiente', Colors.orange.shade800, Colors.orange.shade100);
+        return (Colors.orange, const Color(0xFFFFF3E0));
       case OrderServiceStatus.anulada:
-        return ('Anulada', Colors.red.shade700, Colors.red.shade100);
+        return (Colors.red, const Color(0xFFFFEBEE));
       case OrderServiceStatus.enProgreso:
-        return ('En progreso', Colors.blue.shade700, Colors.blue.shade100);
+        return (Colors.blue, const Color(0xFFE3F2FD));
     }
   }
 }

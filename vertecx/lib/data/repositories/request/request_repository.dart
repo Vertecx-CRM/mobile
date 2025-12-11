@@ -11,7 +11,7 @@ class RequestsRepository implements IRequestRepository {
   final ServiceRequestsService _api;
 
   RequestsRepository([ServiceRequestsService? api])
-    : _api = api ?? const ServiceRequestsService(baseUrl: kBackendBaseUrl);
+      : _api = api ?? ServiceRequestsService(baseUrl: kBackendBaseUrl);
 
   @override
   Future<List<ServiceRequestModel>> getAll() {
@@ -20,7 +20,7 @@ class RequestsRepository implements IRequestRepository {
 
   @override
   Future<ServiceRequestModel> getById(int id) async {
-    final json = await _api.getRequestById(id);
+    final Map<String, dynamic> json = await _api.getRequestById(id);
     return ServiceRequestModel.fromJson(json);
   }
 }

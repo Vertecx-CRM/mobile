@@ -53,13 +53,41 @@ class OrderService {
         .trim();
     final description = (json['description'] ?? '').toString();
     final totalRaw = json['total'];
+    final viaticosRaw = json['viaticos'] ?? json['viaticos'];
     final techniciansRaw = (json['technicians'] as List<dynamic>?) ?? [];
     final clientRaw = _asMap(json['client']);
     final stateRaw = _asMap(json['state']);
 
+    final int totalBase = totalRaw is num ? totalRaw.toInt() : 0;
+    final int viaticos = viaticosRaw is num ? viaticosRaw.toInt() : 0;
+    final int total = totalBase + viaticos;
+
+    String titulo;
+    final servicesRaw = (json['services'] as List<dynamic>?) ?? [];
+    if (servicesRaw.isNotEmpty) {
+      final first = servicesRaw.first;
+      if (first is Map<String, dynamic>) {
+        final service = _asMap(first['service']);
+        final serviceName = (service?['name'] ?? '').toString().trim();
+        if (serviceName.isNotEmpty) {
+          titulo = serviceName;
+        } else if (description.isNotEmpty) {
+          titulo = description;
+        } else {
+          titulo = 'Orden #${_parseInt(idRaw)}';
+        }
+      } else {
+        titulo =
+            description.isNotEmpty ? description : 'Orden #${_parseInt(idRaw)}';
+      }
+    } else {
+      titulo =
+          description.isNotEmpty ? description : 'Orden #${_parseInt(idRaw)}';
+    }
+
     return OrderService(
       id: _parseInt(idRaw),
-      titulo: description.isEmpty ? 'Orden #${_parseInt(idRaw)}' : description,
+      titulo: titulo,
       tecnico: _firstTechnicianName(techniciansRaw),
       cliente: _clientName(clientRaw),
       fechaCreacion: DateTime.parse(
@@ -67,7 +95,7 @@ class OrderService {
       ),
       estado: _statusFromState(stateName),
       estadoLabel: stateName.isEmpty ? 'Estado desconocido' : stateName,
-      total: totalRaw is num ? totalRaw.toInt() : 0,
+      total: total,
       startAt: _parseDateTime(json['fechainicio'], json['horainicio']),
       endAt: _parseDateTime(json['fechafin'], json['horafin']),
       technicians: techniciansRaw
