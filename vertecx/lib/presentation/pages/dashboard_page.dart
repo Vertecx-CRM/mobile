@@ -173,6 +173,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
                 BlocBuilder<SalesBloc, SalesState>(
                   builder: (context, state) {
                     if (state is SalesLoading) {

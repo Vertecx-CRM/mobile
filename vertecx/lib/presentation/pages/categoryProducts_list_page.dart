@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
-import 'package:vertecx/presentation/helpers/app_dialogs.dart';
 import 'package:vertecx/presentation/widgets/categoryProductsWidgets/categoryProduct_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
