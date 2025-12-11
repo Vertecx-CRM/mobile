@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:vertecx/presentation/pages/purchases_page.dart';
-import 'package:vertecx/presentation/pages/sales_page.dart';
-
-// Tabs
-import 'package:vertecx/presentation/pages/user_list_page.dart';
-import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';
 
 // Rutas
 import 'package:vertecx/presentation/routes/app_routes.dart';
-
-// BottomNav
-import 'package:vertecx/presentation/widgets/navigationWidgets/AppBottomNav.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,36 +12,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _tab = 2;
   bool _menuOpen = false;
-  final GlobalKey<UserListPageState> _usersKey = GlobalKey<UserListPageState>();
 
-  void _openProfile() {
-    Navigator.of(context).pushNamed(AppRoutes.profile);
+  void _logout() {
+    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottomSafe = MediaQuery.of(context).padding.bottom;
-    final navHeight = kBottomNavigationBarHeight + bottomSafe;
-
     return Scaffold(
       extendBody: true,
       body: Stack(
         children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: navHeight),
-            child: IndexedStack(
-              index: _tab,
-              children: [
-                const PurchasesPage(), // 1
-                const SalesPage(), // 3
-                const DashboardPage(), // 2 (inicio)
-                UserListPage(key: _usersKey), // 0
-                const SizedBox.shrink(), // 4 (boton menu)
-              ],
-            ),
-          ),
+          const DashboardPage(),
           Positioned(
             top: 8,
             left: 8,
@@ -84,22 +59,13 @@ class _HomeState extends State<Home> {
             left: _menuOpen ? 0 : -260,
             child: _SideMenuPanel(
               onClose: () => setState(() => _menuOpen = false),
+              onLogout: () {
+                setState(() => _menuOpen = false);
+                _logout();
+              },
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: AppBottomNav(
-          currentIndex: _tab,
-          onItemTap: (i) {
-            setState(() => _tab = i);
-            if (i == 3) {
-              _usersKey.currentState?.reloadUsers();
-            }
-          },
-          onProfileTap: _openProfile,
-        ),
       ),
     );
   }
@@ -110,9 +76,11 @@ const _sideMenuWine = Color(0xFFB20000);
 class _SideMenuPanel extends StatefulWidget {
   const _SideMenuPanel({
     required this.onClose,
+    required this.onLogout,
   });
 
   final VoidCallback onClose;
+  final VoidCallback onLogout;
 
   @override
   State<_SideMenuPanel> createState() => _SideMenuPanelState();
@@ -137,10 +105,21 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
   }
 
   Widget _buildItem(_SideMenuItem item) {
+    final leading = item.iconAsset != null
+        ? SvgPicture.asset(
+            item.iconAsset!,
+            width: 24,
+            height: 24,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          )
+        : item.icon != null
+            ? Icon(item.icon, color: Colors.white)
+            : const SizedBox.shrink();
+
     if (!item.hasChildren) {
       return ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-        leading: Icon(item.icon, color: Colors.white),
+        leading: leading,
         title: Text(
           item.label,
           style: const TextStyle(
@@ -157,7 +136,7 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
       children: [
         ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-          leading: Icon(item.icon, color: Colors.white),
+          leading: leading,
           title: Text(
             item.label,
             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
@@ -269,9 +248,30 @@ class _SideMenuPanelState extends State<_SideMenuPanel> {
               ),
               const Divider(color: Colors.white24, height: 1),
               Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.only(top: 8),
-                  children: _menuItems.map(_buildItem).toList(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.only(top: 8),
+                        children: _menuItems.map(_buildItem).toList(),
+                      ),
+                    ),
+                    const Divider(color: Colors.white24, height: 1),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      leading: const Icon(Icons.logout, color: Colors.white),
+                      title: const Text(
+                        'Salir',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onTap: widget.onLogout,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
               ),
             ],
@@ -286,12 +286,14 @@ class _SideMenuItem {
   const _SideMenuItem({
     required this.label,
     this.icon,
+    this.iconAsset,
     this.route,
     this.children,
   });
 
   final String label;
   final IconData? icon;
+  final String? iconAsset;
   final String? route;
   final List<_SideMenuItem>? children;
 
@@ -299,6 +301,11 @@ class _SideMenuItem {
 }
 
 const _menuItems = [
+  _SideMenuItem(
+    label: 'Perfil',
+    iconAsset: 'assets/image/userPerfil.svg',
+    route: AppRoutes.profile,
+  ),
   _SideMenuItem(
     label: 'Dashboard',
     icon: Icons.home,

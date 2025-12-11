@@ -11,13 +11,18 @@ class CategoryProductsService {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
+      List<dynamic> payload;
+      if (jsonData is List) {
+        payload = jsonData;
+      } else if (jsonData is Map<String, dynamic>) {
+        payload = List<dynamic>.from(jsonData['data'] ?? []);
+      } else {
+        payload = [];
+      }
 
-      // Si tu backend devuelve { success: true, data: [...] }
-      final List<dynamic> data = jsonData['data'] ?? [];
-
-      return data.map((e) => CategoryProduct.fromJson(e)).toList();
+      return payload.map((e) => CategoryProduct.fromJson(e)).toList();
     } else {
-      throw Exception('Error al obtener categorías: ${response.statusCode}');
+      throw Exception('Error al obtener categorヴas: ${response.statusCode}');
     }
   }
 
@@ -35,7 +40,7 @@ class CategoryProductsService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception('Error al crear categoría');
+      throw Exception('Error al crear categorヴa');
     }
   }
 

@@ -16,14 +16,24 @@ class CategoryProduct {
   });
 
   factory CategoryProduct.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final parsedId = rawId is int
+        ? rawId
+        : int.tryParse(rawId?.toString() ?? "") ?? 0;
+
+    final statusValue = json['status'];
+    final estado = statusValue == true
+        ? CategoryStatus.activo
+        : statusValue == false
+            ? CategoryStatus.inactivo
+            : CategoryStatus.inactivo;
+
     return CategoryProduct(
-      id: json['id'],
+      id: parsedId,
       imagenPath: json['icon'],
       nombre: json['name'],
       descripcion: json['description'] ?? '',
-      estado: json['status'] == true
-          ? CategoryStatus.activo
-          : CategoryStatus.inactivo,
+      estado: estado,
     );
   }
 
