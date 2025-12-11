@@ -1,45 +1,60 @@
 abstract class SalesEvent {}
 
-class LoadSalesEvent extends SalesEvent {} 
+class LoadSalesEvent extends SalesEvent {
+  final int? year;
+  LoadSalesEvent({this.year});
+}
 
 class LoadMonthlySalesEvent extends SalesEvent {
   final int month;
-  LoadMonthlySalesEvent(this.month);
+  final int? year;
+  LoadMonthlySalesEvent(this.month, {this.year});
 }
 
 abstract class ClientsEvent {}
 
-class LoadClientsEvent extends ClientsEvent {}
+class LoadClientsEvent extends ClientsEvent {
+  final int? year;
+  LoadClientsEvent({this.year});
+}
 
 class LoadMonthlyClientsEvent extends ClientsEvent {
   final int month;
-  LoadMonthlyClientsEvent(this.month);
+  final int? year;
+  LoadMonthlyClientsEvent(this.month, {this.year});
 }
 
 abstract class PurchasesEvent {}
 
-class LoadPurchasesEvent extends PurchasesEvent {}
+class LoadPurchasesEvent extends PurchasesEvent {
+  final int? year;
+  LoadPurchasesEvent({this.year});
+}
 
 class LoadMonthlyPurchasesEvent extends PurchasesEvent {
   final int month;
-  LoadMonthlyPurchasesEvent(this.month);
+  final int? year;
+  LoadMonthlyPurchasesEvent(this.month, {this.year});
 }
 
 abstract class AppointmentsEvent {}
 
-class LoadAppointmentsEvent extends AppointmentsEvent {}
-
+class LoadAppointmentsEvent extends AppointmentsEvent {
+  final int? year;
+  LoadAppointmentsEvent({this.year});
+}
 
 abstract class OrdersEvent {}
 
-class LoadOrdersEvent extends OrdersEvent {}
+class LoadOrdersEvent extends OrdersEvent {
+  final int? year;
+  LoadOrdersEvent({this.year});
+}
 
 abstract class ProductsEvent {}
 
-class LoadProductsEvent extends ProductsEvent {}
-
-
-
-
-
+class LoadProductsEvent extends ProductsEvent {
+  final int? year;
+  LoadProductsEvent({this.year});
+}
 

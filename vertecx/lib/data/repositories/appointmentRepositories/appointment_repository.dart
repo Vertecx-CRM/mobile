@@ -1,28 +1,64 @@
-import 'package:vertecx/data/models/appointments/appointment_model.dart';
+import 'package:intl/intl.dart';
 import 'package:vertecx/data/mocks/appointments_mock_data.dart';
+import 'package:vertecx/data/models/appointments/appointment_model.dart';
+import 'package:vertecx/data/models/orderServices/order_service_models.dart';
+import 'package:vertecx/data/models/request/request_model.dart';
+import 'package:vertecx/data/repositories/orderServices/order_repository.dart';
+import 'package:vertecx/data/repositories/request/request_repository.dart';
 
 class AppointmentRepository {
-  //Devuelve las citas de un día específico
-  List<AppointmentEvent> getAppointmentsForDay(DateTime date) {
-    return mockAppointments
+  AppointmentRepository({
+    OrderRepository? orderRepository,
+    RequestsRepository? requestRepository,
+  }) : _orderRepository = orderRepository ?? OrderRepository(),
+       _requestRepository = requestRepository ?? RequestsRepository();
+
+  final OrderRepository _orderRepository;
+  final RequestsRepository _requestRepository;
+  List<AppointmentEvent>? _cache;
+
+  Future<List<AppointmentEvent>> _loadAppointments() async {
+    if (_cache != null) return _cache!;
+    try {
+      final orders = await _orderRepository.getAll();
+      final requests = await _requestRepository.getAll();
+      final mapped = <AppointmentEvent>[];
+
+      mapped.addAll(orders.map(_toAppointmentFromOrder));
+      mapped.addAll(requests.map(_toAppointmentFromRequest));
+
+      _cache = mapped.isEmpty ? mockAppointments : mapped;
+    } catch (_) {
+      _cache = mockAppointments;
+    }
+
+    return _cache!;
+  }
+
+  Future<List<AppointmentEvent>> getAllAppointments() async {
+    return _loadAppointments();
+  }
+
+  Future<List<AppointmentEvent>> getAppointmentsForDay(DateTime date) async {
+    final all = await _loadAppointments();
+    return all
         .where(
-          (a) =>
-              a.fecha.year == date.year &&
-              a.fecha.month == date.month &&
-              a.fecha.day == date.day,
+          (cita) =>
+              cita.dia == date.day &&
+              cita.mes == date.month &&
+              cita.anio == date.year,
         )
         .toList();
   }
 
-  ///Devuelve todas las citas agrupadas por día de un mes
-  Map<DateTime, List<AppointmentEvent>> getAppointmentsForMonth(
+  Future<Map<DateTime, List<AppointmentEvent>>> getAppointmentsForMonth(
     DateTime month,
-  ) {
+  ) async {
+    final all = await _loadAppointments();
     final Map<DateTime, List<AppointmentEvent>> citasPorDia = {};
 
-    for (final cita in mockAppointments) {
+    for (final cita in all) {
       final fecha = DateTime(cita.anio, cita.mes, cita.dia);
-
       if (fecha.year == month.year && fecha.month == month.month) {
         citasPorDia.putIfAbsent(fecha, () => []);
         citasPorDia[fecha]!.add(cita);
@@ -32,8 +68,122 @@ class AppointmentRepository {
     return citasPorDia;
   }
 
-  ///Devuelve todas las citas (si se necesita un listado completo)
-  List<AppointmentEvent> getAllAppointments() {
-    return mockAppointments;
+  AppointmentEvent _toAppointmentFromOrder(OrderService order) {
+    final start = order.startAt ?? order.fechaCreacion;
+    final end = order.endAt ?? order.startAt ?? order.fechaCreacion;
+    final inicio = _formatTime(start);
+    final fin = _formatTime(
+      end.isAfter(start) ? end : start.add(const Duration(hours: 2)),
+    );
+    final tecnicos = order.technicians
+        .map((name) => Technician(titulo: 'Técnico', nombre: name))
+        .toList();
+    final materials = order.products.map((producto) {
+      final productName =
+          (producto['product']?['productname'] ?? producto['productname'])
+              ?.toString() ??
+          'Producto';
+      final quantity = producto['cantidad'] is int
+          ? producto['cantidad'] as int
+          : 1;
+      return MaterialItem(nombre: productName, cantidad: quantity);
+    }).toList();
+    final monto = order.total > 0
+        ? _formatCurrency(order.total)
+        : 'Valor no registrado';
+
+    return AppointmentEvent(
+      id: order.id,
+      horaInicio: inicio,
+      horaFin: fin,
+      dia: start.day,
+      mes: start.month,
+      anio: start.year,
+      orden: Orden(
+        id: order.id.toString(),
+        tipoServicio: order.titulo,
+        tipoMantenimiento: order.estadoLabel,
+        monto: monto,
+        nombreCliente: order.cliente,
+        direccion: order.client != null
+            ? _clienteDireccion(order.client!) ?? ''
+            : '',
+        tecnicos: tecnicos,
+        descripcion: order.description.isNotEmpty
+            ? order.description
+            : order.titulo,
+        servicio: order.titulo,
+        materiales: materials.isEmpty ? null : materials,
+        serviceRequestId: null,
+        orderServiceId: order.id,
+      ),
+      observaciones: '',
+      estado: order.estadoLabel.isNotEmpty ? order.estadoLabel : 'Pendiente',
+      subestado: order.estadoLabel,
+      tipoCita: 'orden',
+    );
+  }
+
+  AppointmentEvent _toAppointmentFromRequest(ServiceRequestModel request) {
+    final fecha = request.scheduledAt ?? request.createdAt;
+    final inicio = _formatTime(fecha);
+    final end = request.scheduledEndAt ?? fecha.add(const Duration(hours: 2));
+    final fin = _formatTime(end);
+    final cliente = request.customerName;
+    final direccion = request.direccion ?? '';
+    final servicioName =
+        (request.service?['name'] ?? request.serviceType)?.toString() ??
+        request.serviceType;
+
+    return AppointmentEvent(
+      id: request.serviceRequestId,
+      horaInicio: inicio,
+      horaFin: fin,
+      dia: fecha.day,
+      mes: fecha.month,
+      anio: fecha.year,
+      orden: Orden(
+        id: request.serviceRequestId.toString(),
+        tipoServicio: servicioName,
+        tipoMantenimiento: request.serviceType,
+        monto: 'Valor no registrado',
+        nombreCliente: cliente,
+        direccion: direccion,
+        tecnicos: const [],
+        descripcion: request.description,
+        servicio: servicioName,
+        materiales: null,
+        serviceRequestId: request.serviceRequestId,
+        orderServiceId: null,
+      ),
+      observaciones: request.description,
+      estado: (request.state?['name'] ?? 'Pendiente').toString(),
+      subestado: (request.state?['name'] ?? 'Pendiente').toString(),
+      tipoCita: 'solicitud',
+    );
+  }
+
+  static String _formatTime(DateTime dateTime) {
+    return DateFormat('HH:mm').format(dateTime);
+  }
+
+  static String _formatCurrency(int value) {
+    final formatter = NumberFormat.simpleCurrency(
+      locale: 'es_CO',
+      decimalDigits: 0,
+    );
+    return formatter.format(value);
+  }
+
+  static String? _clienteDireccion(Map<String, dynamic> client) {
+    final city =
+        (client['customercity'] ?? client['city'])?.toString().trim() ?? '';
+    final zipcode =
+        (client['customerzipcode'] ?? client['zipcode'])?.toString().trim() ??
+        '';
+    final street =
+        (client['address'] ?? client['direccion'])?.toString().trim() ?? '';
+    final parts = [street, city, zipcode].where((p) => p.isNotEmpty).toList();
+    return parts.isEmpty ? null : parts.join(', ');
   }
 }

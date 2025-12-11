@@ -7,11 +7,13 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.centerTitle = true,
     this.showBack = false,
+    this.extraActions,
   });
 
   final String? title;
   final bool centerTitle;
   final bool showBack;
+  final List<Widget>? extraActions;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -25,7 +27,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         return 'Usuarios';
       case AppRoutes.categoryProduct:
         return 'Productos';
-      case AppRoutes.appointment:
+      case AppRoutes.salesAppointments:
         return 'Citas';
       case AppRoutes.dashboard:
         return 'Dashboard';
@@ -51,21 +53,19 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         return 'Proveedores';
       case AppRoutes.clients:
         return 'Clientes';
-      case AppRoutes.appointment:
-        return 'Citas';
+      case AppRoutes.salesHub:
+        return 'Ventas';
+      case AppRoutes.purchasesHub:
+        return 'Compras';
+      case AppRoutes.productsHub:
+        return 'Productos';
+      case AppRoutes.servicesHub:
+        return 'Servicios';
+      case AppRoutes.purchaseOrders:
+        return 'Orden de Compra';
       default:
         return 'Sistemas PC';
     }
-  }
-
-  void _goProfile(BuildContext context) {
-    Navigator.of(context).pushNamed(AppRoutes.profile);
-  }
-
-  void _logout(BuildContext context) {
-    Navigator.of(
-      context,
-    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   @override
@@ -94,48 +94,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           fontWeight: FontWeight.w700,
         ),
       ),
-      actions: [
-        PopupMenuButton<_ProfileAction>(
-          icon: const CircleAvatar(
-            radius: 16,
-            backgroundColor: Color(0xFFEAEAEA),
-            child: Icon(Icons.person, color: Colors.black87),
-          ),
-          itemBuilder: (_) => const [
-            PopupMenuItem(
-              value: _ProfileAction.view,
-              child: ListTile(
-                leading: Icon(Icons.account_circle_outlined),
-                title: Text('Ver perfil'),
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-              ),
-            ),
-            PopupMenuItem(
-              value: _ProfileAction.logout,
-              child: ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Cerrar sesión'),
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-              ),
-            ),
-          ],
-          onSelected: (value) {
-            switch (value) {
-              case _ProfileAction.view:
-                _goProfile(context);
-                break;
-              case _ProfileAction.logout:
-                _logout(context);
-                break;
-            }
-          },
-        ),
-        const SizedBox(width: 8),
-      ],
+      actions: extraActions ?? [],
     );
   }
 }
-
-enum _ProfileAction { view, logout }

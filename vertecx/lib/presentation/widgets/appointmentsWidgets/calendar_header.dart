@@ -3,14 +3,14 @@ import 'package:vertecx/presentation/widgets/appointmentsWidgets/calendar_arrow.
 
 class CalendarHeader extends StatelessWidget {
   final DateTime focusedDay;
-  final List<String> months;
+  final List<String> monthNames;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
 
   const CalendarHeader({
     super.key,
     required this.focusedDay,
-    required this.months,
+    required this.monthNames,
     required this.onPrevious,
     required this.onNext,
   });
@@ -20,10 +20,7 @@ class CalendarHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CalendarArrow(
-          icon: Icons.chevron_left,
-          onTap: onPrevious,
-        ),
+        CalendarArrow(icon: Icons.chevron_left, onTap: onPrevious),
         const SizedBox(width: 20),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -40,7 +37,7 @@ class CalendarHeader extends StatelessWidget {
             ],
           ),
           child: Text(
-            months[focusedDay.month - 1],
+            monthNames[focusedDay.month - 1],
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -72,10 +69,7 @@ class CalendarHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 20),
-        CalendarArrow(
-          icon: Icons.chevron_right,
-          onTap: onNext,
-        ),
+        CalendarArrow(icon: Icons.chevron_right, onTap: onNext),
       ],
     );
   }

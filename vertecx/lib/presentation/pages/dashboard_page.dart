@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/dashboard/dashboard_models.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
@@ -17,24 +17,71 @@ import '../widgets/dashboardWidgets/barChart_widget.dart';
 import '../widgets/dashboardWidgets/graphLines_widget.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  late final List<int> _years;
+  late int _selectedYear;
+
+  @override
+  void initState() {
+    super.initState();
+    final currentYear = DateTime.now().year;
+    _years = List.generate(6, (index) => currentYear - index);
+    _selectedYear = currentYear;
+  }
+
+  Widget _buildYearSelector() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: _selectedYear,
+          items: _years
+              .map((year) => DropdownMenuItem(
+                    value: year,
+                    child: Text(
+                      year.toString(),
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            if (value == null) return;
+            setState(() => _selectedYear = value);
+          },
+          icon: const Icon(Icons.expand_more, color: Colors.black87, size: 18),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
+      key: ValueKey(_selectedYear),
       providers: [
-        BlocProvider(create: (_) => SalesBloc(SalesRepository())..add(LoadSalesEvent())),
-        BlocProvider(create: (_) => ClientsBloc(ClientsRepository())..add(LoadClientsEvent())),
-        BlocProvider(create: (_) => PurchasesBloc(PurchasesRepository())..add(LoadPurchasesEvent())),
-        BlocProvider(create: (_) => AppointmentsBloc(AppointmentsRepository())..add(LoadAppointmentsEvent())),
-        BlocProvider(create: (_) => OrdersBloc(OrdersRepository())..add(LoadOrdersEvent())),
-        BlocProvider(create: (_) => ProductsBloc(ProductsRepository())..add(LoadProductsEvent())),
+        BlocProvider(create: (_) => SalesBloc(SalesRepository())..add(LoadSalesEvent(year: _selectedYear))),
+        BlocProvider(create: (_) => ClientsBloc(ClientsRepository())..add(LoadClientsEvent(year: _selectedYear))),
+        BlocProvider(create: (_) => PurchasesBloc(PurchasesRepository())..add(LoadPurchasesEvent(year: _selectedYear))),
+        BlocProvider(create: (_) => AppointmentsBloc(AppointmentsRepository())..add(LoadAppointmentsEvent(year: _selectedYear))),
+        BlocProvider(create: (_) => OrdersBloc(OrdersRepository())..add(LoadOrdersEvent(year: _selectedYear))),
+        BlocProvider(create: (_) => ProductsBloc(ProductsRepository())..add(LoadProductsEvent(year: _selectedYear))),
         BlocProvider(create: (_) => CalendarBloc(AppointmentRepository())..add(LoadAllAppointments())),
       ],
       child: Scaffold(
         backgroundColor: const Color(0xFFE8E8E8),
-        appBar: const AppTopBar(),
+        appBar: AppTopBar(extraActions: [_buildYearSelector()]),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -89,18 +136,18 @@ class DashboardPage extends StatelessWidget {
                     BlocBuilder<AppointmentsBloc, AppointmentsState>(
                       builder: (context, state) {
                         if (state is AppointmentsLoaded) {
-                          final total = state.completadas + state.pendientes + state.enProgreso + state.anuladas;
+                          final total = state.total;
                           return SummaryCard(
                             icon: Icons.event_note,
                             iconColor: Colors.black87,
-                            title: "Citas:",
+                            title: "Solicitudes de servicio:",
                             value: total.toString(),
                           );
                         }
                         return const SummaryCard(
                           icon: Icons.event_note,
                           iconColor: Colors.black87,
-                          title: "Citas:",
+                          title: "Solicitudes de servicio:",
                           value: "...",
                         );
                       },
@@ -108,24 +155,25 @@ class DashboardPage extends StatelessWidget {
                     BlocBuilder<OrdersBloc, OrdersState>(
                       builder: (context, state) {
                         if (state is OrdersLoaded) {
-                          final total = state.completadas + state.pendientes + state.enProceso + state.canceladas;
+                          final total = state.total;
                           return SummaryCard(
                             icon: Icons.inventory,
                             iconColor: Colors.black87,
-                            title: "Órdenes:",
+                            title: "Ordenes:",
                             value: total.toString(),
                           );
                         }
                         return const SummaryCard(
                           icon: Icons.inventory,
                           iconColor: Colors.black87,
-                          title: "Órdenes:",
+                          title: "Ordenes:",
                           value: "...",
                         );
                       },
                     ),
                   ],
                 ),
+                const SizedBox(height: 20),
                 BlocBuilder<SalesBloc, SalesState>(
                   builder: (context, state) {
                     if (state is SalesLoading) {
@@ -133,12 +181,20 @@ class DashboardPage extends StatelessWidget {
                     } else if (state is SalesLoaded) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: YearSalesChartWidget(title: "Ventas", sales: state.sales),
+                        child: YearSalesChartWidget(
+                          title: "Ventas",
+                          sales: state.sales,
+                          year: _selectedYear,
+                        ),
                       );
                     } else if (state is MonthlySalesLoaded) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: MonthSalesChartWidget(month: state.month, dailySales: state.dailySales),
+                        child: MonthSalesChartWidget(
+                          month: state.month,
+                          dailySales: state.dailySales,
+                          year: _selectedYear,
+                        ),
                       );
                     } else if (state is SalesError) {
                       return Center(child: Text(state.message));
@@ -155,12 +211,14 @@ class DashboardPage extends StatelessWidget {
                         title: "Clientes",
                         sales: state.clients.map((c) => Sales(month: c.month, amount: c.amount)).toList(),
                         isClientChart: true,
+                        year: _selectedYear,
                       );
                     } else if (state is MonthlyClientsLoaded) {
                       return MonthSalesChartWidget(
                         month: state.month,
                         dailySales: state.dailyClients,
                         isClientChart: true,
+                        year: _selectedYear,
                       );
                     } else if (state is ClientsError) {
                       return Center(child: Text(state.message));
@@ -180,6 +238,7 @@ class DashboardPage extends StatelessWidget {
                           title: "Compras",
                           sales: state.purchases,
                           isPurchasesChart: true,
+                          year: _selectedYear,
                         ),
                       );
                     } else if (state is MonthlyPurchasesLoaded) {
@@ -187,6 +246,7 @@ class DashboardPage extends StatelessWidget {
                         month: state.month,
                         dailySales: state.dailyPurchases,
                         isPurchasesChart: true,
+                        year: _selectedYear,
                       );
                     } else if (state is PurchasesError) {
                       return Center(child: Text(state.message));
@@ -198,11 +258,14 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<AppointmentsBloc, AppointmentsState>(
                   builder: (context, state) {
                     if (state is AppointmentsLoaded) {
+                      if (state.states.isEmpty) return const SizedBox(height: 20);
+                      final labels = state.states.keys.toList();
+                      final values = state.states.values.toList();
                       return StateChartWidget(
-                        title: "Citas",
-                        description: "Comparación de citas en pendientes, en proceso y completadas",
-                        labels: ["Completados", "Pendientes", "En progreso", "Anulada"],
-                        values: [state.completadas, state.pendientes, state.enProgreso, state.anuladas],
+                        title: "Solicitudes de servicio",
+                        description: "Comparacion de solicitudes por estado",
+                        labels: labels,
+                        values: values,
                       );
                     }
                     return const SizedBox(height: 20);
@@ -212,11 +275,14 @@ class DashboardPage extends StatelessWidget {
                 BlocBuilder<OrdersBloc, OrdersState>(
                   builder: (context, state) {
                     if (state is OrdersLoaded) {
+                      if (state.states.isEmpty) return const SizedBox(height: 20);
+                      final labels = state.states.keys.toList();
+                      final values = state.states.values.toList();
                       return StateChartWidget(
-                        title: "Órdenes",
-                        description: "Comparación de órdenes en pendientes, en proceso y completadas",
-                        labels: ["Completados", "Pendientes", "En progreso", "Anulada"],
-                        values: [state.completadas, state.pendientes, state.enProceso, state.canceladas],
+                        title: "Ordenes",
+                        description: "Comparacion de ordenes por estado",
+                        labels: labels,
+                        values: values,
                       );
                     }
                     return const SizedBox(height: 20);

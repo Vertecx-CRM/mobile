@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:vertecx/presentation/pages/purchases_page.dart';
-import 'package:vertecx/presentation/pages/sales_page.dart';
-
-// Tabs
-import 'package:vertecx/presentation/pages/user_list_page.dart';
-import 'package:vertecx/presentation/pages/categoryProducts_list_page.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';
 
 // Rutas
 import 'package:vertecx/presentation/routes/app_routes.dart';
-
-// BottomNav
-import 'package:vertecx/presentation/widgets/navigationWidgets/AppBottomNav.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,29 +12,35 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _tab = 2;
   bool _menuOpen = false;
+
+  void _logout() {
+    Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bottomSafe = MediaQuery.of(context).padding.bottom;
-    final navHeight = kBottomNavigationBarHeight + bottomSafe;
-
     return Scaffold(
       extendBody: true,
       body: Stack(
         children: [
-          Padding(
-            padding: EdgeInsets.only(bottom: navHeight),
-            child: IndexedStack(
-              index: _tab,
-              children: const [
-                PurchasesPage(), // 1
-                SalesPage(),            // 3
-                DashboardPage(),           // 2 (inicio)
-                UserListPage(),            // 0
-                SizedBox.shrink(),         // 4 (botón menú)
-              ],
+          const DashboardPage(),
+          Positioned(
+            top: 8,
+            left: 8,
+            child: SafeArea(
+              child: Material(
+                elevation: 2,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                child: IconButton(
+                  onPressed: () => setState(() => _menuOpen = !_menuOpen),
+                  icon: Icon(
+                    _menuOpen ? Icons.close : Icons.menu,
+                    color: const Color(0xFFB20000),
+                  ),
+                ),
+              ),
             ),
           ),
           if (_menuOpen) ...[
@@ -53,169 +50,310 @@ class _HomeState extends State<Home> {
                 child: const ColoredBox(color: Colors.black45),
               ),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _QuickActionsPanel(
-                bottomPadding: navHeight,
-                onClose: () => setState(() => _menuOpen = false),
-              ),
-            ),
           ],
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 510),
+            curve: Curves.easeOut,
+            top: 0,
+            bottom: 0,
+            left: _menuOpen ? 0 : -260,
+            child: _SideMenuPanel(
+              onClose: () => setState(() => _menuOpen = false),
+              onLogout: () {
+                setState(() => _menuOpen = false);
+                _logout();
+              },
+            ),
+          ),
         ],
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: AppBottomNav(
-          currentIndex: _tab,
-          menuOpen: _menuOpen,
-          onItemTap: (i) {
-            if (i == 4) {
-              setState(() => _menuOpen = !_menuOpen);
-            } else {
-              setState(() => _tab = i);
-            }
-          },
-          onMenuToggle: () => setState(() => _menuOpen = !_menuOpen),
-        ),
       ),
     );
   }
 }
 
-class _QuickActionsPanel extends StatelessWidget {
-  const _QuickActionsPanel({
-    required this.bottomPadding,
+const _sideMenuWine = Color(0xFFB20000);
+
+class _SideMenuPanel extends StatefulWidget {
+  const _SideMenuPanel({
     required this.onClose,
+    required this.onLogout,
   });
 
-  final double bottomPadding;
   final VoidCallback onClose;
+  final VoidCallback onLogout;
+
+  @override
+  State<_SideMenuPanel> createState() => _SideMenuPanelState();
+}
+
+class _SideMenuPanelState extends State<_SideMenuPanel> {
+  final _expanded = <String>{};
+
+  void _toggle(String label) {
+    setState(() {
+      if (_expanded.contains(label)) {
+        _expanded.remove(label);
+      } else {
+        _expanded.add(label);
+      }
+    });
+  }
+
+  void _navigate(String route) {
+    widget.onClose();
+    Navigator.of(context).pushNamed(route);
+  }
+
+  Widget _buildItem(_SideMenuItem item) {
+    final leading = item.iconAsset != null
+        ? SvgPicture.asset(
+            item.iconAsset!,
+            width: 24,
+            height: 24,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          )
+        : item.icon != null
+            ? Icon(item.icon, color: Colors.white)
+            : const SizedBox.shrink();
+
+    if (!item.hasChildren) {
+      return ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        leading: leading,
+        title: Text(
+          item.label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        onTap: () => _navigate(item.route!),
+      );
+    }
+
+    final isExpanded = _expanded.contains(item.label);
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          leading: leading,
+          title: Text(
+            item.label,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+          trailing: AnimatedRotation(
+            turns: isExpanded ? 0.5 : 0,
+            duration: const Duration(milliseconds: 380),
+            child: const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
+          ),
+          onTap: () => _toggle(item.label),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 380),
+          curve: Curves.easeInOut,
+          child: Column(
+            children: [
+              if (isExpanded)
+                ...item.children!.map(
+                  (child) => Padding(
+                    padding: const EdgeInsets.only(left: 48),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                      dense: true,
+                      leading: const SizedBox.shrink(),
+                      title: Text(
+                        child.label,
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      onTap: () => _navigate(child.route!),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    const wine = Color(0xFF5C0F0F);
-    const red = Color(0xFFB20000);
-
-    final actions = const [
-      ('Compras',   'assets/image/truck.svg'),
-      ('Usuarios',  'assets/image/user.svg'),
-      ('Roles',     'assets/image/icon.svg'),
-      ('Ventas',    'assets/image/fi-rs-shopping-cart-add.svg'),
-      ('Productos', 'assets/image/box.svg'),
-      ('Servicios', 'assets/image/tool.svg'),
-    ];
-
-    void _go(String label) {
-      onClose();
-      switch (label) {
-        case 'Usuarios':
-          Navigator.of(context).pushNamed(AppRoutes.userList);
-          break;
-        case 'Compras':
-          Navigator.of(context).pushNamed(AppRoutes.purchasesHub);
-          break;
-        case 'Productos':
-          Navigator.of(context).pushNamed(AppRoutes.productsHub);
-          break;
-        case 'Servicios':
-          Navigator.of(context).pushNamed(AppRoutes.servicesHub);
-          break;
-        case 'Ventas':
-          Navigator.of(context).pushNamed(AppRoutes.salesHub);
-          break;
-        case 'Roles':
-          Navigator.of(context).pushNamed(AppRoutes.rolesList); // placeholder
-          break;
-        default:
-          break;
-      }
-    }
-
     return Material(
       color: Colors.transparent,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Material(
-          color: wine,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(22),
-            topRight: Radius.circular(22),
+      child: SafeArea(
+        child: Container(
+          width: 250,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            color: _sideMenuWine,
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black45,
+                blurRadius: 12,
+                offset: Offset(4, 0),
+              ),
+            ],
           ),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, bottomPadding + 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    onPressed: onClose,
-                    icon: const Icon(Icons.close, color: Colors.white),
-                  ),
-                ),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: actions.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 1,
-                  ),
-                  itemBuilder: (_, i) {
-                    final a = actions[i];
-                    final label = a.$1;
-                    final asset = a.$2;
-                    return Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () => _go(label),
-                        child: Ink(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  asset,
-                                  width: 34,
-                                  height: 34,
-                                  colorFilter: const ColorFilter.mode(
-                                    red,
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  label,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    color: red,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.white,
+                      child: const Text(
+                        'v',
+                        style: TextStyle(
+                          color: _sideMenuWine,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Vertecx',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            'Panel de gestión',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: widget.onClose,
+                      icon: const Icon(Icons.close, color: Colors.white),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const Divider(color: Colors.white24, height: 1),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.only(top: 8),
+                        children: _menuItems.map(_buildItem).toList(),
+                      ),
+                    ),
+                    const Divider(color: Colors.white24, height: 1),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      leading: const Icon(Icons.logout, color: Colors.white),
+                      title: const Text(
+                        'Salir',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      onTap: widget.onLogout,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+
+class _SideMenuItem {
+  const _SideMenuItem({
+    required this.label,
+    this.icon,
+    this.iconAsset,
+    this.route,
+    this.children,
+  });
+
+  final String label;
+  final IconData? icon;
+  final String? iconAsset;
+  final String? route;
+  final List<_SideMenuItem>? children;
+
+  bool get hasChildren => children != null && children!.isNotEmpty;
+}
+
+const _menuItems = [
+  _SideMenuItem(
+    label: 'Perfil',
+    iconAsset: 'assets/image/userPerfil.svg',
+    route: AppRoutes.profile,
+  ),
+  _SideMenuItem(
+    label: 'Dashboard',
+    icon: Icons.home,
+    route: AppRoutes.dashboard,
+  ),
+  _SideMenuItem(
+    label: 'Usuarios',
+    icon: Icons.person,
+    route: AppRoutes.userList,
+  ),
+  _SideMenuItem(
+    label: 'Roles',
+    icon: Icons.group,
+    route: AppRoutes.rolesList,
+  ),
+  _SideMenuItem(
+    label: 'Compras',
+    icon: Icons.local_shipping,
+    children: [
+      _SideMenuItem(label: 'Compras', route: AppRoutes.purchases),
+      _SideMenuItem(label: 'Orden de compra', route: AppRoutes.purchaseOrders),
+    ],
+  ),
+  _SideMenuItem(
+    label: 'Productos',
+    icon: Icons.widgets,
+    children: [
+      _SideMenuItem(label: 'Productos', route: AppRoutes.productsList),
+      _SideMenuItem(label: 'Categorías', route: AppRoutes.productCategories),
+    ],
+  ),
+  _SideMenuItem(
+    label: 'Servicios',
+    icon: Icons.build,
+    children: [
+      _SideMenuItem(label: 'Servicios', route: AppRoutes.servicesList),
+      _SideMenuItem(label: 'Técnicos', route: AppRoutes.techniciansList),
+    ],
+  ),
+  _SideMenuItem(
+    label: 'Ventas',
+    icon: Icons.shopping_cart,
+    children: [
+      _SideMenuItem(label: 'Ventas', route: AppRoutes.sales),
+      _SideMenuItem(label: 'Clientes', route: AppRoutes.clients),
+      _SideMenuItem(label: 'Solicitudes', route: AppRoutes.requests),
+      _SideMenuItem(label: 'Ordenes', route: AppRoutes.salesOrders),
+      _SideMenuItem(label: 'Citas', route: AppRoutes.salesAppointments),
+    ],
+  ),
+];

@@ -18,24 +18,42 @@ class ProductCardWidget extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Imagen
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                product.imagePath,
+              child: Image.network(
+                product.imageUrl,
                 width: 90,
                 height: 90,
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) {
+                  return Container(
+                    width: 90,
+                    height: 90,
+                    color: const Color(0xFFEFEFEF),
+                    alignment: Alignment.center,
+                    child: const Icon(Icons.broken_image, size: 26),
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    width: 90,
+                    height: 90,
+                    alignment: Alignment.center,
+                    child: const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 12),
-
-            // Información del producto
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Nombre
                   Text(
                     product.name,
                     style: const TextStyle(
@@ -45,8 +63,6 @@ class ProductCardWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
-
-                  // Estado
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
@@ -61,7 +77,7 @@ class ProductCardWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        product.statusString, // ← usa el getter
+                        product.statusString,
                         style: TextStyle(
                           color: product.status == ProductStatus.activo
                               ? const Color(0xff168700)
@@ -73,20 +89,18 @@ class ProductCardWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-
-                  // Precio y Stock
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        product.formattedPrice, // ← formateado en pesos
+                        product.formattedPrice,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                         ),
                       ),
                       Text(
-                        "Stock: ${product.stockString}", // ← dinámico
+                        "Stock: ${product.stockString}",
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 13,
@@ -95,8 +109,6 @@ class ProductCardWidget extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 10),
-
-                  // Botón
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

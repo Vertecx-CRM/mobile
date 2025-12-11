@@ -104,22 +104,31 @@ class AppointmentCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          cita.orden.tipoServicio,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFB20000),
+                        Expanded(
+                          child: Text(
+                            cita.orden.tipoServicio,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB20000),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 6),
-                        Text(
-                          cita.tipoCita,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: tipoCitaColor,
+                        Flexible(
+                          child: Text(
+                            cita.tipoCita,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: tipoCitaColor,
+                            ),
                           ),
                         ),
                       ],

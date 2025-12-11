@@ -1,8 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
+
+// Calendar
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
+
+// Roles
+import 'package:vertecx/data/repositories/roles/roles_repository.dart';
+import 'package:vertecx/data/repositories/roles/bloc/roles_bloc.dart';
+import 'package:vertecx/data/repositories/roles/bloc/roles_event.dart';
+
+// Technicians
+import 'package:vertecx/data/repositories/technicians/technicians_repository.dart';
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_bloc.dart';
+import 'package:vertecx/data/repositories/technicians/bloc/technicians_event.dart';
+
+// Services
+import 'package:vertecx/data/repositories/services/services_repository.dart';
+import 'package:vertecx/data/repositories/services/bloc/services_bloc.dart';
+import 'package:vertecx/data/repositories/services/bloc/services_event.dart';
+
+// Products
+import 'package:vertecx/data/repositories/products/products_repository.dart';
+import 'package:vertecx/data/repositories/products/bloc/products_bloc.dart';
+
+// Pages
 import 'package:vertecx/presentation/pages/clients_page.dart';
 import 'package:vertecx/presentation/pages/products_page.dart';
 import 'package:vertecx/presentation/pages/purchases_page.dart';
@@ -25,7 +48,6 @@ import 'package:vertecx/presentation/pages/roles_page.dart';
 import 'package:vertecx/presentation/pages/OrderServicePage.dart';
 import 'package:vertecx/presentation/pages/requests_page.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('es_ES', null);
@@ -39,7 +61,22 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => CalendarBloc(AppointmentRepository())),
+        BlocProvider(
+          create: (_) => CalendarBloc(AppointmentRepository()),
+        ),
+        BlocProvider(
+          create: (_) => RolesBloc(RolesRepository())..add(LoadRolesEvent()),
+        ),
+        BlocProvider(
+          create: (_) => TechniciansBloc(TechniciansRepository())
+            ..add(LoadTechniciansEvent()),
+        ),
+        BlocProvider(
+          create: (_) => ServicesBloc(ServicesRepository())..add(LoadServicesEvent()),
+        ),
+        BlocProvider(
+          create: (_) => ProductsBloc(ProductsRepository()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -58,7 +95,7 @@ class MainApp extends StatelessWidget {
           AppRoutes.salesHub: (_) => const SalesHubPage(),
           AppRoutes.purchaseOrders: (_) => const PurchaseOrdersPage(),
           AppRoutes.purchases: (_) => const PurchasesPage(),
-          AppRoutes.productCategories: (_) => CategoryProductListPage(),
+          AppRoutes.productCategories: (_) => const CategoryProductListPage(),
           AppRoutes.productsList: (_) => const ProductsPage(),
           AppRoutes.servicesList: (_) => const ServicesPage(),
           AppRoutes.techniciansList: (_) => const TechniciansPage(),
@@ -91,5 +128,5 @@ class _Placeholder extends StatelessWidget {
         ),
       ),
     );
-    }
+  }
 }

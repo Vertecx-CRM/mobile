@@ -3,9 +3,19 @@ import 'dart:math';
 import 'package:vertecx/data/models/appointments/appointment_model.dart';
 
 final List<String> months = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
 
 final List<AppointmentEvent> mockAppointments = [
   AppointmentEvent(
@@ -22,10 +32,9 @@ final List<AppointmentEvent> mockAppointments = [
       monto: "\$100.000 COP",
       nombreCliente: "Juan Pérez",
       direccion: "Calle 123 #45-67",
-      tecnicos: [
-        Technician(titulo: "Tec. Redes", nombre: "Carlos López"),
-      ],
+      tecnicos: [Technician(titulo: "Tec. Redes", nombre: "Carlos López")],
       descripcion: "Mantenimiento de router y switches.",
+      serviceRequestId: 5,
     ),
     observaciones: "Cliente requiere mantenimiento trimestral.",
     estado: "Pendiente",
@@ -56,6 +65,7 @@ final List<AppointmentEvent> mockAppointments = [
         MaterialItem(nombre: "Servidor HP ProLiant", cantidad: 1),
         MaterialItem(nombre: "Cable de red Cat6", cantidad: 20),
       ],
+      orderServiceId: 7,
     ),
     observaciones: "Instalación en centro de datos.",
     estado: "En-proceso",
@@ -82,9 +92,8 @@ final List<AppointmentEvent> mockAppointments = [
       ],
       descripcion: "Cambio de cámara dañada.",
       servicio: "Garantía de cámaras de seguridad",
-      materiales: [
-        MaterialItem(nombre: "Cámara Hikvision", cantidad: 1),
-      ],
+      materiales: [MaterialItem(nombre: "Cámara Hikvision", cantidad: 1)],
+      orderServiceId: 8,
     ),
     observaciones: "Equipo presentaba fallas en imagen.",
     estado: "Finalizado",

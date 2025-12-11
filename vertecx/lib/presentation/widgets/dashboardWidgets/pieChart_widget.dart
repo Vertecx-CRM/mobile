@@ -98,35 +98,34 @@ class ProductsPieChartWidget extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisExtent: 28, 
-                    crossAxisSpacing: 20,
+                    mainAxisExtent: 32,
+                    crossAxisSpacing: 16,
                   ),
                   itemCount: categories.length,
                   itemBuilder: (context, i) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 30),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 14,
-                            height: 14,
-                            decoration: BoxDecoration(
-                              color: colors[i % colors.length],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                    return Row(
+                      children: [
+                        Container(
+                          width: 14,
+                          height: 14,
+                          decoration: BoxDecoration(
+                            color: colors[i % colors.length],
+                            borderRadius: BorderRadius.circular(4),
                           ),
-                          const SizedBox(width: 6),
-                          Text(
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
                             categories[i],
-                            style: TextStyle(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
                               color: Colors.black,
-                              fontWeight: i % 2 == 1
-                                  ? FontWeight.bold
-                                  : FontWeight.bold, 
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     );
                   },
                 ),

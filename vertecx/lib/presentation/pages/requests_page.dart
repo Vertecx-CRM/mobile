@@ -5,7 +5,6 @@ import 'package:vertecx/data/repositories/request/bloc/requests_bloc.dart';
 import 'package:vertecx/data/repositories/request/bloc/requests_event.dart';
 import 'package:vertecx/data/repositories/request/bloc/requests_state.dart';
 import 'package:vertecx/data/repositories/request/request_repository.dart';
-import 'package:vertecx/data/services/service_requests_service.dart';
 import 'package:vertecx/presentation/widgets/requestWidgets/request_card.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
@@ -15,11 +14,9 @@ class RequestsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RequestsBloc>(
-      create: (_) => RequestsBloc(
-        RequestsRepository(
-          const ServiceRequestsService(baseUrl: 'http://localhost:3001'),
-        ),
-      )..add(const RequestsLoadRequested()),
+      create: (_) =>
+          RequestsBloc(RequestsRepository())
+            ..add(const RequestsLoadRequested()),
       child: const _RequestsScaffold(),
     );
   }
@@ -128,7 +125,9 @@ class _RequestsList extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: state.loadingMore
                         ? null
-                        : () => context.read<RequestsBloc>().add(const RequestsLoadMorePressed()),
+                        : () => context.read<RequestsBloc>().add(
+                            const RequestsLoadMorePressed(),
+                          ),
                     icon: state.loadingMore
                         ? const SizedBox(
                             width: 16,
@@ -197,7 +196,7 @@ class _SearchBoxState extends State<_SearchBox> {
             blurRadius: 2,
             color: Color(0x11000000),
             offset: Offset(0, 1),
-          )
+          ),
         ],
       ),
       child: Row(

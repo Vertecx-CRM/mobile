@@ -11,8 +11,16 @@ class UserService {
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final List<dynamic> data = jsonData['data'] ?? [];
-      return data.map((e) => UserModel.fromJson(e)).toList();
+      List<dynamic> payload;
+      if (jsonData is List) {
+        payload = jsonData;
+      } else if (jsonData is Map<String, dynamic>) {
+        payload = List<dynamic>.from(jsonData['data'] ?? []);
+      } else {
+        payload = [];
+      }
+
+      return payload.map((e) => UserModel.fromJson(e)).toList();
     } else {
       throw Exception('Error al obtener usuarios: ${response.statusCode}');
     }

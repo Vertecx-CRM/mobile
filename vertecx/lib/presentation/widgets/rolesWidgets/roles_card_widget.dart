@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
-
-enum RoleStatus { activo, inactivo }
-
-class RoleModel {
-  final String id;
-  final String name;
-  final RoleStatus status;
-
-  RoleModel({required this.id, required this.name, required this.status});
-
-  String get statusString =>
-      status == RoleStatus.activo ? "Activo" : "Inactivo";
-}
+import 'package:vertecx/data/models/roles/role_model.dart';
 
 class RoleCardWidget extends StatelessWidget {
   final RoleModel role;
 
   const RoleCardWidget({super.key, required this.role});
+
+  bool get isActive => role.status == RoleStatus.activo;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +19,6 @@ class RoleCardWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Nombre e ID
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -48,19 +37,18 @@ class RoleCardWidget extends StatelessWidget {
               ],
             ),
 
-            // Estado
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: role.status == RoleStatus.activo
+                color: isActive
                     ? const Color(0xffD2F5D3) // verde suave
                     : const Color(0xffFF8888), // rojo suave
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                role.statusString,
+                isActive ? "Activo" : "Inactivo",
                 style: TextStyle(
-                  color: role.status == RoleStatus.activo
+                  color: isActive
                       ? const Color(0xff168700)
                       : const Color(0xff870000),
                   fontWeight: FontWeight.bold,

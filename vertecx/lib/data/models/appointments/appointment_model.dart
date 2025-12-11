@@ -5,10 +5,7 @@ class Technician extends Equatable {
   final String titulo;
   final String nombre;
 
-  const Technician({
-    required this.titulo,
-    required this.nombre,
-  });
+  const Technician({required this.titulo, required this.nombre});
 
   @override
   List<Object?> get props => [titulo, nombre];
@@ -19,10 +16,7 @@ class MaterialItem extends Equatable {
   final String nombre;
   final int cantidad;
 
-  const MaterialItem({
-    required this.nombre,
-    required this.cantidad,
-  });
+  const MaterialItem({required this.nombre, required this.cantidad});
 
   @override
   List<Object?> get props => [nombre, cantidad];
@@ -31,15 +25,17 @@ class MaterialItem extends Equatable {
 /// Modelo de Orden
 class Orden extends Equatable {
   final String id;
-  final String tipoServicio; 
-  final String? tipoMantenimiento; 
+  final String tipoServicio;
+  final String? tipoMantenimiento;
   final String monto;
   final String nombreCliente;
   final String direccion;
   final List<Technician> tecnicos;
   final String descripcion;
-  final String? servicio; 
+  final String? servicio;
   final List<MaterialItem>? materiales;
+  final int? serviceRequestId;
+  final int? orderServiceId;
 
   const Orden({
     required this.id,
@@ -52,21 +48,25 @@ class Orden extends Equatable {
     required this.descripcion,
     this.servicio,
     this.materiales,
+    this.serviceRequestId,
+    this.orderServiceId,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        tipoServicio,
-        tipoMantenimiento,
-        monto,
-        nombreCliente,
-        direccion,
-        tecnicos,
-        descripcion,
-        servicio,
-        materiales,
-      ];
+    id,
+    tipoServicio,
+    tipoMantenimiento,
+    monto,
+    nombreCliente,
+    direccion,
+    tecnicos,
+    descripcion,
+    servicio,
+    materiales,
+    serviceRequestId,
+    orderServiceId,
+  ];
 }
 
 /// Modelo de AppointmentEvent
@@ -81,10 +81,10 @@ class AppointmentEvent extends Equatable {
   final Orden orden;
 
   final String observaciones;
-  final String estado; 
-  final String subestado; 
+  final String estado;
+  final String subestado;
   final String? motivoCancelacion;
-  final List<String>? evidencia; 
+  final List<String>? evidencia;
   final String? comprobantePago;
   final String tipoCita;
   final String? horaCancelacion;
@@ -112,20 +112,20 @@ class AppointmentEvent extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        horaInicio,
-        horaFin,
-        dia,
-        mes,
-        anio,
-        orden,
-        observaciones,
-        estado,
-        subestado,
-        motivoCancelacion,
-        evidencia,
-        comprobantePago,
-        tipoCita,
-        horaCancelacion,
-      ];
+    id,
+    horaInicio,
+    horaFin,
+    dia,
+    mes,
+    anio,
+    orden,
+    observaciones,
+    estado,
+    subestado,
+    motivoCancelacion,
+    evidencia,
+    comprobantePago,
+    tipoCita,
+    horaCancelacion,
+  ];
 }

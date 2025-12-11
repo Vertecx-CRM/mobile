@@ -1,23 +1,34 @@
 enum RoleStatus { activo, inactivo }
 
 class RoleModel {
-  final String id;
+  final int id;
   final String name;
   final RoleStatus status;
-  RoleModel({required this.id, required this.name, required this.status});
 
-  // Método de utilidad para mostrar el estado como texto
-  String get statusString =>
-      status == RoleStatus.activo ? "Activo" : "Inactivo";
+  RoleModel({
+    required this.id,
+    required this.name,
+    required this.status,
+  });
 
-  // Método para cambiar el estado
-  RoleModel toggleStatus() {
+  static int _asInt(dynamic v) {
+    if (v is int) return v;
+    return int.tryParse(v?.toString() ?? '') ?? 0;
+  }
+
+  static RoleStatus _parseStatus(dynamic v) {
+    final raw = (v ?? '').toString().toLowerCase().trim();
+    if (raw == 'active' || raw == 'activo' || raw == '1' || raw == 'true') return RoleStatus.activo;
+    if (raw == 'inactive' || raw == 'inactivo' || raw == '0' || raw == 'false') return RoleStatus.inactivo;
+    if (raw.isEmpty) return RoleStatus.activo;
+    return RoleStatus.inactivo;
+  }
+
+  factory RoleModel.fromJson(Map<String, dynamic> json) {
     return RoleModel(
-      id: id,
-      name: name,
-      status: status == RoleStatus.activo
-          ? RoleStatus.inactivo
-          : RoleStatus.activo,
+      id: _asInt(json['roleid'] ?? json['roleId'] ?? json['id']),
+      name: (json['name'] ?? json['rolename'] ?? '').toString(),
+      status: _parseStatus(json['status']),
     );
   }
 }

@@ -25,15 +25,20 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     // Obtener el estado desde stateid
-    final stateId = json['stateid'] as int;
+    final rawStateId = json['stateid'];
+    final stateId = rawStateId is int
+        ? rawStateId
+        : int.tryParse(rawStateId?.toString() ?? "") ?? 2;
     final estado = stateId == 1 ? UserStatus.activo : UserStatus.inactivo;
 
-    // Obtener el rol desde roleconfiguration.roles.name
+    // Obtener el rol desde roles.name o roleconfiguration.roles.name
     String roleName = "Sin rol";
-    try {
-      roleName = json['roleconfiguration']['roles']['name'] as String;
-    } catch (e) {
-      // Si no existe, deja "Sin rol"
+    final roleSource = json['roles'] ?? json['roleconfiguration']?['roles'];
+    if (roleSource is Map && roleSource['name'] != null) {
+      final name = roleSource['name'].toString().trim();
+      if (name.isNotEmpty) {
+        roleName = name;
+      }
     }
 
     String tipoDoc = "Sin tipo";

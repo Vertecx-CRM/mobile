@@ -15,14 +15,16 @@ class CalendarLoading extends CalendarState {}
 class CalendarLoaded extends CalendarState {
   final DateTime selectedDate;
   final List<AppointmentEvent> appointments;
+  final Map<DateTime, List<AppointmentEvent>> appointmentsByDay;
 
   const CalendarLoaded({
     required this.selectedDate,
     required this.appointments,
+    required this.appointmentsByDay,
   });
 
   @override
-  List<Object?> get props => [selectedDate, appointments];
+  List<Object?> get props => [selectedDate, appointments, appointmentsByDay];
 }
 
 class CalendarMonthLoaded extends CalendarState {
@@ -55,4 +57,3 @@ class AllAppointmentsLoaded extends CalendarState {
   @override
   List<Object?> get props => [appointments];
 }
-

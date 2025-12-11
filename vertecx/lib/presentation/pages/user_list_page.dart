@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vertecx/data/models/users/user_model.dart';
 import 'package:vertecx/data/services/user_service.dart'; 
-import 'package:vertecx/presentation/helpers/app_dialogs.dart';
 import 'package:vertecx/presentation/widgets/usersWidgets/user_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
@@ -12,18 +11,50 @@ class UserListPage extends StatefulWidget {
   const UserListPage({super.key});
 
   @override
-  State<UserListPage> createState() => _UserListPageState();
+  State<UserListPage> createState() => UserListPageState();
 }
 
-class _UserListPageState extends State<UserListPage> {
+class UserListPageState extends State<UserListPage> {
+  late final UserBloc _bloc;
   int _usersToShow = 4;
   String _searchQuery = "";
   final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = UserBloc(UserService())..add(LoadUsers());
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
 
   void _loadMoreUsers(int totalUsers) {
     setState(() {
       _usersToShow = (_usersToShow + 2).clamp(0, totalUsers);
     });
+  }
+
+  void reloadUsers() {
+    _bloc.add(LoadUsers());
+  }
+
+  String? _firstAdminId(List<UserModel> users) {
+    String? adminId;
+    int? minId;
+    for (final user in users) {
+      if (user.roleString.toLowerCase() != 'admin') continue;
+      final parsedId = int.tryParse(user.id);
+      if (parsedId == null) continue;
+      if (minId == null || parsedId < minId) {
+        minId = parsedId;
+        adminId = user.id;
+      }
+    }
+    return adminId;
   }
 
   void _scrollToTop() {
@@ -36,8 +67,8 @@ class _UserListPageState extends State<UserListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => UserBloc(UserService())..add(LoadUsers()),
+    return BlocProvider.value(
+      value: _bloc,
       child: BlocListener<UserBloc, UserState>(
         listenWhen: (previous, current) {
           return previous is UserLoaded && current is UserLoaded;
@@ -69,6 +100,7 @@ class _UserListPageState extends State<UserListPage> {
                 final filteredUsers = state.users
                     .where((u) => u.matchesQuery(_searchQuery))
                     .toList();
+                final protectedAdminId = _firstAdminId(state.users);
 
                 final users = filteredUsers.take(_usersToShow).toList();
                 final allUsersLoaded = _usersToShow >= filteredUsers.length;
@@ -93,11 +125,14 @@ class _UserListPageState extends State<UserListPage> {
                         ...users.map(
                           (user) => UserCardWidget(
                             user: user,
-                            onToggleStatus: () {
-                              context.read<UserBloc>().add(
-                                ToggleUserStatus(user.id),
-                              );
-                            },
+                            onToggleStatus:
+                                (protectedAdminId != null && user.id == protectedAdminId)
+                                    ? null
+                                    : () {
+                                        context.read<UserBloc>().add(
+                                              ToggleUserStatus(user.id),
+                                            );
+                                      },
                           ),
                         ),
                         const SizedBox(height: 20),
