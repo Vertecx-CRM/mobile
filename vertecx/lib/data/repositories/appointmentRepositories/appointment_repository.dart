@@ -92,6 +92,8 @@ class AppointmentRepository {
         ? _formatCurrency(order.total)
         : 'Valor no registrado';
 
+    final estadoLabel = _translateEstado(order.estadoLabel);
+
     return AppointmentEvent(
       id: order.id,
       horaInicio: inicio,
@@ -102,7 +104,10 @@ class AppointmentRepository {
       orden: Orden(
         id: order.id.toString(),
         tipoServicio: order.titulo,
-        tipoMantenimiento: order.estadoLabel,
+        tipoMantenimiento: (order.serviceType != null &&
+                order.serviceType!.trim().isNotEmpty)
+            ? order.serviceType
+            : (estadoLabel.isNotEmpty ? estadoLabel : null),
         monto: monto,
         nombreCliente: order.cliente,
         direccion: order.client != null
@@ -118,8 +123,8 @@ class AppointmentRepository {
         orderServiceId: order.id,
       ),
       observaciones: '',
-      estado: order.estadoLabel.isNotEmpty ? order.estadoLabel : 'Pendiente',
-      subestado: order.estadoLabel,
+      estado: estadoLabel.isNotEmpty ? estadoLabel : 'Pendiente',
+      subestado: estadoLabel.isNotEmpty ? estadoLabel : 'Pendiente',
       tipoCita: 'orden',
     );
   }
@@ -134,6 +139,10 @@ class AppointmentRepository {
     final servicioName =
         (request.service?['name'] ?? request.serviceType)?.toString() ??
         request.serviceType;
+
+    final estadoLabel = _translateEstado(
+      (request.state?['name'] ?? 'Pendiente').toString(),
+    );
 
     return AppointmentEvent(
       id: request.serviceRequestId,
@@ -157,14 +166,42 @@ class AppointmentRepository {
         orderServiceId: null,
       ),
       observaciones: request.description,
-      estado: (request.state?['name'] ?? 'Pendiente').toString(),
-      subestado: (request.state?['name'] ?? 'Pendiente').toString(),
+      estado: estadoLabel.isNotEmpty ? estadoLabel : 'Pendiente',
+      subestado: estadoLabel.isNotEmpty ? estadoLabel : 'Pendiente',
       tipoCita: 'solicitud',
     );
   }
 
   static String _formatTime(DateTime dateTime) {
     return DateFormat('HH:mm').format(dateTime);
+  }
+
+  static String _translateEstado(String raw) {
+    final normalized = raw.trim().toLowerCase();
+    if (normalized.isEmpty) return '';
+
+    switch (normalized) {
+      case 'finished':
+      case 'finalizado':
+        return 'Finalizado';
+      case 'cancel':
+      case 'canceled':
+      case 'cancelled':
+      case 'cancelado':
+        return 'Cancelado';
+      case 'in process':
+      case 'in-process':
+      case 'in_process':
+      case 'en-proceso':
+      case 'en proceso':
+        return 'En-proceso';
+      case 'pendient':
+      case 'pending':
+      case 'pendiente':
+        return 'Pendiente';
+      default:
+        return raw;
+    }
   }
 
   static String _formatCurrency(int value) {

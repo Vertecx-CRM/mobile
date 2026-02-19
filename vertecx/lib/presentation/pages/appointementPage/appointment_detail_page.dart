@@ -27,7 +27,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppTopBar(title: 'Detalles de la cita'),
+      appBar: const AppTopBar(title: 'Detalles de la cita', showBack: true),
       backgroundColor: const Color(0xFFE8E8E8),
       body: Column(
         children: [

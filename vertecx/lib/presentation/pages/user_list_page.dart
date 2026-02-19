@@ -6,6 +6,8 @@ import 'package:vertecx/presentation/widgets/usersWidgets/user_card_widget.dart'
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/data/repositories/userRepositories/bloc/user_bloc.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.dart';
+import 'package:vertecx/presentation/routes/app_routes.dart';
 
 class UserListPage extends StatefulWidget {
   const UserListPage({super.key});
@@ -19,11 +21,19 @@ class UserListPageState extends State<UserListPage> {
   int _usersToShow = 4;
   String _searchQuery = "";
   final ScrollController _scrollController = ScrollController();
+  late final List<String> _permissions;
 
   @override
   void initState() {
     super.initState();
     _bloc = UserBloc(UserService())..add(LoadUsers());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    _permissions = args is List<String> ? args : const <String>[];
   }
 
   @override
@@ -76,7 +86,21 @@ class UserListPageState extends State<UserListPage> {
         listener: (context, state) {
         },
         child: Scaffold(
-          appBar: const AppTopBar(title: 'Usuarios'),
+          appBar: const AppTopBar(title: 'Usuarios', showMenu: true),
+          drawer: Drawer(
+            backgroundColor: Colors.transparent,
+            child: SideMenuPanel(
+              permissions: _permissions,
+              onClose: () => Navigator.of(context).maybePop(),
+              onLogout: () {
+                Navigator.of(context).maybePop();
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  AppRoutes.login,
+                  (route) => false,
+                );
+              },
+            ),
+          ),
           backgroundColor: const Color(0xFFE8E8E8),
           body: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {

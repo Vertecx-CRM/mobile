@@ -18,6 +18,7 @@ class OrderService {
   final String description;
   final Map<String, dynamic>? client;
   final Map<String, dynamic>? state;
+  final String? serviceType;
   final List<OrderServiceHistoryEntry> history;
 
   const OrderService({
@@ -36,6 +37,7 @@ class OrderService {
     this.description = '',
     this.client,
     this.state,
+    this.serviceType,
     required this.history,
   });
 
@@ -63,12 +65,19 @@ class OrderService {
     final int total = totalBase + viaticos;
 
     String titulo;
+    String? serviceType;
     final servicesRaw = (json['services'] as List<dynamic>?) ?? [];
     if (servicesRaw.isNotEmpty) {
       final first = servicesRaw.first;
       if (first is Map<String, dynamic>) {
         final service = _asMap(first['service']);
         final serviceName = (service?['name'] ?? '').toString().trim();
+        final typeName = (service?['typeofservice']?['name'] ?? '')
+            .toString()
+            .trim();
+        if (typeName.isNotEmpty) {
+          serviceType = typeName;
+        }
         if (serviceName.isNotEmpty) {
           titulo = serviceName;
         } else if (description.isNotEmpty) {
@@ -110,6 +119,7 @@ class OrderService {
       description: description,
       client: clientRaw,
       state: stateRaw,
+      serviceType: serviceType,
       history: ((json['history'] as List<dynamic>?) ?? [])
           .whereType<Map<String, dynamic>>()
           .map(OrderServiceHistoryEntry.fromJson)

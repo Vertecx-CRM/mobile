@@ -35,33 +35,35 @@ class AppointmentOrderHistory extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               ...history.asMap().entries.map((entry) {
-                final description = entry.value.description;
+                final actionLabel = entry.value.actionLabel.trim();
+                final description = entry.value.description?.trim();
+                final title =
+                    actionLabel.isNotEmpty ? actionLabel : "Orden actualizada";
+                final detail = (description != null && description.isNotEmpty)
+                    ? description
+                    : "Por: Sistema";
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      entry.value.actionLabel,
+                      DateFormat(
+                        'dd/MM/yyyy, h:mm a',
+                        'es',
+                      ).format(entry.value.createdAt),
+                      style: const TextStyle(color: Color(0xFF6E6E6E)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      title,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF000000),
                       ),
                     ),
-                    if (description != null && description.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          description,
-                          style: const TextStyle(color: Color(0xFF666666)),
-                        ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        DateFormat(
-                          'dd/MM/yyyy HH:mm',
-                        ).format(entry.value.createdAt),
-                        style: const TextStyle(color: Color(0xFF6E6E6E)),
-                      ),
+                    const SizedBox(height: 4),
+                    Text(
+                      detail,
+                      style: const TextStyle(color: Color(0xFF666666)),
                     ),
                     if (entry.key != history.length - 1)
                       const Padding(

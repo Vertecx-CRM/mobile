@@ -6,6 +6,8 @@ import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 import 'package:vertecx/data/services/category_products_service.dart';
 import 'package:vertecx/data/repositories/categoryProductRepositories/bloc/category_product_bloc.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.dart';
+import 'package:vertecx/presentation/routes/app_routes.dart';
 
 class CategoryProductListPage extends StatefulWidget {
   const CategoryProductListPage({super.key});
@@ -19,6 +21,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
   int _categoriesToShow = 4;
   String _searchQuery = "";
   final ScrollController _scrollController = ScrollController();
+  List<String> _permissions = const <String>[];
 
   void _loadMoreCategories(int totalCategories) {
     setState(() {
@@ -35,12 +38,35 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_permissions.isEmpty) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      _permissions = args is List<String> ? args : const <String>[];
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
           CategoryProductBloc(CategoryProductsService())..add(LoadCategories()),
       child: Scaffold(
-        appBar: const AppTopBar(title: 'Categorías de productos'),
+        appBar: const AppTopBar(title: 'Categorías de productos', showMenu: true),
+        drawer: Drawer(
+          backgroundColor: Colors.transparent,
+          child: SideMenuPanel(
+            permissions: _permissions,
+            onClose: () => Navigator.of(context).maybePop(),
+            onLogout: () {
+              Navigator.of(context).maybePop();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.login,
+                (route) => false,
+              );
+            },
+          ),
+        ),
         backgroundColor: const Color(0xFFE8E8E8),
         body: BlocBuilder<CategoryProductBloc, CategoryProductState>(
           builder: (context, state) {
@@ -79,7 +105,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                     children: [
                       const SizedBox(height: 8),
                       Buscar(
-                        hintText: "Buscar categoría...",
+                        hintText: "Buscar categorí­a...",
                         onChanged: (value) {
                           setState(() => _searchQuery = value);
                         },
@@ -97,7 +123,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // Botón para cargar más
+                      // BotÃ³n para cargar mÃ¡s
                       if (filteredCategories.isNotEmpty)
                         if (!allCategoriesLoaded)
                           TextButton(
@@ -111,7 +137,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                                   height: 20,
                                 ),
                                 const Text(
-                                  "Cargar más Categorías de productos",
+                                  "Cargar más Categorí­as de productos",
                                   style: TextStyle(color: Color(0xFFB20000)),
                                 ),
                               ],
@@ -121,7 +147,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "Ya están todas las categorías de productos",
+                              "Ya están todas las categorí­as de productos",
                               style: TextStyle(
                                 color: Color(0xFFB20000),
                                 fontWeight: FontWeight.bold,
@@ -146,7 +172,7 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
               );
             }
 
-            // Estado inicial vacío
+            // Estado inicial vacÃ­o
             return const Center(child: CircularProgressIndicator());
           },
         ),

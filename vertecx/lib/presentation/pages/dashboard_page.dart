@@ -16,6 +16,8 @@ import 'package:vertecx/presentation/widgets/dashboardWidgets/pieChart_widget.da
 import '../widgets/dashboardWidgets/barChart_widget.dart';
 import '../widgets/dashboardWidgets/graphLines_widget.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.dart';
+import 'package:vertecx/presentation/routes/app_routes.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -27,6 +29,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late final List<int> _years;
   late int _selectedYear;
+  late final List<String> _permissions;
 
   @override
   void initState() {
@@ -34,6 +37,13 @@ class _DashboardPageState extends State<DashboardPage> {
     final currentYear = DateTime.now().year;
     _years = List.generate(6, (index) => currentYear - index);
     _selectedYear = currentYear;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    _permissions = args is List<String> ? args : const <String>[];
   }
 
   Widget _buildYearSelector() {
@@ -81,7 +91,24 @@ class _DashboardPageState extends State<DashboardPage> {
       ],
       child: Scaffold(
         backgroundColor: const Color(0xFFE8E8E8),
-        appBar: AppTopBar(extraActions: [_buildYearSelector()]),
+        appBar: AppTopBar(
+          showMenu: true,
+          extraActions: [_buildYearSelector()],
+        ),
+        drawer: Drawer(
+          backgroundColor: Colors.transparent,
+          child: SideMenuPanel(
+            permissions: _permissions,
+            onClose: () => Navigator.of(context).maybePop(),
+            onLogout: () {
+              Navigator.of(context).maybePop();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                AppRoutes.login,
+                (route) => false,
+              );
+            },
+          ),
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -296,6 +323,15 @@ class _DashboardPageState extends State<DashboardPage> {
                     if (state is CalendarLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is AllAppointmentsLoaded) {
+                      final now = DateTime.now();
+                      final todaysAppointments = state.appointments
+                          .where(
+                            (cita) =>
+                                cita.dia == now.day &&
+                                cita.mes == now.month &&
+                                cita.anio == now.year,
+                          )
+                          .toList();
                       return Container(
                         padding: const EdgeInsets.all(16),
                         margin: const EdgeInsets.only(top: 12),
@@ -318,13 +354,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                 Icon(Icons.event_note, color: Colors.black, size: 20),
                                 SizedBox(width: 6),
                                 Text(
-                                  "Todas las citas",
+                                  "Citas de hoy",
                                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                                 ),
                               ],
                             ),
                             const SizedBox(height: 12),
-                            ...state.appointments.map((cita) => AppointmentCard(cita: cita)).toList(),
+                            if (todaysAppointments.isEmpty)
+                              const Text(
+                                "No hay citas para hoy",
+                                style: TextStyle(color: Color(0xFF6E6E6E)),
+                              ),
+                            ...todaysAppointments
+                                .map((cita) => AppointmentCard(cita: cita))
+                                .toList(),
                           ],
                         ),
                       );
