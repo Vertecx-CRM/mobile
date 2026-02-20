@@ -27,6 +27,14 @@ class AppointmentColors {
       "text": const Color(0xFF6A0DAD),
       "bg": const Color(0xFF6A0DAD).withOpacity(0.48),
     },
+    "Agendada": {
+      "text": const Color(0xFF00695C),
+      "bg": const Color(0xFFB2DFDB).withOpacity(0.9),
+    },
+    "agendada": {
+      "text": const Color(0xFF00695C),
+      "bg": const Color(0xFFB2DFDB).withOpacity(0.9),
+    },
   };
 
   /// Colores por tipo de cita

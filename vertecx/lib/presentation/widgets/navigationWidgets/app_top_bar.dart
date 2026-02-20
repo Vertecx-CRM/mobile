@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.dart';
 
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar({
@@ -7,16 +8,19 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.centerTitle = true,
     this.showBack = false,
+    this.showMenu = false,
     this.extraActions,
   });
 
   final String? title;
   final bool centerTitle;
   final bool showBack;
+  final bool showMenu;
   final List<Widget>? extraActions;
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize =>
+      const Size.fromHeight(SideMenuButton.buttonSize + 16);
 
   String _titleFromRoute(BuildContext context) {
     final name = ModalRoute.of(context)?.settings.name ?? '';
@@ -76,6 +80,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 1.5,
       backgroundColor: Colors.white,
       centerTitle: centerTitle,
+      automaticallyImplyLeading: false,
+      toolbarHeight: SideMenuButton.buttonSize + 12,
       // 👇 esquinas redondeadas abajo
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
@@ -86,7 +92,21 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.arrow_back, color: Colors.black87),
               onPressed: () => Navigator.of(context).maybePop(),
             )
-          : null,
+          : showMenu
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: SideMenuButton.buttonSize,
+                      height: SideMenuButton.buttonSize,
+                      child: const SideMenuButton(),
+                    ),
+                  ),
+                )
+              : null,
+      leadingWidth: showMenu ? SideMenuButton.buttonSize + 8 : null,
+      titleSpacing: 0,
       title: Text(
         resolvedTitle,
         style: const TextStyle(

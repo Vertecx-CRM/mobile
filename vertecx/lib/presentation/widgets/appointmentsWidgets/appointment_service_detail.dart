@@ -62,6 +62,20 @@ class _AppointmentServiceDetailState extends State<AppointmentServiceDetail> {
     );
   }
 
+  String _maintenanceLabel(String? value) {
+    if (value == null) return "Mantenimiento:";
+    final normalized = value.toLowerCase();
+    if (normalized.contains('instal')) {
+      return "Instalacion:";
+    }
+    if (normalized.contains('preventivo') ||
+        normalized.contains('correctivo') ||
+        normalized.contains('mantenimiento')) {
+      return "Mantenimiento:";
+    }
+    return "Mantenimiento:";
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CalendarBloc, CalendarState>(
@@ -241,7 +255,7 @@ class _AppointmentServiceDetailState extends State<AppointmentServiceDetail> {
                                 if (detail.mantenimiento != null &&
                                     detail.mantenimiento!.isNotEmpty)
                                   _buildRow(
-                                    "Mantenimiento:",
+                                    _maintenanceLabel(detail.mantenimiento),
                                     detail.mantenimiento!,
                                   ),
                                 _buildRow("Descripción:", detail.descripcion),
@@ -361,7 +375,10 @@ class AppointmentDetailData {
     final cliente = order.cliente.isNotEmpty
         ? order.cliente
         : _clienteNombre(client) ?? cita.orden.nombreCliente;
-    final mantenimiento = order.estadoLabel;
+    final mantenimiento = (order.serviceType != null &&
+            order.serviceType!.trim().isNotEmpty)
+        ? order.serviceType
+        : order.estadoLabel;
     final monto = _formatCurrency(order.total);
 
     return AppointmentDetailData(
