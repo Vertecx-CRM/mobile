@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
@@ -141,7 +142,10 @@ class _ProfileScaffold extends StatelessWidget {
     final brandRed = const Color(0xFFB20000);
 
     void _logout() {
-      Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+      SessionContext.clearAll();
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
     }
 
     return Scaffold(
@@ -163,13 +167,19 @@ class _ProfileScaffold extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline, size: 40, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 40,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 10),
                     Text(c.error!, style: const TextStyle(color: Colors.red)),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: c.load,
-                      style: ElevatedButton.styleFrom(backgroundColor: brandRed),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: brandRed,
+                      ),
                       child: const Text('Reintentar'),
                     ),
                   ],
@@ -194,7 +204,10 @@ class _ProfileScaffold extends StatelessWidget {
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
                     onPressed: _logout,
-                    icon: const Icon(Icons.logout_outlined, color: Colors.white,),
+                    icon: const Icon(
+                      Icons.logout_outlined,
+                      color: Colors.white,
+                    ),
                     label: const Text(
                       'Cerrar sesión',
                       style: TextStyle(color: Colors.white),
@@ -231,7 +244,13 @@ class _HeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 4))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -239,11 +258,17 @@ class _HeaderCard extends StatelessWidget {
           CircleAvatar(
             radius: 34,
             backgroundColor: const Color(0xFFE8E8E8),
-            backgroundImage: (profile.avatarUrl.isNotEmpty) ? NetworkImage(profile.avatarUrl) : null,
+            backgroundImage: (profile.avatarUrl.isNotEmpty)
+                ? NetworkImage(profile.avatarUrl)
+                : null,
             child: (profile.avatarUrl.isEmpty)
                 ? Text(
                     _initials(profile.nombre),
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: wine),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: wine,
+                    ),
                   )
                 : null,
           ),
@@ -254,12 +279,21 @@ class _HeaderCard extends StatelessWidget {
               children: [
                 Text(
                   profile.nombre,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: wine),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: wine,
+                  ),
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _Chip(text: profile.rol, bg: const Color(0xFFFFF1F1), fg: red, icon: Icons.verified_user_outlined),
+                    _Chip(
+                      text: profile.rol,
+                      bg: const Color(0xFFFFF1F1),
+                      fg: red,
+                      icon: Icons.verified_user_outlined,
+                    ),
                     const SizedBox(width: 8),
                     _Chip(
                       text: '${profile.rating.toStringAsFixed(1)} ★',
@@ -284,12 +318,18 @@ class _HeaderCard extends StatelessWidget {
   static String _initials(String name) {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts[0].characters.first + parts[1].characters.first).toUpperCase();
+    return (parts[0].characters.first + parts[1].characters.first)
+        .toUpperCase();
   }
 }
 
 class _Chip extends StatelessWidget {
-  const _Chip({required this.text, required this.bg, required this.fg, this.icon});
+  const _Chip({
+    required this.text,
+    required this.bg,
+    required this.fg,
+    this.icon,
+  });
   final String text;
   final Color bg;
   final Color fg;
@@ -299,7 +339,10 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -307,7 +350,10 @@ class _Chip extends StatelessWidget {
             Icon(icon, size: 16, color: fg),
             const SizedBox(width: 4),
           ],
-          Text(text, style: TextStyle(color: fg, fontWeight: FontWeight.w600)),
+          Text(
+            text,
+            style: TextStyle(color: fg, fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -329,7 +375,13 @@ class _StatsGrid extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: const [BoxShadow(color: Color(0x10000000), blurRadius: 8, offset: Offset(0, 4))],
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x10000000),
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -338,9 +390,19 @@ class _StatsGrid extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: wine)),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: wine,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                ),
               ],
             ),
           ],
@@ -358,7 +420,11 @@ class _StatsGrid extends StatelessWidget {
         crossAxisSpacing: 10,
       ),
       children: [
-        stat('Órdenes', '${profile.ordenes}', Icons.assignment_turned_in_outlined),
+        stat(
+          'Órdenes',
+          '${profile.ordenes}',
+          Icons.assignment_turned_in_outlined,
+        ),
         stat('Solicitudes', '${profile.solicitudes}', Icons.list_alt_outlined),
       ],
     );
@@ -374,7 +440,12 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const wine = Color(0xFF5C0F0F);
 
-    Widget row(IconData icon, String title, String value, {VoidCallback? onTap}) {
+    Widget row(
+      IconData icon,
+      String title,
+      String value, {
+      VoidCallback? onTap,
+    }) {
       return InkWell(
         onTap: onTap,
         child: Padding(
@@ -387,9 +458,21 @@ class _InfoCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
+                    ),
                     const SizedBox(height: 2),
-                    Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                    Text(
+                      value,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -399,13 +482,20 @@ class _InfoCard extends StatelessWidget {
       );
     }
 
-    String fecha = '${profile.creadoEl.year}-${profile.creadoEl.month.toString().padLeft(2, '0')}-${profile.creadoEl.day.toString().padLeft(2, '0')}';
+    String fecha =
+        '${profile.creadoEl.year}-${profile.creadoEl.month.toString().padLeft(2, '0')}-${profile.creadoEl.day.toString().padLeft(2, '0')}';
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 4))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x14000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
       child: Column(
@@ -432,12 +522,12 @@ class _Skeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget box({double h = 70}) => Container(
-          height: h,
-          decoration: BoxDecoration(
-            color: const Color(0xFFEDEDED),
-            borderRadius: BorderRadius.circular(16),
-          ),
-        );
+      height: h,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEDEDED),
+        borderRadius: BorderRadius.circular(16),
+      ),
+    );
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
@@ -446,11 +536,23 @@ class _Skeleton extends StatelessWidget {
         children: [
           box(h: 90),
           const SizedBox(height: 12),
-          Row(children: [Expanded(child: box()), const SizedBox(width: 10), Expanded(child: box())]),
+          Row(
+            children: [
+              Expanded(child: box()),
+              const SizedBox(width: 10),
+              Expanded(child: box()),
+            ],
+          ),
           const SizedBox(height: 12),
           box(h: 180),
           const SizedBox(height: 16),
-          Row(children: [Expanded(child: box(h: 48)), const SizedBox(width: 12), Expanded(child: box(h: 48))]),
+          Row(
+            children: [
+              Expanded(child: box(h: 48)),
+              const SizedBox(width: 12),
+              Expanded(child: box(h: 48)),
+            ],
+          ),
         ],
       ),
     );

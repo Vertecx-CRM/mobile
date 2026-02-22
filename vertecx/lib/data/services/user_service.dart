@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
 import '../models/users/user_model.dart';
 
 class UserService {
@@ -7,7 +7,7 @@ class UserService {
 
   Future<List<UserModel>> getUsers() async {
     final url = Uri.parse('$baseUrl/users');
-    final response = await http.get(url);
+    final response = await ApiHttp.get(url);
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -30,7 +30,7 @@ class UserService {
     final stateId = newStatus ? 1 : 2;
 
     final url = Uri.parse('$baseUrl/users/$userId');
-    final response = await http.patch(
+    final response = await ApiHttp.patch(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'stateid': stateId}),
@@ -41,7 +41,9 @@ class UserService {
       final updated = jsonData['data'];
       return UserModel.fromJson(updated);
     } else {
-      throw Exception('Error al actualizar estado: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Error al actualizar estado: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 }

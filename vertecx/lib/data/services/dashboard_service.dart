@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
 
 class DashboardService {
   DashboardService({String? baseUrl})
-      : baseUrl = baseUrl ?? 'http://192.168.1.9:3001';
+    : baseUrl = baseUrl ?? 'http://192.168.1.9:3001';
 
   final String baseUrl;
   String get _dashboardBase => '$baseUrl/dashboard';
@@ -12,10 +12,7 @@ class DashboardService {
     final parsed = Uri.parse(path);
     if (year == null) return parsed;
     return parsed.replace(
-      queryParameters: {
-        ...parsed.queryParameters,
-        'year': '$year',
-      },
+      queryParameters: {...parsed.queryParameters, 'year': '$year'},
     );
   }
 
@@ -58,7 +55,7 @@ class DashboardService {
     // ignore: avoid_print
     print('GET $uri');
 
-    final response = await http.get(uri);
+    final response = await ApiHttp.get(uri);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/data/models/services/service_model.dart';
 
 class ServicesService {
   final String baseUrl = "http://192.168.1.9:3001";
-  final http.Client _client;
 
-  ServicesService({http.Client? client}) : _client = client ?? http.Client();
-
-  Future<_ServicesPageResponse> getServices({
+  Future<ServicesPageResponse> getServices({
     int page = 1,
     int limit = 50,
     String? token,
@@ -18,55 +16,50 @@ class ServicesService {
       'page': page.toString(),
       'limit': limit.toString(),
     };
-
     final uri = Uri.parse("$baseUrl/services").replace(queryParameters: qp);
-
-    http.Response response;
+    final effectiveToken = token ?? SessionContext.accessToken;
 
     try {
-      response = await _client
-          .get(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              if (token != null && token.isNotEmpty)
-                'Authorization': 'Bearer $token',
-            },
-          )
-          .timeout(const Duration(seconds: 25));
+      final response = await ApiHttp.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          if (effectiveToken != null && effectiveToken.isNotEmpty)
+            'Authorization': 'Bearer $effectiveToken',
+        },
+      ).timeout(const Duration(seconds: 25));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Error al obtener servicios: ${response.statusCode}. Body: ${response.body}',
+        );
+      }
+
+      final decoded = jsonDecode(response.body);
+      if (decoded is! Map<String, dynamic>) {
+        throw Exception(
+          'Respuesta invÃ¡lida del backend (se esperaba objeto).',
+        );
+      }
+
+      final rawData = decoded['data'];
+      final rawMeta = decoded['meta'];
+      final List<ServiceModel> services = (rawData is List)
+          ? rawData
+                .whereType<Map<String, dynamic>>()
+                .map(ServiceModel.fromJson)
+                .toList()
+          : <ServiceModel>[];
+
+      final meta = ServicesMeta.fromJson(
+        rawMeta is Map<String, dynamic> ? rawMeta : <String, dynamic>{},
+      );
+      return ServicesPageResponse(data: services, meta: meta);
     } on SocketException {
-      throw Exception('Sin conexión. Verifica red/IP del backend.');
+      throw Exception('Sin conexiÃ³n. Verifica red/IP del backend.');
     } catch (e) {
       throw Exception('Error de red: $e');
     }
-
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Error al obtener servicios: ${response.statusCode}. Body: ${response.body}',
-      );
-    }
-
-    final decoded = jsonDecode(response.body);
-
-    if (decoded is! Map<String, dynamic>) {
-      throw Exception('Respuesta inválida del backend (se esperaba objeto).');
-    }
-
-    final rawData = decoded['data'];
-    final rawMeta = decoded['meta'];
-
-    final List<ServiceModel> services = (rawData is List)
-        ? rawData
-            .whereType<Map<String, dynamic>>()
-            .map(ServiceModel.fromJson)
-            .toList()
-        : <ServiceModel>[];
-
-    final meta = ServicesMeta.fromJson(
-      rawMeta is Map<String, dynamic> ? rawMeta : <String, dynamic>{},
-    );
-
-    return _ServicesPageResponse(data: services, meta: meta);
   }
 }
 
@@ -98,9 +91,9 @@ class ServicesMeta {
   }
 }
 
-class _ServicesPageResponse {
+class ServicesPageResponse {
   final List<ServiceModel> data;
   final ServicesMeta meta;
 
-  _ServicesPageResponse({required this.data, required this.meta});
+  ServicesPageResponse({required this.data, required this.meta});
 }

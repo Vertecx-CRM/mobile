@@ -11,7 +11,13 @@ class OrderRepository {
 
   Future<List<OrderService>> getAll() async {
     final data = await _service.getOrders();
-    return data.map(OrderService.fromJson).toList();
+    final orders = data.map(OrderService.fromJson).toList();
+    orders.sort((a, b) {
+      final byDate = b.fechaCreacion.compareTo(a.fechaCreacion);
+      if (byDate != 0) return byDate;
+      return b.id.compareTo(a.id);
+    });
+    return orders;
   }
 
   Future<OrderService> getById(int id) async {

@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/core/api_config.dart';
-import 'package:vertecx/presentation/routes/app_routes.dart';
+import 'package:vertecx/core/navigation_helper.dart';
+import 'package:vertecx/core/session_context.dart';
 
 class User {
   final int id;
@@ -11,7 +12,8 @@ class User {
   final int roleId;
   final String roleName;
   final List<String> permissions;
-  final String token;
+  final String accessToken;
+  final String refreshToken;
 
   User({
     required this.id,
@@ -20,7 +22,8 @@ class User {
     required this.roleId,
     required this.roleName,
     required this.permissions,
-    required this.token,
+    required this.accessToken,
+    required this.refreshToken,
   });
 }
 
@@ -38,13 +41,10 @@ class AuthService {
     final normalizedEmail = rawEmail.toLowerCase();
     final loginUri = Uri.parse('$_baseUrl$_loginPath');
 
-    final loginRes = await http.post(
+    final loginRes = await ApiHttp.post(
       loginUri,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': normalizedEmail,
-        'password': password,
-      }),
+      body: jsonEncode({'email': normalizedEmail, 'password': password}),
     );
 
     if (loginRes.statusCode != 200 && loginRes.statusCode != 201) {
@@ -62,22 +62,27 @@ class AuthService {
     }
 
     final loginBody = jsonDecode(loginRes.body) as Map<String, dynamic>;
-    final accessToken = (loginBody['access_token'] ?? '') as String;
+    final accessToken = (loginBody['access_token'] ?? '').toString();
+    final refreshToken = (loginBody['refresh_token'] ?? '').toString();
 
     if (accessToken.isEmpty) {
       throw Exception('Token de acceso no recibido');
     }
+    if (refreshToken.isEmpty) {
+      throw Exception('Refresh token no recibido');
+    }
+
+    SessionContext.setTokens(access: accessToken, refresh: refreshToken);
 
     final meUri = Uri.parse('$_baseUrl$_mePath');
 
-    final meRes = await http.get(
+    final meRes = await ApiHttp.get(
       meUri,
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-      },
+      headers: {'Accept': 'application/json'},
     );
 
     if (meRes.statusCode != 200 && meRes.statusCode != 201) {
+      SessionContext.clearAuth();
       throw Exception('No se pudo obtener la información del usuario');
     }
 
@@ -99,7 +104,8 @@ class AuthService {
       roleId: roleId,
       roleName: roleName,
       permissions: permissions,
-      token: accessToken,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     );
   }
 }
@@ -146,29 +152,19 @@ class _LoginPageState extends State<LoginPage> {
     }
     setState(() => _loading = true);
     try {
-      final User user = await AuthService.signIn(
-        _email.text,
-        _pass.text,
-      );
+      final User user = await AuthService.signIn(_email.text, _pass.text);
+      SessionContext.permissions = user.permissions;
       if (!mounted) {
         return;
       }
 
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.adminHome,
-        (Route<dynamic> r) => false,
-        arguments: user.permissions,
-      );
+      NavigationHelper.goToLanding(context, permissions: user.permissions);
     } catch (e) {
       if (!mounted) {
         return;
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString().replaceFirst('Exception: ', ''),
-          ),
-        ),
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
       );
     } finally {
       if (mounted) {
@@ -230,8 +226,7 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.all(Radius.circular(16)),
         borderSide: BorderSide(color: primary, width: 1.2),
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     );
   }
 
@@ -291,17 +286,16 @@ class _LoginPageState extends State<LoginPage> {
                           Text(
                             'Ingresa tus datos para continuar.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: mutedColor,
-                            ),
+                            style: TextStyle(fontSize: 13, color: mutedColor),
                           ),
                           const SizedBox(height: 24),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 4, bottom: 6),
+                              padding: const EdgeInsets.only(
+                                left: 4,
+                                bottom: 6,
+                              ),
                               child: Text(
                                 'Email',
                                 style: TextStyle(
@@ -325,8 +319,9 @@ class _LoginPageState extends State<LoginPage> {
                               if (value.isEmpty) {
                                 return 'Ingrese su correo';
                               }
-                              final bool ok = RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                  .hasMatch(value);
+                              final bool ok = RegExp(
+                                r'^[^@]+@[^@]+\.[^@]+',
+                              ).hasMatch(value);
                               if (!ok) {
                                 return 'Correo no válido';
                               }
@@ -338,8 +333,10 @@ class _LoginPageState extends State<LoginPage> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 4, bottom: 6),
+                              padding: const EdgeInsets.only(
+                                left: 4,
+                                bottom: 6,
+                              ),
                               child: Text(
                                 'Contraseña',
                                 style: TextStyle(
@@ -367,10 +364,9 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            validator: (String? v) =>
-                                (v == null || v.isEmpty)
-                                    ? 'Ingrese su contraseña'
-                                    : null,
+                            validator: (String? v) => (v == null || v.isEmpty)
+                                ? 'Ingrese su contraseña'
+                                : null,
                             onFieldSubmitted: (_) => _submit(),
                           ),
                           const SizedBox(height: 24),
@@ -381,8 +377,9 @@ class _LoginPageState extends State<LoginPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: primary,
                                 foregroundColor: Colors.white,
-                                disabledBackgroundColor:
-                                    primary.withOpacity(0.6),
+                                disabledBackgroundColor: primary.withOpacity(
+                                  0.6,
+                                ),
                                 disabledForegroundColor: Colors.white70,
                                 elevation: 6,
                                 shadowColor: primary.withOpacity(0.45),
@@ -399,8 +396,8 @@ class _LoginPageState extends State<LoginPage> {
                                         strokeWidth: 2,
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
-                                        ),
+                                              Colors.white,
+                                            ),
                                       ),
                                     )
                                   : const Text(

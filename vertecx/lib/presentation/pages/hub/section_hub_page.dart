@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:vertecx/core/navigation_helper.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
 
@@ -33,7 +35,11 @@ class SectionHubPage extends StatelessWidget {
                   return _HubCard(
                     icon: it.icon,
                     label: it.label,
-                    onTap: () => Navigator.of(context).pushNamed(it.routeName),
+                    onTap: () => NavigationHelper.goToPrimarySection(
+                      context,
+                      route: it.routeName,
+                      permissions: SessionContext.permissions,
+                    ),
                   );
                 },
               ),

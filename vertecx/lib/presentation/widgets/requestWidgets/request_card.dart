@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:vertecx/data/models/request/request_model.dart';
 
 class RequestCard extends StatelessWidget {
@@ -19,66 +19,95 @@ class RequestCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
+      child: Card(
+        elevation: 0,
+        color: Colors.grey.shade100,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Id:${data.serviceRequestId}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.black87,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    'Id: ',
+                    style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                  Text(
+                    '${data.serviceRequestId}',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  decoration: BoxDecoration(
-                    color: colors.$1,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    stateLabel,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: colors.$2,
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colors.$1,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      stateLabel,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: colors.$2,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              data.serviceType,
-              maxLines: 2,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                ],
               ),
-            ),
-            const SizedBox(height: 6),
-            _meta('Servicio:', _serviceName(data)),
-            const SizedBox(height: 2),
-            _meta('Cliente:', _customerName(data)),
-            const SizedBox(height: 2),
-            _meta('Fecha creación:', _fmt(data.createdAt)),
-            if (data.scheduledAt != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                data.serviceType,
+                maxLines: 2,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Servicio: ${_serviceName(data)}',
+                style: TextStyle(
+                  color: Colors.grey.shade800,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 2),
-              _meta('Programada:', _fmt(data.scheduledAt!)),
+              Text(
+                'Cliente: ${_customerName(data)}',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Fecha creacion: ${_fmt(data.createdAt)}',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              if (data.scheduledAt != null)
+                Text(
+                  'Programada: ${_fmt(data.scheduledAt!)}',
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              Text(
+                'Estado registrado: $stateLabel',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                ),
+              ),
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -121,7 +150,10 @@ class RequestCard extends StatelessWidget {
         .toString()
         .trim();
 
-    final String full = <String>[name, last].where((e) => e.isNotEmpty).join(' ').trim();
+    final String full = <String>[name, last]
+        .where((e) => e.isNotEmpty)
+        .join(' ')
+        .trim();
     return full.isEmpty ? 'Sin definir' : full;
   }
 
@@ -149,27 +181,6 @@ class RequestCard extends StatelessWidget {
       return (const Color(0xFFFFE6E6), const Color(0xFFB00020));
     }
     return (const Color(0xFFF1F3F4), const Color(0xFF5F6368));
-  }
-
-  Widget _meta(String label, String value) {
-    return RichText(
-      text: TextSpan(
-        text: '$label  ',
-        style: const TextStyle(
-          fontSize: 11,
-          color: Colors.black54,
-        ),
-        children: [
-          TextSpan(
-            text: value,
-            style: const TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   String _fmt(DateTime d) {

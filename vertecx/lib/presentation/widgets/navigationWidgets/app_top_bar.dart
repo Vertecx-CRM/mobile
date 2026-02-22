@@ -7,12 +7,16 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.title,
     this.centerTitle = true,
     this.showBack = false,
+    this.showMenu = false,
+    this.onMenuPressed,
     this.extraActions,
   });
 
   final String? title;
   final bool centerTitle;
   final bool showBack;
+  final bool showMenu;
+  final VoidCallback? onMenuPressed;
   final List<Widget>? extraActions;
 
   @override
@@ -73,6 +77,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     final resolvedTitle = title ?? _titleFromRoute(context);
 
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 1.5,
       backgroundColor: Colors.white,
       centerTitle: centerTitle,
@@ -86,7 +91,18 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.arrow_back, color: Colors.black87),
               onPressed: () => Navigator.of(context).maybePop(),
             )
-          : null,
+          : showMenu
+              ? IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.black87),
+                  onPressed: onMenuPressed ??
+                      () {
+                        final scaffold = Scaffold.maybeOf(context);
+                        if (scaffold?.hasDrawer ?? false) {
+                          scaffold!.openDrawer();
+                        }
+                      },
+                )
+              : null,
       title: Text(
         resolvedTitle,
         style: const TextStyle(
