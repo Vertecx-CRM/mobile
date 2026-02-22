@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:vertecx/data/models/request/request_model.dart';
 
+enum RequestsSortOrder { newestFirst, oldestFirst }
+
 class RequestsState extends Equatable {
   final List<ServiceRequestModel> all;
   final List<ServiceRequestModel> filtered;
@@ -11,6 +13,7 @@ class RequestsState extends Equatable {
   final int pageSize;
   final int visibleCount;
   final String? error;
+  final RequestsSortOrder sortOrder;
 
   const RequestsState({
     this.all = const [],
@@ -22,6 +25,7 @@ class RequestsState extends Equatable {
     this.pageSize = 6,
     this.visibleCount = 0,
     this.error,
+    this.sortOrder = RequestsSortOrder.newestFirst,
   });
 
   bool get hasMore => visible.length < filtered.length;
@@ -36,6 +40,7 @@ class RequestsState extends Equatable {
     int? pageSize,
     int? visibleCount,
     String? error,
+    RequestsSortOrder? sortOrder,
   }) {
     return RequestsState(
       all: all ?? this.all,
@@ -47,6 +52,7 @@ class RequestsState extends Equatable {
       pageSize: pageSize ?? this.pageSize,
       visibleCount: visibleCount ?? this.visibleCount,
       error: error,
+      sortOrder: sortOrder ?? this.sortOrder,
     );
   }
 
@@ -61,5 +67,6 @@ class RequestsState extends Equatable {
         pageSize,
         visibleCount,
         error,
+        sortOrder,
       ];
 }

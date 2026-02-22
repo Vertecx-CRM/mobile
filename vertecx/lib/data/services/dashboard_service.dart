@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/data/constants/api_constants.dart';
 
 class DashboardService {
@@ -13,10 +13,7 @@ class DashboardService {
     final parsed = Uri.parse(path);
     if (year == null) return parsed;
     return parsed.replace(
-      queryParameters: {
-        ...parsed.queryParameters,
-        'year': '$year',
-      },
+      queryParameters: {...parsed.queryParameters, 'year': '$year'},
     );
   }
 
@@ -59,7 +56,7 @@ class DashboardService {
     // ignore: avoid_print
     print('GET $uri');
 
-    final response = await http.get(uri);
+    final response = await ApiHttp.get(uri);
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

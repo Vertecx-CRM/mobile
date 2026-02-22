@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
@@ -6,30 +7,61 @@ import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.d
 
 class Home extends StatefulWidget {
   const Home({super.key});
+
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late final List<String> _permissions;
-  late final bool _hasDashboard;
+
+  List<String> _permissions = const <String>[];
+  bool _hasDashboard = false;
+  bool _autoOpenedDrawer = false;
 
   void _logout() {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (route) => false,
-    );
+    SessionContext.clearAll();
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments;
-    final perms = args is List<String> ? args : const <String>[];
+    bool openMenu = false;
+    List<String> perms = _permissions.isNotEmpty
+        ? _permissions
+        : SessionContext.permissions;
+
+    if (args is List<String>) {
+      perms = args;
+    } else if (args is Map<String, dynamic>) {
+      final rawPerms = args['permissions'];
+      if (rawPerms is List) {
+        perms = rawPerms.map((e) => e.toString()).toList();
+      } else if (SessionContext.permissions.isNotEmpty) {
+        perms = SessionContext.permissions;
+      }
+      openMenu = args['openMenu'] == true;
+    } else if (SessionContext.permissions.isNotEmpty) {
+      perms = SessionContext.permissions;
+    }
+
     _permissions = perms;
-    final permsLower = perms.map((p) => p.toLowerCase()).toSet();
+    SessionContext.permissions = perms;
+
+    final permsLower = _permissions.map((p) => p.toLowerCase()).toSet();
     _hasDashboard = permsLower.contains('dashboard.read');
+
+    if (openMenu && !_autoOpenedDrawer) {
+      _autoOpenedDrawer = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _scaffoldKey.currentState?.openDrawer();
+      });
+    }
   }
 
   Widget _buildWelcomeContent() {
@@ -42,10 +74,7 @@ class _HomeState extends State<Home> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(
-          height: topBar.preferredSize.height,
-          child: topBar,
-        ),
+        SizedBox(height: topBar.preferredSize.height, child: topBar),
         Expanded(
           child: Center(
             child: Padding(
@@ -64,12 +93,9 @@ class _HomeState extends State<Home> {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    'Selecciona un mÃ³dulo desde el menÃº lateral para comenzar.',
+                    'Selecciona un modulo desde el menu lateral para comenzar.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
               ),
@@ -106,11 +132,11 @@ class _HomeState extends State<Home> {
       body: Stack(
         children: [
           _buildContent(),
-          Positioned(
+          const Positioned(
             top: 8,
             left: 8,
             child: SafeArea(
-              child: const SideMenuButton(),
+              child: SideMenuButton(),
             ),
           ),
         ],
@@ -118,3 +144,4 @@ class _HomeState extends State<Home> {
     );
   }
 }
+

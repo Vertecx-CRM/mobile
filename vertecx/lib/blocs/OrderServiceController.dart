@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:vertecx/data/models/orderServices/order_service_models.dart';
 import 'package:vertecx/data/repositories/orderServices/order_repository.dart';
 
+enum OrderSortOrder { newestFirst, oldestFirst }
+
 class OrderServiceController extends ChangeNotifier {
   OrderServiceController(this._repo);
 
@@ -11,10 +13,12 @@ class OrderServiceController extends ChangeNotifier {
   List<OrderService> _all = [];
   List<OrderService> _visible = [];
   String _query = '';
+  OrderSortOrder _sortOrder = OrderSortOrder.newestFirst;
   bool _loading = false;
   String? _error;
 
   List<OrderService> get orders => _visible;
+  OrderSortOrder get sortOrder => _sortOrder;
   bool get isLoading => _loading;
   String? get error => _error;
 
@@ -38,6 +42,12 @@ class OrderServiceController extends ChangeNotifier {
 
   void search(String q) {
     _query = q;
+    _applyFilter();
+  }
+
+  void setSortOrder(OrderSortOrder order) {
+    if (_sortOrder == order) return;
+    _sortOrder = order;
     _applyFilter();
   }
 
@@ -104,6 +114,16 @@ class OrderServiceController extends ChangeNotifier {
         return tokens.every((t) => haystack.contains(t));
       }).toList();
     }
+    _visible.sort((a, b) {
+      if (_sortOrder == OrderSortOrder.newestFirst) {
+        final byDate = b.fechaCreacion.compareTo(a.fechaCreacion);
+        if (byDate != 0) return byDate;
+        return b.id.compareTo(a.id);
+      }
+      final byDate = a.fechaCreacion.compareTo(b.fechaCreacion);
+      if (byDate != 0) return byDate;
+      return a.id.compareTo(b.id);
+    });
     notifyListeners();
   }
 }

@@ -44,7 +44,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       case AppRoutes.requests:
         return 'Solicitudes';
       case AppRoutes.techniciansList:
-        return 'Técnicos';
+        return 'Tecnicos';
       case AppRoutes.servicesList:
         return 'Servicios';
       case AppRoutes.productsList:
@@ -77,16 +77,15 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     final resolvedTitle = title ?? _titleFromRoute(context);
 
     return AppBar(
+      automaticallyImplyLeading: false,
       elevation: 1.5,
       backgroundColor: Colors.white,
       centerTitle: centerTitle,
-      automaticallyImplyLeading: false,
       toolbarHeight: SideMenuButton.buttonSize + 12,
-      // 👇 esquinas redondeadas abajo
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
       ),
-      clipBehavior: Clip.antiAlias, // asegura el recorte del fondo
+      clipBehavior: Clip.antiAlias,
       leading: showBack
           ? IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black87),
@@ -118,3 +117,4 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
+

@@ -10,6 +10,7 @@ class RequestsBloc extends Bloc<RequestsEvent, RequestsState> {
     on<RequestsLoadRequested>(_onLoad);
     on<RequestsSearchChanged>(_onSearch);
     on<RequestsLoadMorePressed>(_onLoadMore);
+    on<RequestsSortChanged>(_onSort);
   }
 
   Future<void> _onLoad(
@@ -20,7 +21,11 @@ class RequestsBloc extends Bloc<RequestsEvent, RequestsState> {
     try {
       final List<ServiceRequestModel> data =
           (await repo.getAll()).cast<ServiceRequestModel>();
-      final filtered = data;
+      final filtered = _applyQueryAndSort(
+        source: data,
+        query: state.query,
+        order: state.sortOrder,
+      );
       final firstCount = filtered.length < state.pageSize ? filtered.length : state.pageSize;
       emit(state.copyWith(
         all: data,
@@ -38,36 +43,11 @@ class RequestsBloc extends Bloc<RequestsEvent, RequestsState> {
     RequestsSearchChanged event,
     Emitter<RequestsState> emit,
   ) {
-    final q = event.query.trim().toLowerCase();
-    final List<ServiceRequestModel> source = state.all;
-
-    final List<ServiceRequestModel> filtered = q.isEmpty
-        ? source
-        : source.where((r) {
-            final idStr = 'id:${r.serviceRequestId}';
-            final serviceType = r.serviceType.toLowerCase();
-            final description = r.description.toLowerCase();
-            final stateId = r.stateId.toString();
-            final serviceId = r.serviceId.toString();
-            final clientId = r.clientId.toString();
-            final stateName = ((r.state?['name'] ?? r.state?['nombre'])?.toString().toLowerCase()) ?? '';
-            final serviceName = ((r.service?['name'] ?? r.service?['nombre'])?.toString().toLowerCase()) ?? '';
-            final customerName = ((r.customer?['name'] ??
-                    r.customer?['fullname'] ??
-                    r.customer?['razonSocial'] ??
-                    r.customer?['nombre'])
-                ?.toString()
-                .toLowerCase()) ?? '';
-            return serviceType.contains(q) ||
-                description.contains(q) ||
-                idStr.contains(q) ||
-                stateId.contains(q) ||
-                serviceId.contains(q) ||
-                clientId.contains(q) ||
-                stateName.contains(q) ||
-                serviceName.contains(q) ||
-                customerName.contains(q);
-          }).toList();
+    final filtered = _applyQueryAndSort(
+      source: state.all,
+      query: event.query,
+      order: state.sortOrder,
+    );
 
     final firstCount = filtered.length < state.pageSize ? filtered.length : state.pageSize;
 
@@ -94,5 +74,75 @@ class RequestsBloc extends Bloc<RequestsEvent, RequestsState> {
       visible: state.filtered.take(nextCount).toList(),
       loadingMore: false,
     ));
+  }
+
+  void _onSort(
+    RequestsSortChanged event,
+    Emitter<RequestsState> emit,
+  ) {
+    if (event.order == state.sortOrder) return;
+
+    final filtered = _applyQueryAndSort(
+      source: state.all,
+      query: state.query,
+      order: event.order,
+    );
+    final nextCount = state.visibleCount.clamp(0, filtered.length);
+
+    emit(state.copyWith(
+      sortOrder: event.order,
+      filtered: filtered,
+      visibleCount: nextCount,
+      visible: filtered.take(nextCount).toList(),
+    ));
+  }
+
+  List<ServiceRequestModel> _applyQueryAndSort({
+    required List<ServiceRequestModel> source,
+    required String query,
+    required RequestsSortOrder order,
+  }) {
+    final q = query.trim().toLowerCase();
+
+    final List<ServiceRequestModel> filtered = q.isEmpty
+        ? List<ServiceRequestModel>.of(source)
+        : source.where((r) {
+            final idStr = 'id:${r.serviceRequestId}';
+            final serviceType = r.serviceType.toLowerCase();
+            final description = r.description.toLowerCase();
+            final stateId = r.stateId.toString();
+            final serviceId = r.serviceId.toString();
+            final clientId = r.clientId.toString();
+            final stateName = ((r.state?['name'] ?? r.state?['nombre'])?.toString().toLowerCase()) ?? '';
+            final serviceName = ((r.service?['name'] ?? r.service?['nombre'])?.toString().toLowerCase()) ?? '';
+            final customerName = ((r.customer?['name'] ??
+                    r.customer?['fullname'] ??
+                    r.customer?['razonSocial'] ??
+                    r.customer?['nombre'])
+                ?.toString()
+                .toLowerCase()) ?? '';
+            return serviceType.contains(q) ||
+                description.contains(q) ||
+                idStr.contains(q) ||
+                stateId.contains(q) ||
+                serviceId.contains(q) ||
+                clientId.contains(q) ||
+                stateName.contains(q) ||
+                serviceName.contains(q) ||
+                customerName.contains(q);
+          }).toList();
+
+    filtered.sort((a, b) {
+      if (order == RequestsSortOrder.newestFirst) {
+        final byDate = b.createdAt.compareTo(a.createdAt);
+        if (byDate != 0) return byDate;
+        return b.serviceRequestId.compareTo(a.serviceRequestId);
+      }
+      final byDate = a.createdAt.compareTo(b.createdAt);
+      if (byDate != 0) return byDate;
+      return a.serviceRequestId.compareTo(b.serviceRequestId);
+    });
+
+    return filtered;
   }
 }

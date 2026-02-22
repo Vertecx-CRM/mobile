@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/data/constants/api_constants.dart';
 import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
 
@@ -9,7 +9,7 @@ class CategoryProductsService {
 
   Future<List<CategoryProduct>> getCategories() async {
     final url = Uri.parse('$_baseUrl/products-categories');
-    final response = await http.get(url);
+    final response = await ApiHttp.get(url);
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -33,7 +33,7 @@ class CategoryProductsService {
   Future<void> createCategory(CategoryProduct category) async {
     final url = Uri.parse('$_baseUrl/products-categories');
 
-    final response = await http.post(
+    final response = await ApiHttp.post(
       url,
       headers: const {'Content-Type': 'application/json'},
       body: jsonEncode({
@@ -54,7 +54,7 @@ class CategoryProductsService {
   Future<CategoryProduct> updateStatus(int id, bool newStatus) async {
     final url = Uri.parse('$_baseUrl/products-categories/$id');
 
-    final response = await http.patch(
+    final response = await ApiHttp.patch(
       url,
       headers: const {'Content-Type': 'application/json'},
       body: jsonEncode({'status': newStatus}),

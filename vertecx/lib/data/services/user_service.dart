@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/data/constants/api_constants.dart';
 import '../models/users/user_model.dart';
 
@@ -9,7 +9,7 @@ class UserService {
 
   Future<List<UserModel>> getUsers() async {
     final url = Uri.parse('$_baseUrl/users');
-    final response = await http.get(url);
+    final response = await ApiHttp.get(url);
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -34,7 +34,7 @@ class UserService {
     final int stateId = newStatus ? 1 : 2;
 
     final url = Uri.parse('$_baseUrl/users/$userId');
-    final response = await http.patch(
+    final response = await ApiHttp.patch(
       url,
       headers: const {'Content-Type': 'application/json'},
       body: jsonEncode({'stateid': stateId}),

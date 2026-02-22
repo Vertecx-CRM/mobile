@@ -80,6 +80,11 @@ class OrderServiceController extends ChangeNotifier {
         return tokens.every((t) => haystack.contains(t));
       }).toList();
     }
+    _visible.sort((a, b) {
+      final byDate = b.fechaCreacion.compareTo(a.fechaCreacion);
+      if (byDate != 0) return byDate;
+      return b.id.compareTo(a.id);
+    });
     notifyListeners();
   }
 }
