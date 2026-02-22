@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/presentation/pages/dashboard_page.dart';
 import 'package:vertecx/presentation/routes/app_routes.dart';
-import 'package:vertecx/presentation/widgets/navigationWidgets/app_side_menu.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,9 +13,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool _menuOpen = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   List<String> _permissions = const <String>[];
   bool _hasDashboard = false;
+  bool _autoOpenedDrawer = false;
 
   void _logout() {
     SessionContext.clearAll();
@@ -49,13 +51,15 @@ class _HomeState extends State<Home> {
 
     _permissions = perms;
     SessionContext.permissions = perms;
+
     final permsLower = _permissions.map((p) => p.toLowerCase()).toSet();
     _hasDashboard = permsLower.contains('dashboard.read');
 
-    if (openMenu && !_menuOpen) {
+    if (openMenu && !_autoOpenedDrawer) {
+      _autoOpenedDrawer = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        setState(() => _menuOpen = true);
+        _scaffoldKey.currentState?.openDrawer();
       });
     }
   }
@@ -112,48 +116,27 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       extendBody: true,
+      drawer: Drawer(
+        backgroundColor: Colors.transparent,
+        child: SideMenuPanel(
+          permissions: _permissions,
+          onClose: () => Navigator.of(context).maybePop(),
+          onLogout: () {
+            Navigator.of(context).maybePop();
+            _logout();
+          },
+        ),
+      ),
       body: Stack(
         children: [
           _buildContent(),
-          Positioned(
+          const Positioned(
             top: 8,
             left: 8,
             child: SafeArea(
-              child: Material(
-                elevation: 2,
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                child: IconButton(
-                  onPressed: () => setState(() => _menuOpen = !_menuOpen),
-                  icon: Icon(
-                    _menuOpen ? Icons.close : Icons.menu,
-                    color: const Color(0xFFB20000),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (_menuOpen)
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () => setState(() => _menuOpen = false),
-                child: const ColoredBox(color: Colors.black45),
-              ),
-            ),
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 510),
-            curve: Curves.easeOut,
-            top: 0,
-            bottom: 0,
-            left: _menuOpen ? 0 : -260,
-            child: AppSideMenuPanel(
-              permissions: _permissions,
-              onClose: () => setState(() => _menuOpen = false),
-              onLogout: () {
-                setState(() => _menuOpen = false);
-                _logout();
-              },
+              child: SideMenuButton(),
             ),
           ),
         ],
@@ -161,3 +144,4 @@ class _HomeState extends State<Home> {
     );
   }
 }
+

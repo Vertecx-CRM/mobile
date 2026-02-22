@@ -16,23 +16,27 @@ class CategoryProduct {
   });
 
   factory CategoryProduct.fromJson(Map<String, dynamic> json) {
-    final rawId = json['id'];
-    final parsedId = rawId is int
-        ? rawId
-        : int.tryParse(rawId?.toString() ?? "") ?? 0;
+    final idValue = json['id'] ?? json['categoryid'] ?? json['category_id'];
+    final parsedId = idValue is int
+        ? idValue
+        : int.tryParse(idValue?.toString() ?? "") ?? 0;
 
-    final statusValue = json['status'];
-    final estado = statusValue == true
-        ? CategoryStatus.activo
-        : statusValue == false
-            ? CategoryStatus.inactivo
-            : CategoryStatus.inactivo;
+    final nameValue = json['name'] ?? json['categoryname'] ?? '';
+    final descriptionValue =
+        json['description'] ?? json['categorydescription'] ?? '';
+
+    final statusRaw = json['status'] ?? json['isactive'];
+    final isActive = statusRaw == true ||
+        (statusRaw is String && statusRaw.toLowerCase() == 'true') ||
+        (statusRaw is num && statusRaw == 1);
+    final estado =
+        isActive ? CategoryStatus.activo : CategoryStatus.inactivo;
 
     return CategoryProduct(
       id: parsedId,
       imagenPath: json['icon'],
-      nombre: json['name'],
-      descripcion: json['description'] ?? '',
+      nombre: nameValue,
+      descripcion: descriptionValue,
       estado: estado,
     );
   }

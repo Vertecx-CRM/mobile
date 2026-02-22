@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:vertecx/core/api_http.dart';
+import 'package:vertecx/data/constants/api_constants.dart';
 
 class DashboardService {
   DashboardService({String? baseUrl})
-    : baseUrl = baseUrl ?? 'http://192.168.1.9:3001';
+      : baseUrl = baseUrl ?? kBackendBaseUrl;
 
   final String baseUrl;
   String get _dashboardBase => '$baseUrl/dashboard';

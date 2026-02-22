@@ -51,12 +51,30 @@ class StateChartWidget extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             height: 220,
-            child: BarChart(
-              BarChartData(
-                maxY: maxValue.toDouble(),
-                gridData: FlGridData(show: false),
-                borderData: FlBorderData(show: false),
-                titlesData: FlTitlesData(
+              child: BarChart(
+                BarChartData(
+                  maxY: maxValue.toDouble(),
+                  gridData: FlGridData(show: false),
+                  borderData: FlBorderData(show: false),
+                  barTouchData: BarTouchData(
+                    enabled: true,
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        final index = group.x.toInt();
+                        final value = (index >= 0 && index < values.length)
+                            ? values[index]
+                            : 0;
+                        return BarTooltipItem(
+                          value.toString(),
+                          const TextStyle(
+                            color: Color(0xFF00C2FF),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
                   leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),

@@ -183,8 +183,9 @@ Map<String, int> _mapStateCounts(List<dynamic> data) {
     final rawState = (item['state'] ?? item['status'] ?? '').toString().trim();
     if (rawState.isEmpty) continue;
 
+    final stateLabel = _translateDashboardState(rawState);
     final value = parseDashboardInt(item['value'] ?? item['total'] ?? item['count']);
-    counts[rawState] = (counts[rawState] ?? 0) + value;
+    counts[stateLabel] = (counts[stateLabel] ?? 0) + value;
   }
 
   return counts;
@@ -243,4 +244,32 @@ String _normalizeState(String value) {
   });
 
   return normalized;
+}
+
+String _translateDashboardState(String value) {
+  final normalized = _normalizeState(value).replaceAll('-', ' ');
+  switch (normalized) {
+    case 'cancel':
+    case 'canceled':
+    case 'cancelled':
+    case 'cancelado':
+      return 'Cancelados';
+    case 'finished':
+    case 'finalizado':
+      return 'Finalizados';
+    case 'in process':
+    case 'inprocess':
+    case 'en proceso':
+    case 'enproceso':
+      return 'En proceso';
+    case 'pendient':
+    case 'pending':
+    case 'pendiente':
+      return 'Pendientes';
+    case 'agendada':
+    case 'agendado':
+      return 'Agendada';
+    default:
+      return value;
+  }
 }

@@ -61,7 +61,7 @@ class CategoryCard extends StatelessWidget {
                       ),
                     )
                   : Image.asset(
-                      'assets/icons/default_icon.png',
+                      'assets/icons/tag.png',
                       width: 40,
                       height: 40,
                       errorBuilder: (context, error, stackTrace) => const Icon(
