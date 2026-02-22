@@ -47,8 +47,7 @@ class _AppSideMenuPanelState extends State<AppSideMenuPanel> {
   }
 
   bool _hasPermission(_SideMenuItem item) {
-    if (item.requiredPermissions == null ||
-        item.requiredPermissions!.isEmpty) {
+    if (item.requiredPermissions == null || item.requiredPermissions!.isEmpty) {
       return true;
     }
     return item.requiredPermissions!
@@ -71,7 +70,8 @@ class _AppSideMenuPanelState extends State<AppSideMenuPanel> {
         ? _visibleChildren(item.children!)
         : const <_SideMenuItem>[];
 
-    final showGroup = item.hasChildren && (children.isNotEmpty || _hasPermission(item));
+    final showGroup =
+        item.hasChildren && (children.isNotEmpty || _hasPermission(item));
 
     if (item.hasChildren && !showGroup) {
       return const SizedBox.shrink();
@@ -85,8 +85,8 @@ class _AppSideMenuPanelState extends State<AppSideMenuPanel> {
             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           )
         : item.icon != null
-            ? Icon(item.icon, color: Colors.white)
-            : const SizedBox.shrink();
+        ? Icon(item.icon, color: Colors.white)
+        : const SizedBox.shrink();
 
     if (!item.hasChildren) {
       return ListTile(
@@ -177,7 +177,10 @@ class _AppSideMenuPanelState extends State<AppSideMenuPanel> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -234,7 +237,9 @@ class _AppSideMenuPanelState extends State<AppSideMenuPanel> {
                     ),
                     const Divider(color: Colors.white24, height: 1),
                     ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
                       leading: const Icon(Icons.logout, color: Colors.white),
                       title: const Text(
                         'Salir',
@@ -312,6 +317,11 @@ const _menuItems = [
     ],
     children: [
       _SideMenuItem(
+        label: 'Proveedores',
+        route: AppRoutes.providers,
+        requiredPermissions: ['suppliers.read'],
+      ),
+      _SideMenuItem(
         label: 'Compras',
         route: AppRoutes.purchases,
         requiredPermissions: ['purchases.read'],
@@ -326,10 +336,7 @@ const _menuItems = [
   _SideMenuItem(
     label: 'Productos',
     icon: Icons.widgets,
-    requiredPermissions: [
-      'products.read',
-      'categoryproducts.read',
-    ],
+    requiredPermissions: ['products.read', 'categoryproducts.read'],
     children: [
       _SideMenuItem(
         label: 'Productos',
@@ -346,10 +353,7 @@ const _menuItems = [
   _SideMenuItem(
     label: 'Servicios',
     icon: Icons.build,
-    requiredPermissions: [
-      'services.read',
-      'technicians.read',
-    ],
+    requiredPermissions: ['services.read', 'technicians.read'],
     children: [
       _SideMenuItem(
         label: 'Servicios',

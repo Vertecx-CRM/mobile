@@ -47,6 +47,8 @@ class ApiHttp {
     required Map<String, String>? headers,
     required Future<http.Response> Function(Map<String, String>) send,
   }) async {
+    await SessionContext.ensureHydrated();
+
     final firstHeaders = _buildHeaders(headers);
     final firstResponse = await send(firstHeaders);
 

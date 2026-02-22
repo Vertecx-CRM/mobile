@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/data/models/categoryProducts/categoryProducts_model.dart';
 import 'package:vertecx/presentation/widgets/categoryProductsWidgets/categoryProduct_card_widget.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
@@ -42,7 +43,12 @@ class _CategoryProductListPageState extends State<CategoryProductListPage> {
     super.didChangeDependencies();
     if (_permissions.isEmpty) {
       final args = ModalRoute.of(context)?.settings.arguments;
-      _permissions = args is List<String> ? args : const <String>[];
+      if (args is List<String>) {
+        _permissions = args;
+        SessionContext.permissions = args;
+      } else {
+        _permissions = SessionContext.permissions;
+      }
     }
   }
 

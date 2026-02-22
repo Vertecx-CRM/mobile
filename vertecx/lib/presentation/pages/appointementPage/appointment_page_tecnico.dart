@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:vertecx/data/models/appointments/appointment_model.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
@@ -25,7 +26,7 @@ class _AppointmentPageTecnicoState extends State<AppointmentPageTecnico> {
   DateTime? _selectedDay;
   final String _searchQuery = '';
   Map<DateTime, List<AppointmentEvent>> _eventsByDayCache = {};
-  late final List<String> _permissions;
+  List<String> _permissions = const <String>[];
 
   void _loadMonthData() {
     final bloc = context.read<CalendarBloc>();
@@ -62,7 +63,12 @@ class _AppointmentPageTecnicoState extends State<AppointmentPageTecnico> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments;
-    _permissions = args is List<String> ? args : const <String>[];
+    if (args is List<String>) {
+      _permissions = args;
+      SessionContext.permissions = args;
+      return;
+    }
+    _permissions = SessionContext.permissions;
   }
 
   @override
@@ -128,7 +134,7 @@ class _AppointmentPageTecnicoState extends State<AppointmentPageTecnico> {
 
                   if (filtered.isEmpty) {
                     appointmentsSection = const Center(
-                      child: Text("No hay citas para este dí­a"),
+                      child: Text("No hay citas para este dÃ­Â­a"),
                     );
                   } else {
                     appointmentsSection = ListView.builder(

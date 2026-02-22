@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/data/models/users/user_model.dart';
 import 'package:vertecx/data/services/user_service.dart'; 
 import 'package:vertecx/presentation/widgets/usersWidgets/user_card_widget.dart';
@@ -21,7 +22,7 @@ class UserListPageState extends State<UserListPage> {
   int _usersToShow = 4;
   String _searchQuery = "";
   final ScrollController _scrollController = ScrollController();
-  late final List<String> _permissions;
+  List<String> _permissions = const <String>[];
 
   @override
   void initState() {
@@ -33,7 +34,12 @@ class UserListPageState extends State<UserListPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments;
-    _permissions = args is List<String> ? args : const <String>[];
+    if (args is List<String>) {
+      _permissions = args;
+      SessionContext.permissions = args;
+      return;
+    }
+    _permissions = SessionContext.permissions;
   }
 
   @override
@@ -161,7 +167,7 @@ class UserListPageState extends State<UserListPage> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Botón para cargar más
+                        // BotÃ³n para cargar mÃ¡s
                         if (filteredUsers.isNotEmpty)
                           if (!allUsersLoaded)
                             TextButton(
@@ -175,7 +181,7 @@ class UserListPageState extends State<UserListPage> {
                                     height: 20,
                                   ),
                                   const Text(
-                                    "Cargar más Usuarios",
+                                    "Cargar mÃ¡s Usuarios",
                                     style: TextStyle(color: Color(0xFFB20000)),
                                   ),
                                 ],
@@ -185,7 +191,7 @@ class UserListPageState extends State<UserListPage> {
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 10),
                               child: Text(
-                                "Ya están todos los usuarios",
+                                "Ya estÃ¡n todos los usuarios",
                                 style: TextStyle(
                                   color: Color(0xFFB20000),
                                   fontWeight: FontWeight.bold,

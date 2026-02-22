@@ -21,10 +21,7 @@ class SideMenuButton extends StatelessWidget {
         child: Builder(
           builder: (context) => IconButton(
             onPressed: () => Scaffold.of(context).openDrawer(),
-            icon: const Icon(
-              Icons.menu,
-              color: Color(0xFFB20000),
-            ),
+            icon: const Icon(Icons.menu, color: Color(0xFFB20000)),
           ),
         ),
       ),
@@ -70,8 +67,7 @@ class _SideMenuPanelState extends State<SideMenuPanel> {
   }
 
   bool _hasPermission(_SideMenuItem item) {
-    if (item.requiredPermissions == null ||
-        item.requiredPermissions!.isEmpty) {
+    if (item.requiredPermissions == null || item.requiredPermissions!.isEmpty) {
       return true;
     }
     return item.requiredPermissions!
@@ -94,8 +90,8 @@ class _SideMenuPanelState extends State<SideMenuPanel> {
         ? _visibleChildren(item.children!)
         : const <_SideMenuItem>[];
 
-    final showGroup = item.hasChildren &&
-        (children.isNotEmpty || _hasPermission(item));
+    final showGroup =
+        item.hasChildren && (children.isNotEmpty || _hasPermission(item));
 
     if (item.hasChildren && !showGroup) {
       return const SizedBox.shrink();
@@ -106,12 +102,11 @@ class _SideMenuPanelState extends State<SideMenuPanel> {
             item.iconAsset!,
             width: 26,
             height: 26,
-            colorFilter:
-                const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           )
         : item.icon != null
-            ? Icon(item.icon, color: Colors.white)
-            : const SizedBox.shrink();
+        ? Icon(item.icon, color: Colors.white)
+        : const SizedBox.shrink();
 
     if (!item.hasChildren) {
       return ListTile(
@@ -158,8 +153,7 @@ class _SideMenuPanelState extends State<SideMenuPanel> {
                   (child) => Padding(
                     padding: const EdgeInsets.only(left: 48),
                     child: ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 0),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                       dense: true,
                       leading: const SizedBox.shrink(),
                       title: Text(
@@ -203,8 +197,10 @@ class _SideMenuPanelState extends State<SideMenuPanel> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -261,8 +257,9 @@ class _SideMenuPanelState extends State<SideMenuPanel> {
                     ),
                     const Divider(color: Colors.white24, height: 1),
                     ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
                       leading: const Icon(Icons.logout, color: Colors.white),
                       title: const Text(
                         'Salir',
@@ -340,6 +337,11 @@ const _menuItems = [
     ],
     children: [
       _SideMenuItem(
+        label: 'Proveedores',
+        route: AppRoutes.providers,
+        requiredPermissions: ['suppliers.read'],
+      ),
+      _SideMenuItem(
         label: 'Compras',
         route: AppRoutes.purchases,
         requiredPermissions: ['purchases.read'],
@@ -354,10 +356,7 @@ const _menuItems = [
   _SideMenuItem(
     label: 'Productos',
     icon: Icons.widgets,
-    requiredPermissions: [
-      'products.read',
-      'categoryproducts.read',
-    ],
+    requiredPermissions: ['products.read', 'categoryproducts.read'],
     children: [
       _SideMenuItem(
         label: 'Productos',
@@ -374,10 +373,7 @@ const _menuItems = [
   _SideMenuItem(
     label: 'Servicios',
     icon: Icons.build,
-    requiredPermissions: [
-      'services.read',
-      'technicians.read',
-    ],
+    requiredPermissions: ['services.read', 'technicians.read'],
     children: [
       _SideMenuItem(
         label: 'Servicios',

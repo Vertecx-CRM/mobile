@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/core/session_context.dart';
 import 'package:vertecx/data/models/dashboard/dashboard_models.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/appointment_repository.dart';
 import 'package:vertecx/data/repositories/appointmentRepositories/bloc/calendar_bloc.dart';
@@ -29,7 +30,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   late final List<int> _years;
   late int _selectedYear;
-  late final List<String> _permissions;
+  List<String> _permissions = const <String>[];
 
   @override
   void initState() {
@@ -43,7 +44,12 @@ class _DashboardPageState extends State<DashboardPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments;
-    _permissions = args is List<String> ? args : const <String>[];
+    if (args is List<String>) {
+      _permissions = args;
+      SessionContext.permissions = args;
+      return;
+    }
+    _permissions = SessionContext.permissions;
   }
 
   Widget _buildYearSelector() {
