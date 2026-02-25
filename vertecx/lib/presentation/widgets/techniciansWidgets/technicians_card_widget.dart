@@ -6,9 +6,27 @@ class TechnicianCardWidget extends StatelessWidget {
 
   const TechnicianCardWidget({super.key, required this.technician});
 
+  String _initials(String fullName) {
+    final parts = fullName
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+
+    final a = parts[0].substring(0, 1).toUpperCase();
+    final b = parts[1].substring(0, 1).toUpperCase();
+    return '$a$b';
+  }
+
   @override
   Widget build(BuildContext context) {
     final isActive = technician.status == TechnicianStatus.activo;
+
+    final imageUrl = (technician.image ?? '').trim();
+    final initials = _initials(technician.name);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -31,15 +49,21 @@ class TechnicianCardWidget extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Avatar
-              Container(
+              /// Avatar (Imagen o Iniciales)
+              SizedBox(
                 width: 80,
                 height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.purple.shade100,
-                  shape: BoxShape.circle,
+                child: ClipOval(
+                  child: imageUrl.isNotEmpty
+                      ? Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) {
+                            return _InitialsAvatar(initials: initials);
+                          },
+                        )
+                      : _InitialsAvatar(initials: initials),
                 ),
-                child: const Icon(Icons.person, size: 52, color: Colors.purple),
               ),
               const SizedBox(width: 14),
 
@@ -91,7 +115,7 @@ class TechnicianCardWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// Documento
+                /// Documento (tu UI muestra technician.id)
                 Row(
                   children: [
                     const Icon(Icons.credit_card, size: 18, color: Colors.grey),
@@ -139,6 +163,28 @@ class TechnicianCardWidget extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _InitialsAvatar extends StatelessWidget {
+  final String initials;
+
+  const _InitialsAvatar({required this.initials});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.purple.shade100,
+      alignment: Alignment.center,
+      child: Text(
+        initials,
+        style: const TextStyle(
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+          color: Colors.purple,
+        ),
       ),
     );
   }

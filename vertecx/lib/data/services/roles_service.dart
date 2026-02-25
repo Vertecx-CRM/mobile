@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/core/session_context.dart';
+import 'package:vertecx/data/constants/api_constants.dart';
 import 'package:vertecx/data/models/roles/role_model.dart';
 
 class RolesService {
-  final String baseUrl = "http://192.168.1.9:3001";
-
   Future<List<RoleModel>> getRoles({String? token}) async {
-    final uri = Uri.parse('$baseUrl/roles/list');
+    final uri = Uri.parse('$kBackendBaseUrl/roles/list');
     final effectiveToken = token ?? SessionContext.accessToken;
 
     try {
@@ -36,7 +36,7 @@ class RolesService {
           .map(RoleModel.fromJson)
           .toList();
     } on SocketException {
-      throw Exception('Sin conexiÃ³n. Verifica red/IP del backend.');
+      throw Exception('Sin conexión. Verifica red/IP del backend.');
     } catch (e) {
       throw Exception('Error de red: $e');
     }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vertecx/core/session_context.dart';
+import 'package:vertecx/presentation/routes/app_routes.dart';
 import 'package:vertecx/presentation/widgets/navigationWidgets/app_top_bar.dart';
+import 'package:vertecx/presentation/widgets/navigationWidgets/side_menu_panel.dart';
 import 'package:vertecx/presentation/widgets/components/search/search.dart';
 import 'package:vertecx/presentation/widgets/productsWidgets/product_card_widget.dart';
 
@@ -20,6 +23,27 @@ class _ProductsPageState extends State<ProductsPage> {
   int _productsToShow = 4;
   String _searchQuery = "";
 
+  List<String> _permissions = const <String>[];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductsBloc>().add(LoadProductsEvent());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+
+    if (args is List<String>) {
+      _permissions = args;
+      SessionContext.permissions = args;
+    } else {
+      _permissions = SessionContext.permissions;
+    }
+  }
+
   void _loadMoreProducts(int max) {
     setState(() {
       _productsToShow = (_productsToShow + 2).clamp(0, max);
@@ -32,12 +56,6 @@ class _ProductsPageState extends State<ProductsPage> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<ProductsBloc>().add(LoadProductsEvent());
   }
 
   String _normalize(String s) {
@@ -76,7 +94,21 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppTopBar(),
+      appBar: const AppTopBar(title: 'Productos', showMenu: true),
+      drawer: Drawer(
+        backgroundColor: Colors.transparent,
+        child: SideMenuPanel(
+          permissions: _permissions,
+          onClose: () => Navigator.of(context).maybePop(),
+          onLogout: () {
+            Navigator.of(context).maybePop();
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.login,
+              (route) => false,
+            );
+          },
+        ),
+      ),
       backgroundColor: const Color(0xFFE8E8E8),
       body: BlocBuilder<ProductsBloc, ProductsState>(
         builder: (context, state) {

@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/core/session_context.dart';
+import 'package:vertecx/data/constants/api_constants.dart';
 import 'package:vertecx/data/models/technicians/technician_model.dart';
 
 class TechniciansService {
-  final String baseUrl = "http://192.168.1.9:3001";
-
   Future<List<TechnicianModel>> getTechnicians({String? token}) async {
-    final uri = Uri.parse("$baseUrl/technicians");
+    final uri = Uri.parse('$kBackendBaseUrl/technicians');
     final effectiveToken = token ?? SessionContext.accessToken;
 
     try {
@@ -23,12 +23,13 @@ class TechniciansService {
 
       if (response.statusCode != 200) {
         throw Exception(
-          "Error al obtener tÃ©cnicos: "
-          "${response.statusCode}. Body: ${response.body}",
+          'Error al obtener técnicos: '
+          '${response.statusCode}. Body: ${response.body}',
         );
       }
 
       final decoded = jsonDecode(response.body);
+
       List<dynamic> list;
       if (decoded is List) {
         list = decoded;
@@ -43,7 +44,7 @@ class TechniciansService {
           .map(TechnicianModel.fromJson)
           .toList();
     } on SocketException {
-      throw Exception('Sin conexiÃ³n. Verifica red/IP del backend.');
+      throw Exception('Sin conexión. Verifica red/IP del backend.');
     } catch (e) {
       throw Exception('Error de red: $e');
     }
