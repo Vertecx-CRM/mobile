@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/core/session_context.dart';
+import 'package:vertecx/data/constants/api_constants.dart';
 import 'package:vertecx/data/models/products/product_model.dart';
 
 class ProductsService {
-  final String baseUrl = "http://192.168.1.9:3001";
-
   Future<List<ProductModel>> getProducts({
     String status = 'all',
     String? token,
   }) async {
-    final uri = Uri.parse(
-      "$baseUrl/products",
-    ).replace(queryParameters: {'status': status});
+    final uri = Uri.parse('$kBackendBaseUrl/products')
+        .replace(queryParameters: {'status': status});
+
     final effectiveToken = token ?? SessionContext.accessToken;
 
     try {
@@ -33,8 +33,11 @@ class ProductsService {
       }
 
       final decoded = jsonDecode(response.body);
+
       if (decoded is! List) {
-        throw Exception('Respuesta invÃ¡lida del backend (se esperaba lista).');
+        throw Exception(
+          'Respuesta inválida del backend (se esperaba lista).',
+        );
       }
 
       return decoded
@@ -42,7 +45,7 @@ class ProductsService {
           .map(ProductModel.fromJson)
           .toList();
     } on SocketException {
-      throw Exception('Sin conexiÃ³n. Verifica red/IP del backend.');
+      throw Exception('Sin conexión. Verifica red/IP del backend.');
     } catch (e) {
       throw Exception('Error de red: $e');
     }

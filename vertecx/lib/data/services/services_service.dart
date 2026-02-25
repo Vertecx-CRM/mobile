@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:vertecx/core/api_http.dart';
 import 'package:vertecx/core/session_context.dart';
+import 'package:vertecx/data/constants/api_constants.dart';
 import 'package:vertecx/data/models/services/service_model.dart';
 
 class ServicesService {
-  final String baseUrl = "http://192.168.1.9:3001";
-
   Future<ServicesPageResponse> getServices({
     int page = 1,
     int limit = 50,
@@ -16,7 +16,8 @@ class ServicesService {
       'page': page.toString(),
       'limit': limit.toString(),
     };
-    final uri = Uri.parse("$baseUrl/services").replace(queryParameters: qp);
+
+    final uri = Uri.parse('$kBackendBaseUrl/services').replace(queryParameters: qp);
     final effectiveToken = token ?? SessionContext.accessToken;
 
     try {
@@ -37,26 +38,26 @@ class ServicesService {
 
       final decoded = jsonDecode(response.body);
       if (decoded is! Map<String, dynamic>) {
-        throw Exception(
-          'Respuesta invÃ¡lida del backend (se esperaba objeto).',
-        );
+        throw Exception('Respuesta inválida del backend (se esperaba objeto).');
       }
 
       final rawData = decoded['data'];
       final rawMeta = decoded['meta'];
+
       final List<ServiceModel> services = (rawData is List)
           ? rawData
-                .whereType<Map<String, dynamic>>()
-                .map(ServiceModel.fromJson)
-                .toList()
+              .whereType<Map<String, dynamic>>()
+              .map(ServiceModel.fromJson)
+              .toList()
           : <ServiceModel>[];
 
       final meta = ServicesMeta.fromJson(
         rawMeta is Map<String, dynamic> ? rawMeta : <String, dynamic>{},
       );
+
       return ServicesPageResponse(data: services, meta: meta);
     } on SocketException {
-      throw Exception('Sin conexiÃ³n. Verifica red/IP del backend.');
+      throw Exception('Sin conexión. Verifica red/IP del backend.');
     } catch (e) {
       throw Exception('Error de red: $e');
     }
@@ -82,11 +83,15 @@ class ServicesMeta {
   }
 
   factory ServicesMeta.fromJson(Map<String, dynamic> json) {
+    final page = _asInt(json['page']);
+    final limit = _asInt(json['limit']);
+    final pages = _asInt(json['pages']);
+
     return ServicesMeta(
-      page: _asInt(json['page']) == 0 ? 1 : _asInt(json['page']),
-      limit: _asInt(json['limit']) == 0 ? 50 : _asInt(json['limit']),
+      page: page == 0 ? 1 : page,
+      limit: limit == 0 ? 50 : limit,
       total: _asInt(json['total']),
-      pages: _asInt(json['pages']) == 0 ? 1 : _asInt(json['pages']),
+      pages: pages == 0 ? 1 : pages,
     );
   }
 }
